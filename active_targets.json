@@ -1,0 +1,48 @@
+{
+    "condor_targets": [
+        "FLEX",
+        "CYTK",
+        "USMV",
+        "RUN",
+        "STWD",
+        "SPYI",
+        "QUAL",
+        "IBB",
+        "HAYW"
+    ],
+    "wheel_targets": [
+        "EXPD",
+        "ILMN",
+        "W",
+        "INSM",
+        "BKLN",
+        "EXPE",
+        "FLNC",
+        "ROL"
+    ],
+    "trend_targets": [
+        "JAAA",
+        "KMT",
+        "BKD",
+        "XOM",
+        "CVX",
+        "TER",
+        "EXAS",
+        "MT",
+        "PAGP",
+        "ALGM"
+    ],
+    "short_targets": [
+        "PEGA",
+        "OTEX",
+        "DBX",
+        "AMN",
+        "MMYT",
+        "LOGI",
+        "PTC",
+        "CPNG",
+        "HPQ",
+        "NTNX"
+    ],
+    "updated": "2026-02-13 08:01:11.701916"
+}

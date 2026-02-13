@@ -1,50 +1,50 @@
 {
     "trend_targets": [
-        "JAAA",
         "KMT",
+        "BKD",
+        "TER",
+        "CVX",
         "XOM",
         "ALGM",
         "MT",
         "XLE",
-        "TXN",
         "FENY",
-        "HON",
-        "EWY"
+        "TXN"
     ],
     "wheel_targets": [
         "W",
-        "EXPD",
         "ILMN",
         "UBS",
+        "EXPD",
         "MAGS",
         "NWG",
         "GOOGL",
         "GOOG",
-        "FLNC",
-        "MS"
+        "AXP",
+        "SYF"
     ],
     "condor_targets": [
         "FLEX",
         "XLV",
+        "YINN",
         "USMV",
         "STWD",
         "RUN",
         "AR",
         "PSTG",
-        "SPYI",
-        "NVDA",
-        "ABBV"
+        "IBB",
+        "BXMT"
     ],
     "short_targets": [
+        "GWRE",
         "PEGA",
+        "DBX",
         "PCOR",
+        "IGV",
         "HUBS",
         "NOW",
+        "OTEX",
         "RELX",
-        "CART",
-        "CPNG",
-        "IHI",
-        "MMYT",
-        "NTNX"
+        "COIN"
     ]
 }

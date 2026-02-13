@@ -20,7 +20,8 @@ CORE_WATCHLIST = {
     "condor_targets": ["SPY", "IWM", "QQQ"],
     "wheel_targets": ["F", "PLTR", "SOFI", "AMD"],
     "trend_targets": ["NVDA", "TSLA", "COIN", "MSTR"],
-    "short_targets": ["CVNA", "RIVN", "LCID"] # Examples of structural shorts
+    "survivor_targets": ["TQQQ", "SOXL", "UPRO"], # [NEW]
+    "short_targets": ["CVNA", "RIVN", "LCID"] 
 }
 
 def get_candidates():
@@ -30,9 +31,11 @@ def get_candidates():
             if (time.time() - file_time) < 86400:
                 with open(INPUT_FILE, 'r') as f:
                     data = json.load(f)
-                    # Ensure short_targets key exists
+                    # Ensure keys exist
+                    if "survivor_targets" not in data: data["survivor_targets"] = []
                     if "short_targets" not in data: data["short_targets"] = []
-                    print(f"✅ Loaded Candidates: {len(data.get('trend_targets',[]))} Bull, {len(data.get('short_targets',[]))} Bear")
+                    
+                    print(f"✅ Loaded Candidates: {len(data.get('trend_targets',[]))} Bull, {len(data.get('survivor_targets',[]))} Dip")
                     return data
         except: pass
     return CORE_WATCHLIST
@@ -50,8 +53,6 @@ def get_news_summary(ticker):
 def ask_llama(ticker, strategy, headlines):
     """
     The Brain: Context-Aware Analysis.
-    - If strategy is 'short_targets', we look for WEAKNESS.
-    - If strategy is 'trend_targets', we look for STRENGTH.
     """
     if not headlines: return 0.0, "No Data"
 
@@ -60,7 +61,13 @@ def ask_llama(ticker, strategy, headlines):
         role = "short seller"
         goal = "identifying weakness, bad earnings, or regulatory trouble"
         scoring = "High score (1.0) means the stock is likely to CRASH. Low score means it is strong/safe."
-    else:
+        
+    elif strategy == "survivor_targets":
+        role = "value investor"
+        goal = "identifying if a recent price drop is an overreaction or buying opportunity"
+        scoring = "High score (1.0) means the stock is fundamentally strong and the DIP IS SAFE TO BUY."
+        
+    else: # trend, wheel, condor
         role = "growth investor"
         goal = "identifying breakouts, strong earnings, and momentum"
         scoring = "High score (1.0) means the stock is likely to RALLY."
@@ -95,12 +102,12 @@ def beam_to_beelink():
         print(f"   [!] SCP Failed: {e}")
 
 def run_scout():
-    print("--- 🔬 SECTOR SCOUT 4.0 (Bi-Directional) ---")
+    print("--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---")
     candidates = get_candidates()
     final_targets = {
         "condor_targets": [], "wheel_targets": [],
-        "trend_targets": [], "short_targets": [],
-        "updated": str(datetime.datetime.now())
+        "trend_targets": [], "survivor_targets": [],
+        "short_targets": [], "updated": str(datetime.datetime.now())
     }
 
     print("\n2. Deep Diving Candidates...")
@@ -115,8 +122,9 @@ def run_scout():
             score, reason = ask_llama(ticker, category, headlines)
             
             is_approved = False
-            # LOGIC FLIP: High Score allows entry for both (since we flipped the prompt definition)
-            # Short Target Score 0.9 = "High Probability Crash"
+            
+            # Logic Flip for Short Targets handled in Prompt Definition
+            # All scores > 0.6 mean "Good for this Strategy"
             if score > 0.6: is_approved = True
             
             emoji = "✅" if is_approved else "❌"

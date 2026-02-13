@@ -139,7 +139,7 @@ def filter_by_volume(tickers, chunk_size=200):
     return liquid_tickers
 
 def analyze_technicals(tickers):
-    print(f"3. Analyzing Technicals for {len(tickers)} stocks...")
+    print(f"3. Analyzing Technicals (Segregated Lists) for {len(tickers)} stocks...")
     candidates = []
     if not tickers: return []
     try:
@@ -164,20 +164,33 @@ def analyze_technicals(tickers):
                 price = float(current['Close'])
                 if pd.isna(rsi) or pd.isna(adx) or pd.isna(sma200): continue
 
-                # 1. BULL: Trend Targets
-                if adx > 25 and 50 < rsi < 75 and price > sma200:
+                # --- EXCLUSIVE LIST LOGIC ---
+                # We use if/elif to ensure a ticker only ends up in ONE list.
+
+                # 1. TREND TARGETS (Momentum)
+                # Buying Strength: Price > SMA200, Strong Trend (ADX > 25), RSI > 55 (But not insane)
+                if price > sma200 and adx > 25 and 55 < rsi < 75:
                     candidates.append({"symbol": sym, "type": "trend_targets", "score": adx})
                 
-                # 2. BULL: Wheel Targets
-                elif price > sma200 and rsi < 45:
+                # 2. SURVIVOR TARGETS (Dip Buyers)
+                # Buying Weakness in Uptrend: Price > SMA200, RSI < 40 (Oversold)
+                elif price > sma200 and rsi < 40:
+                    candidates.append({"symbol": sym, "type": "survivor_targets", "score": (50-rsi)})
+
+                # 3. WHEEL TARGETS (Stable/Neutral Bull)
+                # Price > SMA200, RSI Healthy (40-55), lower ADX preferred for range
+                elif price > sma200 and 40 <= rsi <= 55:
                     candidates.append({"symbol": sym, "type": "wheel_targets", "score": (50-rsi)})
                 
-                # 3. NEUTRAL: Condor Targets
+                # 4. CONDOR TARGETS (Chop/Sideways)
+                # No Trend (ADX < 20), RSI Middle
                 elif adx < 20 and 40 < rsi < 60:
                     candidates.append({"symbol": sym, "type": "condor_targets", "score": (20-adx)})
                 
-                # 4. BEAR: Short Targets
-                elif adx > 25 and 30 < rsi < 50 and price < sma200:
+                # 5. SHORT TARGETS (Bearish)
+                # Price < SMA200 (Downtrend)
+                elif price < sma200:
+                    # Score based on how "bad" it is (Lower RSI = crash mode, Higher RSI = rip sell)
                     candidates.append({"symbol": sym, "type": "short_targets", "score": adx})
 
             except: continue
@@ -199,6 +212,7 @@ def run_dragnet():
     
     final_output = {
         "trend_targets": [], 
+        "survivor_targets": [], # [NEW]
         "wheel_targets": [], 
         "condor_targets": [],
         "short_targets": []

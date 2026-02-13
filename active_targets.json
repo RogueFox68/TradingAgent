@@ -1,48 +1,47 @@
 {
     "condor_targets": [
         "FLEX",
-        "CYTK",
-        "USMV",
-        "RUN",
+        "XLV",
         "STWD",
-        "SPYI",
-        "QUAL",
+        "RUN",
+        "AR",
+        "PSTG",
         "IBB",
-        "HAYW"
+        "BXMT"
     ],
     "wheel_targets": [
-        "EXPD",
-        "ILMN",
         "W",
-        "INSM",
-        "BKLN",
-        "EXPE",
+        "EXPD",
+        "UBS",
+        "MAGS",
+        "ILMN",
+        "NWG",
+        "GOOGL",
+        "GOOG",
         "FLNC",
-        "ROL"
+        "XLY"
     ],
     "trend_targets": [
-        "JAAA",
         "KMT",
         "BKD",
-        "XOM",
-        "CVX",
         "TER",
-        "EXAS",
+        "CVX",
         "MT",
-        "PAGP",
-        "ALGM"
+        "FENY",
+        "TXN",
+        "HON"
     ],
     "short_targets": [
+        "GWRE",
         "PEGA",
-        "OTEX",
         "DBX",
-        "AMN",
-        "MMYT",
-        "LOGI",
-        "PTC",
-        "CPNG",
-        "HPQ",
-        "NTNX"
+        "PCOR",
+        "IGV",
+        "OTEX",
+        "HUBS",
+        "NOW",
+        "RELX",
+        "COIN"
     ],
-    "updated": "2026-02-13 08:01:11.701916"
+    "updated": "2026-02-13 09:16:20.848148"
 }

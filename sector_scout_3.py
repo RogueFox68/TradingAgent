@@ -36,6 +36,7 @@ OUTPUT_FILE = "active_targets.json"
 BEELINK_IP = "192.168.5.87"
 BEELINK_USER = "trader"
 BEELINK_PATH = "~/bots/repo/active_targets.json"
+WEBHOOK_OVERSEER = "https://discordapp.com/api/webhooks/1462558720901779695/bPQLmTz6XIqeyhYjoIN6AB_zaorhWGBsrWx_G0yzoqSP3Hj_NlzsWGT_AN2rzCS7t9Hu"
 
 # --- CORE BACKUP ---
 CORE_WATCHLIST = {
@@ -147,6 +148,18 @@ def beam_to_beelink(retries=3):
 
     # Fallback
     print(f"   🚨 ALL SCP ATTEMPTS FAILED. Using Fallback.")
+    
+    # [NEW] Discord Alert
+    try:
+        if WEBHOOK_OVERSEER:
+            requests.post(WEBHOOK_OVERSEER, json={
+                "content": "🚨 **SCP TRANSFER FAILED**\n"
+                           "Targets not updated on Beelink.\n"
+                           "Check 5080 network connection.",
+                "username": "Sector Scout"
+            })
+    except: pass
+
     try:
         # Assuming mapped drive or shared folder exists - illustrative fallback
         import shutil

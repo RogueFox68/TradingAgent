@@ -1,5 +1,8 @@
 # CLAUDE.md
 
+> **System Context:** See `../SYSTEM_ARCHITECTURE.md` for how this repo fits 
+> into the larger two-machine trading system.
+
 ## Project Overview
 
 TradingAgent is an automated stock scanning and AI analysis system. It scans the US equity market via the Alpaca API, filters candidates using technical indicators (RSI, ADX, SMA), then scores them with a local Ollama LLM (Llama 3.1) for sentiment analysis.

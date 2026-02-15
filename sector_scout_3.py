@@ -6,6 +6,7 @@ import datetime
 import yfinance as yf
 import subprocess
 import sys
+import config
 
 # Force UTF-8 Output for Windows Console (Emoji Support) - DISABLED due to hang issues
 # Instead, we wrap print to handle encoding errors gracefully
@@ -36,7 +37,7 @@ OUTPUT_FILE = "active_targets.json"
 BEELINK_IP = "192.168.5.87"
 BEELINK_USER = "trader"
 BEELINK_PATH = "~/bots/repo/active_targets.json"
-WEBHOOK_OVERSEER = "https://discordapp.com/api/webhooks/1462558720901779695/bPQLmTz6XIqeyhYjoIN6AB_zaorhWGBsrWx_G0yzoqSP3Hj_NlzsWGT_AN2rzCS7t9Hu"
+WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER') 
 
 # --- CORE BACKUP ---
 CORE_WATCHLIST = {

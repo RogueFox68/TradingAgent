@@ -7,8 +7,26 @@ import yfinance as yf
 import subprocess
 import sys
 
-# Force UTF-8 Output for Windows Console (Emoji Support)
-sys.stdout.reconfigure(encoding='utf-8')
+# Force UTF-8 Output for Windows Console (Emoji Support) - DISABLED due to hang issues
+# Instead, we wrap print to handle encoding errors gracefully
+import builtins
+def safe_print(*args, **kwargs):
+    try:
+        builtins.print(*args, **kwargs)
+    except UnicodeEncodeError:
+        try:
+            encoding = sys.stdout.encoding or 'ascii'
+            new_args = []
+            for arg in args:
+                if isinstance(arg, str):
+                    new_args.append(arg.encode(encoding, errors='replace').decode(encoding))
+                else:
+                    new_args.append(arg)
+            builtins.print(*new_args, **kwargs)
+        except:
+            pass # Last resort: silent failure
+
+print = safe_print
 
 # --- CONFIGURATION ---
 OLLAMA_URL = "http://localhost:11434/api/generate"

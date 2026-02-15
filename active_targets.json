@@ -1,23 +1,27 @@
 {
-    "condor_targets": [],
+    "condor_targets": [
+        "IWM",
+        "QQQ"
+    ],
     "wheel_targets": [
+        "F",
         "PLTR",
         "SOFI",
         "AMD"
     ],
     "trend_targets": [
         "NVDA",
-        "COIN",
-        "MSTR"
+        "TSLA",
+        "COIN"
     ],
     "survivor_targets": [
-        "TQQQ",
-        "SOXL"
+        "SOXL",
+        "UPRO"
     ],
     "short_targets": [
         "CVNA",
         "RIVN",
         "LCID"
     ],
-    "updated": "2026-02-15 09:45:03.768482"
+    "updated": "2026-02-15 11:41:00.604949"
 }

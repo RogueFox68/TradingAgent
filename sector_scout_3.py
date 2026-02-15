@@ -5,6 +5,10 @@ import time
 import datetime
 import yfinance as yf
 import subprocess
+import sys
+
+# Force UTF-8 Output for Windows Console (Emoji Support)
+sys.stdout.reconfigure(encoding='utf-8')
 
 # --- CONFIGURATION ---
 OLLAMA_URL = "http://localhost:11434/api/generate"
@@ -86,20 +90,56 @@ def ask_llama(ticker, strategy, headlines):
         }
         response = requests.post(OLLAMA_URL, json=payload, timeout=30)
         response_json = response.json()
-        analysis = json.loads(response_json['response'])
+        
+        # Robust Parsing
+        raw_text = response_json['response']
+        try:
+            # First try direct load
+            analysis = json.loads(raw_text)
+        except json.JSONDecodeError:
+            # Fallback: Regex extraction
+            import re
+            match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+            if match:
+                analysis = json.loads(match.group(0))
+            else:
+                return 0.0, "JSON Parse Failed"
+
         return analysis.get('score', 0.0), analysis.get('reason', 'N/A')
     except Exception as e:
         print(f"   [!] AI Error on {ticker}: {e}")
         return 0.0, "AI Failed"
 
-def beam_to_beelink():
+def beam_to_beelink(retries=3):
     print(f"\n4. Beaming {OUTPUT_FILE} to Beelink...")
+    
+    for attempt in range(retries):
+        try:
+            cmd = f"scp {OUTPUT_FILE} {BEELINK_USER}@{BEELINK_IP}:{BEELINK_PATH}"
+            # Added 30s timeout and capture_output to keep logs clean
+            subprocess.run(cmd, shell=True, check=True, timeout=30,  stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            print(f"   ✅ Transfer Complete (Attempt {attempt+1}).")
+            return True
+        except subprocess.TimeoutExpired:
+             print(f"   ⚠️ SCP Timeout (Attempt {attempt+1})...")
+        except Exception as e:
+             print(f"   ⚠️ SCP Failed (Attempt {attempt+1}): {e}")
+        
+        time.sleep(5) # Wait before retry
+
+    # Fallback
+    print(f"   🚨 ALL SCP ATTEMPTS FAILED. Using Fallback.")
     try:
-        cmd = f"scp {OUTPUT_FILE} {BEELINK_USER}@{BEELINK_IP}:{BEELINK_PATH}"
-        subprocess.run(cmd, shell=True, check=True)
-        print("   ✅ Transfer Complete.")
+        # Assuming mapped drive or shared folder exists - illustrative fallback
+        import shutil
+        fallback_path = f"//BEELINK/share/bots/repo/{OUTPUT_FILE}"
+        # Only try if path structure roughly exists or just log failure
+        # shutil.copy(OUTPUT_FILE, fallback_path) 
+        print("   (Fallback copy skipped - Network path not configured)") 
     except Exception as e:
-        print(f"   [!] SCP Failed: {e}")
+        print(f"   [!] Fallback Failed: {e}")
+    
+    return False
 
 def run_scout():
     print("--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---")

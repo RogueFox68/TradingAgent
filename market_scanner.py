@@ -31,15 +31,13 @@ def is_mission_time():
         print(f"[Gatekeeper] Today is {now.strftime('%A')}. Market Closed. Aborting.")
         return False
 
-    # 2. Allow 8:00 AM Hour (Covers 08:00 Pre-Market & 08:30 Open)
-    if now.hour == 8:
-        return True
-        
-    # 3. Allow Market Hours (08:30 - 15:00 CST)
+    # 2. STRICT 08:30 CST START
+    # We want to catch the market right at open or slightly after, 
+    # but scanning at 8:00 AM (pre-market) gives misleading volume/price data.
     current_minutes = now.hour * 60 + now.minute
     market_open = 8 * 60 + 30  # 08:30 CST
     market_close = 15 * 60     # 15:00 CST (3:00 PM)
-    
+
     if market_open <= current_minutes <= market_close:
         return True
         

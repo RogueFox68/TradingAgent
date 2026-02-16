@@ -64,15 +64,56 @@ def get_candidates():
         except: pass
     return CORE_WATCHLIST
 
+TRUSTED_SOURCES = ["Bloomberg", "Reuters", "WSJ", "CNBC", "Financial Times"]
+
 def get_news_summary(ticker):
     try:
         stock = yf.Ticker(ticker)
         news = stock.news
+        
+        # Filter: Recent (48h) + Trusted Sources
+        recent_news = []
+        now = time.time()
+        
+        for n in news:
+            # Check recency
+            pub_time = n.get('providerPublishTime', 0)
+            age_hours = (now - pub_time) / 3600
+            if age_hours > 48:
+                continue
+            
+            # Boost trusted sources
+            publisher = n.get('publisher', '')
+            if any(src in publisher for src in TRUSTED_SOURCES):
+                recent_news.insert(0, n)  # Prioritize
+            else:
+                recent_news.append(n)
+        
         headlines = []
-        for n in news[:3]:
+        for n in recent_news[:3]:
             headlines.append(f"- {n.get('title', '')}")
-        return "\n".join(headlines)
-    except: return "No recent news found."
+        
+        return "\n".join(headlines) if headlines else "No recent news."
+    except:
+        return "No recent news found."
+
+def validate_llm_response(score, reason, ticker):
+    # Range check
+    if not (0.0 <= score <= 1.0):
+        print(f"   [!] {ticker}: Invalid score {score}, clamping to 0.0-1.0")
+        score = max(0.0, min(1.0, score))
+    
+    # Reasoning quality
+    if len(reason) < 50:
+        print(f"   [!] {ticker}: Weak reasoning ({len(reason)} chars)")
+        score = score * 0.7  # Reduce confidence
+    
+    # Detect confusion
+    if "insufficient" in reason.lower() or "not enough" in reason.lower():
+        print(f"   [!] {ticker}: LLM confused, using 0.5")
+        return 0.5, reason
+    
+    return score, reason
 
 def ask_llama(ticker, strategy, headlines):
     """
@@ -125,7 +166,7 @@ def ask_llama(ticker, strategy, headlines):
             else:
                 return 0.0, "JSON Parse Failed"
 
-        return analysis.get('score', 0.0), analysis.get('reason', 'N/A')
+        return validate_llm_response(analysis.get('score', 0.0), analysis.get('reason', 'N/A'), ticker)
     except Exception as e:
         print(f"   [!] AI Error on {ticker}: {e}")
         return 0.0, "AI Failed"
@@ -183,7 +224,7 @@ def run_scout():
     }
 
     print("\n2. Deep Diving Candidates...")
-    print("\n2. Deep Diving Candidates...")
+
     for category, tickers in candidates.items():
         if category == "updated" or not tickers: continue
         
@@ -223,6 +264,40 @@ def run_scout():
                     "confidence": round(final_confidence, 2),
                     "reason": reason
                 })
+
+
+    # Parsing Summary
+    total_analyzed = sum(len(v) for k, v in candidates.items() if k != "updated")
+    total_approved = sum(len(v) for k, v in final_targets.items() if k != "updated")
+    approval_rate = total_approved / total_analyzed if total_analyzed > 0 else 0
+
+    all_confidences = []
+    for category in final_targets:
+        if category == "updated": continue
+        for item in final_targets[category]:
+            if isinstance(item, dict):
+                all_confidences.append(item.get('confidence', 0))
+
+    avg_confidence = sum(all_confidences) / len(all_confidences) if all_confidences else 0
+
+    print(f"\n📊 SCOUT SUMMARY:")
+    print(f"   Analyzed: {total_analyzed}")
+    print(f"   Approved: {total_approved} ({approval_rate*100:.0f}%)")
+    print(f"   Avg Confidence: {avg_confidence:.2f}")
+
+    # Discord report
+    if WEBHOOK_OVERSEER:
+        try:
+            requests.post(WEBHOOK_OVERSEER, json={
+                "content": (
+                    f"📊 **SCOUT COMPLETE**\n"
+                    f"Analyzed: {total_analyzed}\n"
+                    f"Approved: {total_approved} ({approval_rate*100:.0f}%)\n"
+                    f"Avg Confidence: {avg_confidence:.2f}"
+                ),
+                "username": "Sector Scout"
+            })
+        except: pass
 
     print("\n3. Saving Results...")
     with open(OUTPUT_FILE, 'w') as f:

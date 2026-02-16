@@ -183,27 +183,46 @@ def run_scout():
     }
 
     print("\n2. Deep Diving Candidates...")
+    print("\n2. Deep Diving Candidates...")
     for category, tickers in candidates.items():
         if category == "updated" or not tickers: continue
         
         print(f"   👉 Analyzing {category}...")
-        for ticker in tickers:
+        for item in tickers:
+            # [COMPATIBILITY] Handle both New Objects and Legacy Strings
+            if isinstance(item, dict):
+                ticker = item.get('symbol')
+                tech_score = item.get('tech_score', 50.0)
+            else:
+                ticker = item
+                tech_score = 50.0 # Default for Manual/Core items
+
             if "/" in ticker: continue
             
+            # 1. Normalize Technical Score (0-100 -> 0.0-1.0)
+            tech_norm = min(max(tech_score / 100.0, 0.0), 1.0)
+
+            # 2. Get AI Opinion
             headlines = get_news_summary(ticker)
-            score, reason = ask_llama(ticker, category, headlines)
+            llm_score, reason = ask_llama(ticker, category, headlines)
+            
+            # 3. Weighted Final Confidence
+            # Tech is 40%, AI is 60% (News beats trailing indicators)
+            final_confidence = (tech_norm * 0.4) + (llm_score * 0.6)
             
             is_approved = False
-            
-            # Logic Flip for Short Targets handled in Prompt Definition
-            # All scores > 0.6 mean "Good for this Strategy"
-            if score > 0.6: is_approved = True
+            if final_confidence > 0.60: is_approved = True
             
             emoji = "✅" if is_approved else "❌"
-            print(f"      {emoji} {ticker:<4} | Score: {score:>4.2f} | {reason[:60]}...")
+            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} (Tech: {tech_score}, AI: {llm_score})")
             
             if is_approved:
-                final_targets[category].append(ticker)
+                # [OUTPUT] Save as Object with Confidence
+                final_targets[category].append({
+                    "symbol": ticker,
+                    "confidence": round(final_confidence, 2),
+                    "reason": reason
+                })
 
     print("\n3. Saving Results...")
     with open(OUTPUT_FILE, 'w') as f:

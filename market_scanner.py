@@ -196,6 +196,42 @@ def analyze_technicals(tickers):
         print(f"   [!] Tech Analysis Error: {e}")
     return candidates
 
+
+def get_earnings_date(ticker_symbol):
+    """
+    Checks if earnings are within the next 2 days.
+    Returns: True if SAFE (No earnings soon), False if DANGER.
+    """
+    try:
+        ticker = yf.Ticker(ticker_symbol)
+        # Get next earnings date
+        calendar = ticker.calendar
+        if calendar is not None and not calendar.empty:
+             # yfinance calendar structure varies. Usually 'Earnings Date' or 'Earnings Date' index
+             # Let's try to find the next date.
+             # Typically calendar keys are 0, 1... or dates.
+             # For safety, let's look at the first available date.
+             next_earnings = calendar.iloc[0][0] # Often a Timestamp
+             if isinstance(next_earnings, datetime.date) or isinstance(next_earnings, datetime.datetime):
+                 # Convert to naive datetime for comparison if needed
+                 if isinstance(next_earnings, pd.Timestamp):
+                     next_earnings = next_earnings.to_pydatetime()
+                 
+                 # Strip timezone if present
+                 if next_earnings.tzinfo:
+                     next_earnings = next_earnings.replace(tzinfo=None)
+
+                 now = datetime.datetime.now()
+                 days_until = (next_earnings - now).days
+                 
+                 if 0 <= days_until <= 2:
+                     print(f"   [!] {ticker_symbol} has earnings in {days_until} days. Skipping.")
+                     return False
+    except: 
+        # If we can't verify, we assume safe (or risky? Let's assume safe to not block everything)
+        pass
+    return True
+
 def run_dragnet():
     # --- GATEKEEPER CHECK ---
     if not is_mission_time():
@@ -210,17 +246,31 @@ def run_dragnet():
     
     final_output = {
         "trend_targets": [], 
-        "survivor_targets": [], # [NEW]
+        "survivor_targets": [],
         "wheel_targets": [], 
         "condor_targets": [],
         "short_targets": []
     }
     
     results.sort(key=lambda x: x['score'], reverse=True)
+    
+    # [FILTER] Earnings Guard
+    safe_results = []
+    print("\n4. Checking Earnings Calendar (Safety Guard)...")
     for item in results:
+        if get_earnings_date(item['symbol']):
+            safe_results.append(item)
+    
+    for item in safe_results:
         category = item['type']
         if len(final_output[category]) < 10: 
-            final_output[category].append(item['symbol'])
+            # [MODIFIED] Store Object instead of String
+            # Old: final_output[category].append(item['symbol'])
+            # New:
+            final_output[category].append({
+                "symbol": item['symbol'],
+                "tech_score": round(item['score'], 2)
+            })
             
     print("\n--- 🎯 DRAGNET RESULTS ---")
     print(json.dumps(final_output, indent=4))

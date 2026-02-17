@@ -43,93 +43,89 @@
     ],
     "survivor_targets": [
         {
-            "symbol": "ILMN",
-            "tech_score": 19.47
-        },
-        {
             "symbol": "GOOGL",
-            "tech_score": 19.38
+            "tech_score": 20.11
         },
         {
             "symbol": "GOOG",
-            "tech_score": 19.14
+            "tech_score": 19.81
         },
         {
-            "symbol": "CWAN",
-            "tech_score": 18.06
-        },
-        {
-            "symbol": "W",
-            "tech_score": 17.91
+            "symbol": "ILMN",
+            "tech_score": 19.74
         },
         {
             "symbol": "MAGS",
-            "tech_score": 17.81
+            "tech_score": 19.03
+        },
+        {
+            "symbol": "W",
+            "tech_score": 18.28
+        },
+        {
+            "symbol": "CWAN",
+            "tech_score": 17.07
         },
         {
             "symbol": "UBS",
-            "tech_score": 16.88
+            "tech_score": 17.0
         },
         {
             "symbol": "KRMN",
-            "tech_score": 16.22
+            "tech_score": 16.37
         },
         {
             "symbol": "XLY",
-            "tech_score": 15.47
+            "tech_score": 15.81
         },
         {
-            "symbol": "MDT",
-            "tech_score": 15.35
+            "symbol": "LQDA",
+            "tech_score": 15.73
         }
     ],
     "wheel_targets": [
         {
-            "symbol": "MS",
-            "tech_score": 9.74
-        },
-        {
-            "symbol": "ROK",
-            "tech_score": 9.53
-        },
-        {
-            "symbol": "TQQQ",
-            "tech_score": 9.44
-        },
-        {
             "symbol": "AMD",
-            "tech_score": 9.44
-        },
-        {
-            "symbol": "IE",
-            "tech_score": 9.21
-        },
-        {
-            "symbol": "LSTR",
-            "tech_score": 8.92
-        },
-        {
-            "symbol": "QLD",
-            "tech_score": 8.91
-        },
-        {
-            "symbol": "INSM",
-            "tech_score": 8.78
-        },
-        {
-            "symbol": "AXP",
-            "tech_score": 8.72
+            "tech_score": 9.87
         },
         {
             "symbol": "SGI",
-            "tech_score": 8.12
+            "tech_score": 9.85
+        },
+        {
+            "symbol": "LSTR",
+            "tech_score": 9.59
+        },
+        {
+            "symbol": "IE",
+            "tech_score": 9.51
+        },
+        {
+            "symbol": "IVW",
+            "tech_score": 9.25
+        },
+        {
+            "symbol": "AXP",
+            "tech_score": 9.25
+        },
+        {
+            "symbol": "XLC",
+            "tech_score": 9.23
+        },
+        {
+            "symbol": "QQQM",
+            "tech_score": 9.17
+        },
+        {
+            "symbol": "SPYG",
+            "tech_score": 9.14
+        },
+        {
+            "symbol": "MS",
+            "tech_score": 9.11
         }
     ],
     "condor_targets": [
-        {
-            "symbol": "VISN",
-            "tech_score": 11.55
-        },
         {
             "symbol": "STWD",
             "tech_score": 10.26
@@ -159,12 +155,16 @@
             "tech_score": 8.15
         },
         {
-            "symbol": "BIRK",
-            "tech_score": 7.6
-        },
-        {
             "symbol": "RRC",
             "tech_score": 7.58
+        },
+        {
+            "symbol": "CNM",
+            "tech_score": 7.54
+        },
+        {
+            "symbol": "BIRK",
+            "tech_score": 7.41
         }
     ],
     "short_targets": [

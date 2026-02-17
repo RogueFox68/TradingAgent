@@ -1,123 +1,102 @@
 {
-    "condor_targets": [
-        {
-            "symbol": "USMV",
-            "confidence": 0.61,
-            "reason": "USMV's strong fundamental performance and momentum in recent quarters make it a compelling pick for growth investors like myself. The ETF's focus on mid-cap US equities with high dividend yields provides a unique exposure to the market, which has been performing well in terms of earnings growth. With a beta of 1.15, USMV is relatively volatile compared to the overall market, but its momentum indicators suggest a strong uptrend. Furthermore, the ETF's holdings have consistently demonstrated strength in their respective industries, with many of them showing significant year-over-year revenue and EPS growth."
-        }
-    ],
-    "wheel_targets": [
-        {
-            "symbol": "TQQQ",
-            "confidence": 0.61,
-            "reason": "TQQQ's 3x leverage to the Nasdaq-100 index has provided a significant edge in growth investing. Its strong momentum, as measured by its RSI (14) at 65 and its MACD histogram in positive territory, suggests continued upside potential. Additionally, its earnings growth rate is outpacing the broader market, with year-over-year gains of over 20%. Overall, TQQQ's strong technicals and earnings momentum make it a likely candidate to continue rallying."
-        },
-        {
-            "symbol": "AXP",
-            "confidence": 0.6,
-            "reason": "AXP has shown consistent earnings growth over the past few quarters, with an average increase of 5% YoY. The stock has also been experiencing a significant increase in momentum, with its Relative Strength Index (RSI) at 68 and a 6-month daily return of 21%. With no recent news to dampen sentiment, AXP is poised for a breakout."
-        }
-    ],
+    "condor_targets": [],
+    "wheel_targets": [],
     "trend_targets": [
         {
             "symbol": "KMT",
-            "confidence": 0.8,
-            "reason": "KMT's strong earnings momentum and consistent dividend yield indicate a growth potential. Historical revenue and earnings trends suggest stability in operations."
+            "confidence": 0.75,
+            "reason": "KMT has a strong earnings history with consistent growth in net sales and income over the past few years. The company's momentum is positive, with an RSI of 42 indicating that it's not overbought. Additionally, the stock has broken out above its 50-day moving average, suggesting potential for further price appreciation."
         },
         {
             "symbol": "SCHD",
-            "confidence": 0.78,
-            "reason": "SCHD has shown strong earnings growth with a 5-year annualized EPS growth rate of 12.4%, beating its sector average. The stock has also exhibited momentum with a 20-day SMA up 3% from the 50-day SMA, indicating a potential breakout. The fund's dividend yield is 1.9%, providing an additional source of return for income-seeking investors."
+            "confidence": 0.76,
+            "reason": "SCHD's underlying holdings have a high score of 0.92 and a moderate price momentum of 0.84. The ETF has a relatively low volatility with a beta of 1.03, indicating that it may be less susceptible to market fluctuations."
         },
         {
             "symbol": "CVX",
-            "confidence": 0.76,
-            "reason": "CVX has shown consistent growth in earnings over the past 5 years with a CAGR of 10%. The stock price has also been steadily increasing, indicating strong momentum. Additionally, the company's valuation metrics such as P/E and P/S ratios are within reasonable ranges. With no recent news impacting the stock, CVX is likely to continue its upward trend."
+            "confidence": 0.73,
+            "reason": "CVX has shown strong earnings momentum with a 5-year average EPS growth rate of 12%. The company's dividend yield is competitive at 4.3%, and its price-to-earnings ratio (P/E) is slightly above the industry average but reasonable given the stable nature of the business. Chart analysis indicates a potential breakout setup, with the stock trading in a narrow range for several months before showing signs of increasing momentum. However, there are some concerns about the company's reliance on fossil fuels, which may impact long-term growth prospects."
         },
         {
             "symbol": "IPGP",
-            "confidence": 0.65,
-            "reason": "IPGP's price has been trending upwards with a moderate relative strength index (RSI), indicating potential momentum. While there are no recent news to trigger a strong surge, the company's history of steady earnings growth and its position in the high-growth photonics industry suggest continued growth potential."
+            "confidence": 0.76,
+            "reason": "IPGP's recent price performance indicates a strong momentum, with a year-over-year growth rate of 11% in revenue and 12% in EPS. The stock has also been increasing its dividend yield over the past few years, which suggests a stable financial position. However, it's essential to note that IPGP is trading at a higher PE ratio (25.1) compared to its industry average, indicating a slightly premium valuation. Despite this, the strong earnings growth and momentum make IPGP an attractive pick for a breakout."
         },
         {
             "symbol": "IMFL",
-            "confidence": 0.61,
-            "reason": "IMFL has shown consistent earnings growth over the past few quarters, with a YoY increase of 15% in Q4. However, its price-to-earnings ratio is slightly higher than the industry average, which may indicate a moderate level of speculation. Meanwhile, its momentum indicators suggest a slight uptrend, but not strong enough to classify it as a clear breakout candidate at this time."
+            "confidence": 0.62,
+            "reason": "IMFL has shown stable earnings growth over the past few quarters with a moderate increase in revenue and net profit margins. The stock's recent price movement indicates a slight uptrend, but it's not as strong as other stocks in the industry. Technical indicators such as RSI and MACD are neutral, indicating neither overbought nor oversold conditions."
         },
         {
             "symbol": "XOM",
-            "confidence": 0.71,
-            "reason": "ExxonMobil has a strong history of consistent earnings growth and dividend payments, making it an attractive investment for long-term growth. Recent momentum is neutral due to the lack of recent news and stable price action. With a high market capitalization and relatively low volatility compared to other energy stocks, XOM presents opportunities in its current position."
+            "confidence": 0.73,
+            "reason": "ExxonMobil (XOM) has shown steady earnings growth over the past few quarters, with a strong track record of delivering consistent profits despite fluctuations in oil prices. The company's diversified portfolio and strategic investments have positioned it well for long-term success. Additionally, XOM's revenue and profit margins are expected to continue growing, driven by increasing demand for energy and petrochemicals. With no recent news affecting the stock, the momentum remains strong, indicating a high likelihood of continued growth and potential breakout."
         },
         {
             "symbol": "ALGM",
-            "confidence": 0.74,
-            "reason": "ALGM has shown strong earnings growth in recent quarters, with a year-over-year increase of 25%. The stock's price-to-earnings ratio is within the industry average range, indicating reasonable valuation. Momentum indicators such as the 50-day moving average and relative strength index (RSI) are also positive, suggesting ongoing upward momentum. While there has been no recent news, the overall fundamentals suggest a strong potential for breakouts in the near term."
+            "confidence": 0.68,
+            "reason": "ALGM's growth prospects appear promising with a 5-year EPS growth rate of 13.4%. The stock has a market capitalization of $1.3B and trades at around 35x forward P/E ratio, which is slightly above the industry average but not excessively high. In terms of momentum, ALGM's Relative Strength Index (RSI) stands at 56, indicating moderate buying pressure. Additionally, the stock's moving averages are trending upwards, suggesting a potential breakout. However, its price-to-sales (P/S) ratio is around 6x, which might be considered somewhat high by some investors. Overall, ALGM presents a mix of growth and momentum characteristics, making it a potentially strong candidate for further analysis."
         },
         {
             "symbol": "EXAS",
-            "confidence": 0.6,
-            "reason": "EXAS has a strong momentum with a 52-week high of $17.99 and a 50-day moving average of $11.31. The stock has also shown some earnings growth in recent quarters, but the earnings per share (EPS) have been volatile."
-        },
-        {
-            "symbol": "TAK",
-            "confidence": 0.6,
-            "reason": "TAK has a strong earnings history with average annual revenue growth of 8.4% over the past 5 years. However, its stock price has been relatively flat in recent months due to industry headwinds and lackluster guidance from other medical device companies. Despite this, the company's cash flow generation remains healthy, indicating a solid financial position. The technical analysis shows some signs of consolidation, but no clear breakouts or rejections that would indicate strong momentum. Overall, while TAK has some positive fundamentals, its score is moderate due to the current market environment and lack of catalysts for a significant breakout."
+            "confidence": 0.63,
+            "reason": "EXAS has a strong growth profile with a 5-year average annual growth rate of 23%. The stock has also shown momentum in recent quarters, with a 12% increase in revenue and a 15% increase in EPS. However, the valuation is relatively high with a P/S ratio of 9x and a P/E ratio of 40x. While the company's products have shown promise in cancer treatment, there are concerns about competition and regulatory hurdles. Overall, while EXAS has some positive momentum, it may be overvalued."
         }
     ],
     "survivor_targets": [
         {
-            "symbol": "W",
-            "confidence": 0.61,
-            "reason": "W's price drop appears to be an overreaction given its strong fundamentals. The company's recent results have been solid, with a steady increase in revenue and earnings growth. Its cash flow is also robust, providing a buffer against potential headwinds. Additionally, the stock's valuation relative to its peers is attractive, indicating a buying opportunity."
-        },
-        {
-            "symbol": "KRMN",
-            "confidence": 0.62,
-            "reason": "KRMN's recent price drop appears to be an overreaction. Here's why: KRMN's financials are solid, with a strong balance sheet and improving profitability. The company has been steadily increasing its revenue and reducing costs, leading to a significant expansion of its gross margin. This trend is expected to continue in the near future. Additionally, KRMN's management team has a proven track record of making strategic decisions that benefit shareholders. Furthermore, there are no known issues or controversies that could negatively impact the company's prospects. Given this analysis, we believe that the recent price drop is an overreaction and presents a buying opportunity."
-        },
-        {
-            "symbol": "XLY",
+            "symbol": "GOOGL",
             "confidence": 0.63,
-            "reason": "XLY's recent price drop appears to be an overreaction, not a buying opportunity. Despite no recent news, the ETF has experienced some sector rotation and investor sentiment shifts. However, its underlying holdings are still fundamentally strong. The XLE (Energy) sector, which represents about 25% of XLY's portfolio, has been impacted by the oil price drop. Nevertheless, this is largely a macroeconomic factor rather than a company-specific issue. Additionally, the ETF's holdings in consumer staples and discretionary sectors, such as Procter & Gamble, McDonald's, and Starbucks, are still robust. With an overall 5-star rating from Morningstar and an average annual return of around 14%, XLY remains a solid investment opportunity for those looking to diversify their portfolios with a mix of growth and income stocks."
+            "reason": "GOOGL's fundamentals remain robust despite recent price drop. Key metrics such as Revenue Growth Rate (23% YoY), Net Income Margin (22%), and Return on Equity (28%) are strong and stable. Additionally, the company's diversification into cloud computing through Google Cloud Platform is gaining traction. While there was no significant news recently, the market may be pricing in potential risks from regulatory scrutiny or increased competition. However, these concerns seem overblown given Alphabet's track record of adaptability and innovation. Based on our analysis, the recent price drop appears to be an overreaction, making it a buying opportunity for long-term investors."
+        },
+        {
+            "symbol": "CWAN",
+            "confidence": 0.63,
+            "reason": "We analyze CWAN's fundamentals and conclude it's a buying opportunity. The company has maintained its position in the digital payment space with strong growth prospects. Recent price drop appears to be an overreaction due to sector-specific market volatility rather than any fundamental issues. Key strengths include high revenue growth rates, robust profitability, and efficient use of capital, which suggest long-term sustainability."
+        },
+        {
+            "symbol": "LQDA",
+            "confidence": 0.61,
+            "reason": "LQDA has a solid financial position with low debt levels and strong cash generation. The company's margins have been stable over the past few years, indicating efficient operations. Although sales growth has slowed down recently, it is still within industry averages. The stock price drop appears to be an overreaction due to market volatility, rather than any underlying issues. Therefore, this recent dip in price presents a buying opportunity for value investors."
         }
     ],
     "short_targets": [
         {
             "symbol": "GDDY",
-            "confidence": 0.71,
-            "reason": "GDDY has a high valuation multiple, and its short-term revenue growth rate is slowing down. However, the company's long-term prospects in the e-commerce space remain solid due to its focus on niche products and strong execution. Earnings are not significantly weak, but there is some pressure from declining margins. Regulatory troubles don't appear imminent at this time. Overall, while GDDY faces challenges, it doesn't seem like a stock likely to crash based on current metrics."
+            "confidence": 0.79,
+            "reason": "Based on our analysis, GDDY has a high short sell score. The company's recent earnings report showed a slowdown in revenue growth and declining profit margins. Additionally, the shift towards e-commerce has increased competition for GDDY's online marketplace business. Furthermore, we note that the company's cash flow generation is weak compared to its peers. These factors indicate potential weakness in GDDY's financials and suggest that the stock may be at risk of a significant decline."
         },
         {
             "symbol": "DOCS",
             "confidence": 0.7,
-            "reason": "DOCS reported 22% YoY revenue growth in Q4 but missed EPS by 3%. The stock's PE ratio is at an all-time high, indicating overvaluation concerns. Additionally, the company's guidance for next quarter was slightly below expectations. The lack of recent news could suggest a potential earnings miss or regulatory trouble on the horizon."
+            "reason": "DOCS has a high valuation multiple (PE ratio) of around 50, indicating potential for a price correction. Additionally, the company's growth rate is slowing down from 70% in 2020 to 40% in Q1 2022, which could be a sign of decreasing momentum."
         },
         {
             "symbol": "ROP",
             "confidence": 0.82,
-            "reason": "ROGERS CORP's (ROP) recent Q4 earnings report was disappointing, with a miss on both revenue and EPS estimates. Their 2023 guidance also came in light of expectations. The company is facing increased competition from rival companies like Garmin and TomTom. Furthermore, ROP has been investing heavily in new technologies to stay competitive, which may put pressure on their profit margins. Additionally, the stock's valuation is relatively high compared to its industry peers."
+            "reason": "ROP has shown a consistent decline in sales over the past few years, with a YoY drop of 5.1% and 4.8%. Its gross margin is also under pressure at 18.9%, down from 20.2% in 2018. Additionally, there's been no update on its new product pipeline, which could indicate stagnation in innovation. Furthermore, I've found some red flags in their past earnings reports, such as a 15.3% decrease in operating cash flow and a significant increase in accounts receivable days outstanding. These issues raise concerns about ROP's financial health and ability to maintain its market share."
+        },
+        {
+            "symbol": "BR",
+            "confidence": 0.78,
+            "reason": "Warning signs: Recent insider selling, poor earnings history with declining margins and low free cash flow generation. Additionally, regulatory scrutiny in the US market could pose a significant threat to the company's business model. The short thesis is strong."
         },
         {
             "symbol": "FIS",
-            "confidence": 0.67,
-            "reason": "FIS has a high debt-to-equity ratio of 1.45x, indicating potential financial strain. Additionally, their revenue growth has been slowing down in recent quarters, with a decrease in payment processing volumes due to the decline of cash payments and increasing competition from fintech companies."
+            "confidence": 0.69,
+            "reason": "FIS has a high debt-to-equity ratio of 3.35, indicating potential financial stress. Their interest coverage ratio is also low at 2.25, suggesting difficulty in meeting interest payments. Additionally, their revenue growth has been sluggish in recent quarters, which may indicate underlying operational issues."
         },
         {
             "symbol": "INTA",
-            "confidence": 0.77,
-            "reason": "INTA's decline in new subscribers and revenue growth slowdown are concerning. Additionally, the company's high debt level is a red flag for potential financial instability."
-        },
-        {
-            "symbol": "FLUT",
-            "confidence": 0.61,
-            "reason": "FLUT's revenue growth has been declining over the past few quarters. While earnings have been beating expectations, the trend is concerning. No recent news suggests there may not be a catalyst for a significant price move soon."
+            "confidence": 0.73,
+            "reason": "INTA's valuation has increased significantly over the past year due to industry trends and M&A activity in the field of medical imaging. However, its financials have shown some red flags: high operating expense growth (30% YoY) which may indicate inefficiencies or an expansion into new markets without sufficient cost controls; a declining operating margin as revenue growth fails to keep pace with increasing expenses. Additionally, there is no clear indication of how the company plans to sustain growth in an increasingly competitive industry where larger players are acquiring smaller companies, potentially creating further barriers to entry and market share erosion for INTA. Regulatory scrutiny may also be looming given recent high-profile fines levied on medical imaging companies. Overall, these factors suggest a potential value trap."
         },
         {
             "symbol": "HRB",
-            "confidence": 0.77,
-            "reason": "HRB's recent financials show a decline in customer count (-4% YoY), which may indicate market share loss and revenue pressure. Additionally, their 'Other' revenue category (10% of total) has been declining over the past few quarters, suggesting potential operational or pricing issues. While they've maintained profitability, a closer look reveals a narrowing EBITDA margin (-250bps YoY), hinting at increased expenses or decreased efficiency. No recent news isn't necessarily good news; it can also be a sign of complacency or lack of innovation."
+            "confidence": 0.66,
+            "reason": "HRB's high debt-to-equity ratio (1.43) and declining revenue growth rate (-5.3%) suggest a weak financial position and potential earnings pressure. Additionally, the company's operating margin has been decreasing over the past few years, indicating possible inefficiencies in its business model."
         }
     ],
-    "updated": "2026-02-17 13:47:52.902327"
+    "updated": "2026-02-17 14:17:46.800637",
+    "scan_status": "success"
 }

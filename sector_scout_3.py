@@ -314,7 +314,7 @@ def run_scout():
     print("\n3. Saving Results...")
     
     # [PHASE 2.5] Add Success Flag
-    final_targets["scan_status"] = "success"
+    final_targets["status"] = "success"
     
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(final_targets, f, indent=4)

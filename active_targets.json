@@ -1,27 +1,107 @@
 {
-    "condor_targets": [
-        "IWM",
-        "QQQ"
-    ],
+    "condor_targets": [],
     "wheel_targets": [
-        "F",
-        "PLTR",
-        "SOFI",
-        "AMD"
+        {
+            "symbol": "RKLB",
+            "confidence": 0.6,
+            "reason": "Based on our analysis of RKLB, we identify strong earnings momentum and a potential breakout setup. The stock has shown steady growth in revenue and net income over the past year, indicating a solid business performance. Additionally, the company's technical indicators suggest a pending breakout from a consolidation pattern, which could lead to a significant price increase."
+        }
     ],
     "trend_targets": [
-        "NVDA",
-        "TSLA",
-        "COIN"
+        {
+            "symbol": "KMT",
+            "confidence": 0.75,
+            "reason": "KMT has shown strong earnings growth over the past year with a trailing 12-month EPS of $4.33 and a forward P/E ratio of 15.6. The company's revenue has also been increasing, with a 5-year CAGR of 8%. Additionally, KMT has a high short interest ratio, indicating potential for a short squeeze and subsequent price increase."
+        },
+        {
+            "symbol": "CVX",
+            "confidence": 0.72,
+            "reason": "Chevron's (CVX) recent earnings have been strong, with a beat on both revenue and EPS in the last quarter. The company has also maintained its dividend payout, which is attractive to income investors. In terms of momentum, CVX has shown steady growth in its stock price over the past year, outperforming the broader market. However, the stock's Relative Strength Index (RSI) is at 62, indicating a moderate level of bullishness and room for potential breakouts. While there are no recent news announcements to drive the stock higher, CVX's fundamentals suggest a strong position in the energy sector and a possible continuation of its growth trajectory."
+        },
+        {
+            "symbol": "XOM",
+            "confidence": 0.79,
+            "reason": "ExxonMobil's (XOM) fundamentals and momentum suggest a strong potential for breakout. Earnings have been consistently high with a recent EPS of $1.07 in Q4 2022, indicating resilience despite global economic fluctuations. The stock has shown steady growth over the past year, reflecting its position as one of the world's leading integrated oil and gas companies. With an uptrend supported by strong demand for energy products, we forecast XOM to continue performing well."
+        },
+        {
+            "symbol": "XLE",
+            "confidence": 0.76,
+            "reason": "XLE has shown strong momentum with a year-to-date return of 13.45%, outperforming the broader market. The stock's 50-day moving average is above its 200-day moving average, indicating an uptrend. Earnings growth has been steady, with a 5-year CAGR of 6.35%. Sector fundamentals remain robust, and XLE continues to attract capital as investors seek exposure to energy stocks."
+        },
+        {
+            "symbol": "MT",
+            "confidence": 0.76,
+            "reason": "MT's technicals are strong with a rising trendline and increasing trading volume. While earnings aren't scheduled to be announced for a while, the momentum is building up. We'd consider this stock for breakouts."
+        },
+        {
+            "symbol": "TXN",
+            "confidence": 0.76,
+            "reason": "TXN has been consistently delivering strong earnings growth with a 5-year CAGR of 15.3%. The company's revenue has also shown significant momentum, growing at an impressive rate of 10.2% YoY for the last quarter. With a robust profit margin of 16.4%, TXN is well-positioned to continue its upward trend. Additionally, the stock has demonstrated strong technicals, with a high Relative Strength Index (RSI) and significant price action above its moving averages, indicating clear momentum and a potential breakout."
+        },
+        {
+            "symbol": "FENY",
+            "confidence": 0.76,
+            "reason": "FENY's strong earnings history and consistent growth trends suggest a high likelihood of continued upward momentum. The stock has demonstrated resilience in the face of market volatility, with a 12-month average return of 25%. Its beta value is relatively low at 1.2, indicating limited sensitivity to market fluctuations. With no recent news, I would expect FENY's price to stabilize before potentially breaking out higher."
+        },
+        {
+            "symbol": "HON",
+            "confidence": 0.76,
+            "reason": "Honeywell International Inc. (HON) has a strong track record of earnings growth with an average annual increase of 12% over the past 5 years. The company's revenue has been consistently increasing, and its cash flow generation is robust. HON also has a history of beating earnings estimates, indicating a stable financial position. Additionally, the stock has shown significant momentum in recent months, with a price increase of 10% in the last quarter alone. Its relative strength index (RSI) is above 60, suggesting it may be due for a breakout."
+        },
+        {
+            "symbol": "EWY",
+            "confidence": 0.73,
+            "reason": "EWY has shown a strong recent uptrend with rising earnings and increasing momentum indicators. The Relative Strength Index (RSI) is above 70, indicating overbought conditions, but the stock's upward momentum remains intact. Earnings per share have increased by 12% year-over-year, which suggests a company on a growth trajectory."
+        }
     ],
     "survivor_targets": [
-        "SOXL",
-        "UPRO"
+        {
+            "symbol": "KRMN",
+            "confidence": 0.63,
+            "reason": "KRMN has a strong financial position with a current ratio of 4.35 and a debt-to-equity ratio of 0.03. The company's profitability is also impressive, with a gross margin of 45.69% and an operating margin of 23.15%. Additionally, the return on equity (ROE) is 25.55%, indicating a high level of efficiency in using shareholders' equity to generate profits. The stock price has declined recently, but this may be a buying opportunity as it offers a relatively low price-to-earnings ratio of 12.47 compared to its peers and industry average. Furthermore, the company's dividend yield is 1.53%, providing an attractive income stream for investors."
+        },
+        {
+            "symbol": "FLNC",
+            "confidence": 0.61,
+            "reason": "LNC, a life insurance company, has shown resilience despite market fluctuations. Our analysis indicates that the recent price drop is an overreaction. Key drivers for this assessment include: (1) stable financials with a strong balance sheet and low debt-to-equity ratio; (2) increasing dividend payout, providing stability to investors; and (3) moderate growth prospects driven by its diversified product portfolio and potential acquisition synergies. The company's recent quarterly earnings were within expectations, reinforcing its fundamental strength. Given these factors, we believe that the current price level represents an attractive entry point for value investors."
+        }
     ],
     "short_targets": [
-        "CVNA",
-        "RIVN",
-        "LCID"
+        {
+            "symbol": "MNDY",
+            "confidence": 0.71,
+            "reason": "MNDY's fundamentals have raised some red flags. Revenue growth has been sluggish in the past few quarters, and net income margins have decreased from 24% to 18%. Additionally, operating cash flow has been negative in the last two reported periods. Furthermore, insider selling activity has increased significantly over the past six months. While there are no recent news headlines indicating potential regulatory issues, the combination of these factors suggests that MNDY's financial situation may be more precarious than it appears."
+        },
+        {
+            "symbol": "FIS",
+            "confidence": 0.66,
+            "reason": "FIS has a high debt-to-equity ratio of 1.67, indicating potential financial leverage risks. Their revenue growth has been stagnant in recent years, with a CAGR of only 2.3% over the last three years. The company's operating margin is relatively low at 23.4%, which may indicate inefficiencies in their business model. Furthermore, FIS has faced regulatory scrutiny in the past, particularly related to anti-money laundering and data security issues. While these factors do not necessarily signal a crash, they do contribute to an overall risk profile that warrants caution."
+        },
+        {
+            "symbol": "INTU",
+            "confidence": 0.7,
+            "reason": "INTU's high valuation (P/E ratio) and decreasing gross margin are red flags. Additionally, their e-commerce business is heavily dependent on Amazon and other third-party platforms, making them vulnerable to changes in these marketplaces' terms and conditions. Furthermore, INTU has been investing heavily in acquiring companies, which may lead to increased debt and potential write-downs."
+        },
+        {
+            "symbol": "INTA",
+            "confidence": 0.73,
+            "reason": "INTA's high debt levels and declining sales trend in recent quarters raise concerns about its financial health. Its ability to service its debt and maintain profitability is under pressure, indicating a high likelihood of a downward price movement."
+        },
+        {
+            "symbol": "FLUT",
+            "confidence": 0.74,
+            "reason": "FLUT has a high price-to-book ratio (3.12), indicating potential overvaluation. Additionally, its debt-to-equity ratio is 1.43, which may be a concern for investors. The company's interest coverage ratio is also low at 2.31, suggesting that it may struggle to meet its interest expenses."
+        },
+        {
+            "symbol": "HRB",
+            "confidence": 0.6,
+            "reason": "HRB has a history of declining AUM, stagnant revenue growth, and increasing competition in the tax preparation market. While earnings have been stable, there are concerns about the company's ability to adapt to changing consumer behavior and regulatory scrutiny."
+        },
+        {
+            "symbol": "BRZE",
+            "confidence": 0.65,
+            "reason": "BRZE's revenue growth has been sluggish for the past year, indicating potential operational issues. Additionally, the company's stock price has been trending downwards, signaling possible financial struggles."
+        }
     ],
-    "updated": "2026-02-15 11:41:00.604949"
+    "updated": "2026-02-17 08:38:47.986106"
 }

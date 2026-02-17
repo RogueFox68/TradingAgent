@@ -117,10 +117,17 @@ def ask_llama(ticker, strategy, headlines):
         role = "short seller"
         goal = "identifying weakness, bad earnings, or regulatory trouble"
         scoring = "High score (1.0) means the stock is likely to CRASH. Low score means it is strong/safe."
+    
     elif strategy == "survivor_targets":
         role = "value investor"
-        goal = "identifying if a recent price drop is an overreaction or buying opportunity"
-        scoring = "High score (1.0) means the stock is fundamentally strong and the DIP IS SAFE TO BUY."
+        goal = "identifying if a recent price drop is an overreaction"
+        scoring = "High score (1.0) means the DIP IS SAFE TO BUY. Low score means 'catching a falling knife'."
+        
+    elif strategy in ["condor_targets", "wheel_targets"]:
+        role = "options income trader"
+        goal = "identifying STABILITY and LACK of volatility"
+        scoring = "High score (1.0) means the stock is BORING/FLAT. Low score means it is volatile/risky."
+        
     else: 
         role = "growth investor"
         goal = "identifying breakouts, strong earnings, and momentum"
@@ -210,28 +217,46 @@ def run_scout():
 
             if "/" in ticker: continue
             
-            # 1. Normalize Technical Score
+            # 1. Normalize Technical Score (Strategy-Aware)
+            # Default scaling (0-100)
             tech_norm = min(max(tech_score / 100.0, 0.0), 1.0)
+            
+            if category == "condor_targets":
+                # Condor scores are 0-20 (Low ADX). 20 is perfect.
+                # Score 15 -> 1.0
+                tech_norm = min(max(tech_score / 15.0, 0.0), 1.0)
+                
+            elif category == "wheel_targets":
+                # Wheel scores are -5 to 10 (RSI 40-55). 10 is perfect.
+                # Score 8 -> 0.8
+                tech_norm = min(max(tech_score / 10.0, 0.0), 1.0)
+                
+            elif category == "survivor_targets":
+                # Survivor scores are 10-50 (50-RSI). 30 (RSI 20) is perfect.
+                # Score 30 -> 1.0
+                tech_norm = min(max(tech_score / 30.0, 0.0), 1.0)
 
             # 2. Get AI Opinion
             headlines = get_news_summary(ticker)
             
             # [Revised] Intelligent Fallback
             if "No recent news" in headlines:
+                 # If no news, trust the technicals completely (especially for Condors)
                  llm_score = tech_norm
                  reason = "No recent news - relying on technical analysis"
             else:
                  llm_score, reason = ask_llama(ticker, category, headlines)
             
             # 3. Weighted Final Confidence
+            # tech_norm is now properly scaled for the strategy
             final_confidence = (tech_norm * 0.4) + (llm_score * 0.6)
             
             is_approved = False
-            # [Revised] Lower Threshold (was 0.60)
+            # [Revised] Lower Threshold (was 0.60, then 0.50)
             if final_confidence > 0.50: is_approved = True
             
             emoji = "✅" if is_approved else "❌"
-            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} (Tech: {tech_score}, AI: {llm_score})")
+            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} (Tech: {tech_score:>4.1f} -> {tech_norm:.2f}, AI: {llm_score:.2f})")
             
             if is_approved:
                 final_targets[category].append({

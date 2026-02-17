@@ -8,8 +8,7 @@ import subprocess
 import sys
 import config
 
-# Force UTF-8 Output for Windows Console (Emoji Support) - DISABLED due to hang issues
-# Instead, we wrap print to handle encoding errors gracefully
+# Force UTF-8 Output for Windows Console
 import builtins
 def safe_print(*args, **kwargs):
     try:
@@ -25,7 +24,7 @@ def safe_print(*args, **kwargs):
                     new_args.append(arg)
             builtins.print(*new_args, **kwargs)
         except:
-            pass # Last resort: silent failure
+            pass 
 
 print = safe_print
 
@@ -39,12 +38,12 @@ BEELINK_USER = "trader"
 BEELINK_PATH = "~/bots/repo/active_targets.json"
 WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER') 
 
-# --- CORE BACKUP ---
+# --- CORE BACKUP (Unchanged) ---
 CORE_WATCHLIST = {
     "condor_targets": ["SPY", "IWM", "QQQ"],
     "wheel_targets": ["F", "PLTR", "SOFI", "AMD"],
     "trend_targets": ["NVDA", "TSLA", "COIN", "MSTR"],
-    "survivor_targets": ["TQQQ", "SOXL", "UPRO"], # [NEW]
+    "survivor_targets": ["TQQQ", "SOXL", "UPRO"], 
     "short_targets": ["CVNA", "RIVN", "LCID"] 
 }
 
@@ -55,10 +54,8 @@ def get_candidates():
             if (time.time() - file_time) < 86400:
                 with open(INPUT_FILE, 'r') as f:
                     data = json.load(f)
-                    # Ensure keys exist
                     if "survivor_targets" not in data: data["survivor_targets"] = []
                     if "short_targets" not in data: data["short_targets"] = []
-                    
                     print(f"✅ Loaded Candidates: {len(data.get('trend_targets',[]))} Bull, {len(data.get('survivor_targets',[]))} Dip")
                     return data
         except: pass
@@ -71,7 +68,6 @@ def get_news_summary(ticker):
         stock = yf.Ticker(ticker)
         news = stock.news
         
-        # Filter: Recent (48h) + Trusted Sources
         recent_news = []
         now = time.time()
         
@@ -79,13 +75,15 @@ def get_news_summary(ticker):
             # Check recency
             pub_time = n.get('providerPublishTime', 0)
             age_hours = (now - pub_time) / 3600
-            if age_hours > 48:
+            
+            # [Revised] 7 Days (was 48h)
+            if age_hours > 168:
                 continue
             
             # Boost trusted sources
             publisher = n.get('publisher', '')
             if any(src in publisher for src in TRUSTED_SOURCES):
-                recent_news.insert(0, n)  # Prioritize
+                recent_news.insert(0, n)
             else:
                 recent_news.append(n)
         
@@ -98,17 +96,14 @@ def get_news_summary(ticker):
         return "No recent news found."
 
 def validate_llm_response(score, reason, ticker):
-    # Range check
     if not (0.0 <= score <= 1.0):
         print(f"   [!] {ticker}: Invalid score {score}, clamping to 0.0-1.0")
         score = max(0.0, min(1.0, score))
     
-    # Reasoning quality
     if len(reason) < 50:
         print(f"   [!] {ticker}: Weak reasoning ({len(reason)} chars)")
-        score = score * 0.7  # Reduce confidence
+        score = score * 0.7 
     
-    # Detect confusion
     if "insufficient" in reason.lower() or "not enough" in reason.lower():
         print(f"   [!] {ticker}: LLM confused, using 0.5")
         return 0.5, reason
@@ -116,23 +111,17 @@ def validate_llm_response(score, reason, ticker):
     return score, reason
 
 def ask_llama(ticker, strategy, headlines):
-    """
-    The Brain: Context-Aware Analysis.
-    """
     if not headlines: return 0.0, "No Data"
 
-    # --- DYNAMIC PROMPTING ---
     if strategy == "short_targets":
         role = "short seller"
         goal = "identifying weakness, bad earnings, or regulatory trouble"
         scoring = "High score (1.0) means the stock is likely to CRASH. Low score means it is strong/safe."
-        
     elif strategy == "survivor_targets":
         role = "value investor"
         goal = "identifying if a recent price drop is an overreaction or buying opportunity"
         scoring = "High score (1.0) means the stock is fundamentally strong and the DIP IS SAFE TO BUY."
-        
-    else: # trend, wheel, condor
+    else: 
         role = "growth investor"
         goal = "identifying breakouts, strong earnings, and momentum"
         scoring = "High score (1.0) means the stock is likely to RALLY."
@@ -152,13 +141,10 @@ def ask_llama(ticker, strategy, headlines):
         response = requests.post(OLLAMA_URL, json=payload, timeout=30)
         response_json = response.json()
         
-        # Robust Parsing
         raw_text = response_json['response']
         try:
-            # First try direct load
             analysis = json.loads(raw_text)
         except json.JSONDecodeError:
-            # Fallback: Regex extraction
             import re
             match = re.search(r'\{.*\}', raw_text, re.DOTALL)
             if match:
@@ -177,7 +163,6 @@ def beam_to_beelink(retries=3):
     for attempt in range(retries):
         try:
             cmd = f"scp {OUTPUT_FILE} {BEELINK_USER}@{BEELINK_IP}:{BEELINK_PATH}"
-            # Added 30s timeout and capture_output to keep logs clean
             subprocess.run(cmd, shell=True, check=True, timeout=30,  stderr=subprocess.PIPE, stdout=subprocess.PIPE)
             print(f"   ✅ Transfer Complete (Attempt {attempt+1}).")
             return True
@@ -185,13 +170,10 @@ def beam_to_beelink(retries=3):
              print(f"   ⚠️ SCP Timeout (Attempt {attempt+1})...")
         except Exception as e:
              print(f"   ⚠️ SCP Failed (Attempt {attempt+1}): {e}")
-        
-        time.sleep(5) # Wait before retry
+        time.sleep(5) 
 
-    # Fallback
     print(f"   🚨 ALL SCP ATTEMPTS FAILED. Using Fallback.")
     
-    # [NEW] Discord Alert
     try:
         if WEBHOOK_OVERSEER:
             requests.post(WEBHOOK_OVERSEER, json={
@@ -201,17 +183,6 @@ def beam_to_beelink(retries=3):
                 "username": "Sector Scout"
             })
     except: pass
-
-    try:
-        # Assuming mapped drive or shared folder exists - illustrative fallback
-        import shutil
-        fallback_path = f"//BEELINK/share/bots/repo/{OUTPUT_FILE}"
-        # Only try if path structure roughly exists or just log failure
-        # shutil.copy(OUTPUT_FILE, fallback_path) 
-        print("   (Fallback copy skipped - Network path not configured)") 
-    except Exception as e:
-        print(f"   [!] Fallback Failed: {e}")
-    
     return False
 
 def run_scout():
@@ -230,35 +201,39 @@ def run_scout():
         
         print(f"   👉 Analyzing {category}...")
         for item in tickers:
-            # [COMPATIBILITY] Handle both New Objects and Legacy Strings
             if isinstance(item, dict):
                 ticker = item.get('symbol')
                 tech_score = item.get('tech_score', 50.0)
             else:
                 ticker = item
-                tech_score = 50.0 # Default for Manual/Core items
+                tech_score = 50.0 
 
             if "/" in ticker: continue
             
-            # 1. Normalize Technical Score (0-100 -> 0.0-1.0)
+            # 1. Normalize Technical Score
             tech_norm = min(max(tech_score / 100.0, 0.0), 1.0)
 
             # 2. Get AI Opinion
             headlines = get_news_summary(ticker)
-            llm_score, reason = ask_llama(ticker, category, headlines)
+            
+            # [Revised] Intelligent Fallback
+            if "No recent news" in headlines:
+                 llm_score = tech_norm
+                 reason = "No recent news - relying on technical analysis"
+            else:
+                 llm_score, reason = ask_llama(ticker, category, headlines)
             
             # 3. Weighted Final Confidence
-            # Tech is 40%, AI is 60% (News beats trailing indicators)
             final_confidence = (tech_norm * 0.4) + (llm_score * 0.6)
             
             is_approved = False
-            if final_confidence > 0.60: is_approved = True
+            # [Revised] Lower Threshold (was 0.60)
+            if final_confidence > 0.50: is_approved = True
             
             emoji = "✅" if is_approved else "❌"
             print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} (Tech: {tech_score}, AI: {llm_score})")
             
             if is_approved:
-                # [OUTPUT] Save as Object with Confidence
                 final_targets[category].append({
                     "symbol": ticker,
                     "confidence": round(final_confidence, 2),
@@ -266,7 +241,6 @@ def run_scout():
                 })
 
 
-    # Parsing Summary
     total_analyzed = sum(len(v) for k, v in candidates.items() if k != "updated")
     total_approved = sum(len(v) for k, v in final_targets.items() if k != "updated")
     approval_rate = total_approved / total_analyzed if total_analyzed > 0 else 0
@@ -285,10 +259,8 @@ def run_scout():
     print(f"   Approved: {total_approved} ({approval_rate*100:.0f}%)")
     print(f"   Avg Confidence: {avg_confidence:.2f}")
 
-    # Discord report
     if WEBHOOK_OVERSEER:
         try:
-            # Alert if TOO conservative (0 targets)
             if total_approved == 0:
                  requests.post(WEBHOOK_OVERSEER, json={
                     "content": (

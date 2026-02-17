@@ -8877,3 +8877,1249 @@ HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","desc
    ✅ Transfer Complete (Attempt 1).
 [Tue 02/17/2026  8:42:35.96] 🏁 MISSION COMPLETE. 
 ========================================================== 
+========================================================== 
+[Tue 02/17/2026  9:07:05.72] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Tue 02/17/2026  9:07:05.73] Phase 1: Launching Market Scanner... 
+--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---
+1. Fetching asset list from Alpaca...
+   -> Found 4914 tradeable assets.
+2. Filtering for Liquidity (Vol > 1.5M)...
+   -> Batch 0/4914: Found 69 candidates...   -> Batch 200/4914: Found 167 candidates...   -> Batch 400/4914: Found 253 candidates...   -> Batch 600/4914: Found 290 candidates...   -> Batch 800/4914: Found 297 candidates...   -> Batch 1000/4914: Found 311 candidates...   -> Batch 1200/4914: Found 328 candidates...   -> Batch 1400/4914: Found 344 candidates...   -> Batch 1600/4914: Found 360 candidates...   -> Batch 1800/4914: Found 372 candidates...
+7 Failed downloads:
+['UAN', 'EMA', 'USAS', 'WVE', 'ZIP', 'UPBD', 'SPAB']: TypeError("'NoneType' object is not subscriptable")
+   -> Batch 2000/4914: Found 386 candidates...   -> Batch 2200/4914: Found 411 candidates...   -> Batch 2400/4914: Found 455 candidates...   -> Batch 2600/4914: Found 498 candidates...   -> Batch 2800/4914: Found 541 candidates...   -> Batch 3000/4914: Found 584 candidates...   -> Batch 3200/4914: Found 616 candidates...   -> Batch 3400/4914: Found 621 candidates...   -> Batch 3600/4914: Found 627 candidates...   -> Batch 3800/4914: Found 652 candidates...   -> Batch 4000/4914: Found 718 candidates...   -> Batch 4200/4914: Found 788 candidates...   -> Batch 4400/4914: Found 874 candidates...   -> Batch 4600/4914: Found 950 candidates...   -> Batch 4800/4914: Found 996 candidates...
+   -> Final Liquid List: 996 stocks.
+3. Analyzing Technicals (Segregated Lists) for 996 stocks...
+
+6 Failed downloads:
+['DOC', 'CAG', 'GRNY', 'IQV', 'HMY', 'DKNG']: TypeError("'NoneType' object is not subscriptable")
+
+4. Checking Earnings Calendar (Safety Guard)...
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IMFL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FENY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IGV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FENI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VYMI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IVLU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EMXC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VCSH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EMLC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EFV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IHI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPDW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VEA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ARKB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GBTC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BITB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BTC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IBIT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FBTC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SHY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ETHE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FETH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ETH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ILF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ETHU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IXUS"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VEU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XOP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWZ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ACWX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VXUS"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPLV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IEMG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PAVE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IEFA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EEM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FBND"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PYLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWJ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EFA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VTV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPIB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VUG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VONG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FNDX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XHB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DGRO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPEM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VGK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VWO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: CGCP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BSV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPHQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLRE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IYR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: CGGR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: MAGS"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VIXY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: TQQQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PSQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: KWEB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QID"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IVW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AIQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QQQM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SRLN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QQQI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SVXY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BKLN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UPRO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AGQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPXL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SSO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JEPQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: YINN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: MCHI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: USMV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QYLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FXI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ITOT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VTI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XME"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SLV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DYNF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SIVR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: HYG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XBI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JQUA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: URA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: INDA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SILJ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPHY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: CGDV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QUAL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SIL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PFF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JNK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: USHY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: COPX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XRT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DFAC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GDXJ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: KBWB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ACWI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UGL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UDOW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: KBE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GDX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: RSP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AAAU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SGOL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IAUM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IAU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GLDM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: OUNZ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DIA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SOXL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SMH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UCO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: MUU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ASHR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ICLN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SOXX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SJNK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWR"}}}
+
+--- 🎯 DRAGNET RESULTS ---
+{
+    "trend_targets": [
+        {
+            "symbol": "KMT",
+            "tech_score": 60.9
+        },
+        {
+            "symbol": "SCHD",
+            "tech_score": 58.34
+        },
+        {
+            "symbol": "TER",
+            "tech_score": 58.28
+        },
+        {
+            "symbol": "CVX",
+            "tech_score": 56.03
+        },
+        {
+            "symbol": "IMFL",
+            "tech_score": 55.47
+        },
+        {
+            "symbol": "XOM",
+            "tech_score": 55.3
+        },
+        {
+            "symbol": "EXAS",
+            "tech_score": 53.54
+        },
+        {
+            "symbol": "XLE",
+            "tech_score": 52.4
+        },
+        {
+            "symbol": "MT",
+            "tech_score": 52.38
+        },
+        {
+            "symbol": "TXN",
+            "tech_score": 51.95
+        }
+    ],
+    "survivor_targets": [
+        {
+            "symbol": "MAGS",
+            "tech_score": 23.32
+        },
+        {
+            "symbol": "W",
+            "tech_score": 23.07
+        },
+        {
+            "symbol": "GOOGL",
+            "tech_score": 22.1
+        },
+        {
+            "symbol": "GOOG",
+            "tech_score": 21.77
+        },
+        {
+            "symbol": "ILMN",
+            "tech_score": 20.39
+        },
+        {
+            "symbol": "XLY",
+            "tech_score": 18.42
+        },
+        {
+            "symbol": "UBS",
+            "tech_score": 17.73
+        },
+        {
+            "symbol": "XLG",
+            "tech_score": 16.74
+        },
+        {
+            "symbol": "MDT",
+            "tech_score": 16.68
+        },
+        {
+            "symbol": "KRMN",
+            "tech_score": 16.28
+        }
+    ],
+    "wheel_targets": [
+        {
+            "symbol": "MCHI",
+            "tech_score": 9.99
+        },
+        {
+            "symbol": "ALLY",
+            "tech_score": 9.61
+        },
+        {
+            "symbol": "SYF",
+            "tech_score": 9.58
+        },
+        {
+            "symbol": "QYLD",
+            "tech_score": 9.53
+        },
+        {
+            "symbol": "ASTS",
+            "tech_score": 9.51
+        },
+        {
+            "symbol": "NWG",
+            "tech_score": 9.23
+        },
+        {
+            "symbol": "SPYM",
+            "tech_score": 9.22
+        },
+        {
+            "symbol": "BABA",
+            "tech_score": 9.08
+        },
+        {
+            "symbol": "SCHX",
+            "tech_score": 9.04
+        },
+        {
+            "symbol": "FXI",
+            "tech_score": 8.74
+        }
+    ],
+    "condor_targets": [
+        {
+            "symbol": "STWD",
+            "tech_score": 10.66
+        },
+        {
+            "symbol": "AR",
+            "tech_score": 10.3
+        },
+        {
+            "symbol": "XLV",
+            "tech_score": 10.15
+        },
+        {
+            "symbol": "USMV",
+            "tech_score": 9.85
+        },
+        {
+            "symbol": "CRWV",
+            "tech_score": 8.04
+        },
+        {
+            "symbol": "BIRK",
+            "tech_score": 7.9
+        },
+        {
+            "symbol": "EQR",
+            "tech_score": 7.54
+        },
+        {
+            "symbol": "RRC",
+            "tech_score": 7.53
+        },
+        {
+            "symbol": "VST",
+            "tech_score": 7.35
+        },
+        {
+            "symbol": "ZTS",
+            "tech_score": 6.96
+        }
+    ],
+    "short_targets": [
+        {
+            "symbol": "MNDY",
+            "tech_score": 64.39
+        },
+        {
+            "symbol": "DOCS",
+            "tech_score": 62.07
+        },
+        {
+            "symbol": "ROP",
+            "tech_score": 61.42
+        },
+        {
+            "symbol": "FIS",
+            "tech_score": 55.95
+        },
+        {
+            "symbol": "INTU",
+            "tech_score": 55.42
+        },
+        {
+            "symbol": "INTA",
+            "tech_score": 54.21
+        },
+        {
+            "symbol": "FLUT",
+            "tech_score": 53.79
+        },
+        {
+            "symbol": "HRB",
+            "tech_score": 53.72
+        },
+        {
+            "symbol": "WDAY",
+            "tech_score": 53.31
+        },
+        {
+            "symbol": "BRZE",
+            "tech_score": 51.17
+        }
+    ]
+}
+   ✅ Saved to dragnet_candidates.json
+[Tue 02/17/2026  9:10:14.10] ✅ Scanner Complete. Dragnet file ready. 
+[Tue 02/17/2026  9:10:14.12] Phase 2: Launching Sector Scout... 
+--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---
+✅ Loaded Candidates: 10 Bull, 10 Dip
+
+2. Deep Diving Candidates...
+   👉 Analyzing trend_targets...
+      ✅ KMT  | Conf: 0.77 (Tech: 60.9, AI: 0.88)
+      ✅ SCHD | Conf: 0.79 (Tech: 58.34, AI: 0.92)
+      ✅ TER  | Conf: 0.79 (Tech: 58.28, AI: 0.92)
+      ✅ CVX  | Conf: 0.78 (Tech: 56.03, AI: 0.92)
+      ✅ IMFL | Conf: 0.61 (Tech: 55.47, AI: 0.65)
+      ✅ XOM  | Conf: 0.76 (Tech: 55.3, AI: 0.9)
+      ❌ EXAS | Conf: 0.42 (Tech: 53.54, AI: 0.35)
+      ❌ XLE  | Conf: 0.60 (Tech: 52.4, AI: 0.65)
+      ❌ MT   | Conf: 0.48 (Tech: 52.38, AI: 0.45)
+      ✅ TXN  | Conf: 0.76 (Tech: 51.95, AI: 0.92)
+   👉 Analyzing survivor_targets...
+      ✅ MAGS | Conf: 0.62 (Tech: 23.32, AI: 0.88)
+      ✅ W    | Conf: 0.60 (Tech: 23.07, AI: 0.85)
+      ❌ GOOGL | Conf: 0.60 (Tech: 22.1, AI: 0.85)
+      ✅ GOOG | Conf: 0.63 (Tech: 21.77, AI: 0.9)
+      ❌ ILMN | Conf: 0.59 (Tech: 20.39, AI: 0.85)
+      ✅ XLY  | Conf: 0.60 (Tech: 18.42, AI: 0.88)
+      ❌ UBS  | Conf: 0.58 (Tech: 17.73, AI: 0.85)
+      ❌ XLG  | Conf: 0.58 (Tech: 16.74, AI: 0.85)
+      ❌ MDT  | Conf: 0.58 (Tech: 16.68, AI: 0.85)
+      ❌ KRMN | Conf: 0.58 (Tech: 16.28, AI: 0.85)
+   👉 Analyzing wheel_targets...
+      ❌ MCHI | Conf: 0.55 (Tech: 9.99, AI: 0.85)
+      ❌ ALLY | Conf: 0.58 (Tech: 9.61, AI: 0.9)
+      ❌ SYF  | Conf: 0.54 (Tech: 9.58, AI: 0.83)
+      ❌ QYLD | Conf: 0.31 (Tech: 9.53, AI: 0.45)
+      ❌ ASTS | Conf: 0.37 (Tech: 9.51, AI: 0.55)
+   [!] NWG: LLM confused, using 0.5
+      ❌ NWG  | Conf: 0.34 (Tech: 9.23, AI: 0.5)
+      ❌ SPYM | Conf: 0.58 (Tech: 9.22, AI: 0.9)
+      ❌ BABA | Conf: 0.56 (Tech: 9.08, AI: 0.88)
+      ❌ SCHX | Conf: 0.46 (Tech: 9.04, AI: 0.7)
+      ❌ FXI  | Conf: 0.47 (Tech: 8.74, AI: 0.72)
+   👉 Analyzing condor_targets...
+      ❌ STWD | Conf: 0.49 (Tech: 10.66, AI: 0.75)
+      ❌ AR   | Conf: 0.57 (Tech: 10.3, AI: 0.88)
+      ❌ XLV  | Conf: 0.49 (Tech: 10.15, AI: 0.75)
+      ❌ USMV | Conf: 0.59 (Tech: 9.85, AI: 0.92)
+      ❌ CRWV | Conf: 0.58 (Tech: 8.04, AI: 0.92)
+      ❌ BIRK | Conf: 0.48 (Tech: 7.9, AI: 0.75)
+      ❌ EQR  | Conf: 0.58 (Tech: 7.54, AI: 0.92)
+      ❌ RRC  | Conf: 0.42 (Tech: 7.53, AI: 0.65)
+      ❌ VST  | Conf: 0.50 (Tech: 7.35, AI: 0.78)
+      ❌ ZTS  | Conf: 0.54 (Tech: 6.96, AI: 0.85)
+   👉 Analyzing short_targets...
+      ✅ MNDY | Conf: 0.81 (Tech: 64.39, AI: 0.92)
+      ✅ DOCS | Conf: 0.73 (Tech: 62.07, AI: 0.8)
+      ✅ ROP  | Conf: 0.70 (Tech: 61.42, AI: 0.75)
+      ❌ FIS  | Conf: 0.60 (Tech: 55.95, AI: 0.62)
+      ✅ INTU | Conf: 0.67 (Tech: 55.42, AI: 0.75)
+      ✅ INTA | Conf: 0.79 (Tech: 54.21, AI: 0.95)
+      ✅ FLUT | Conf: 0.62 (Tech: 53.79, AI: 0.68)
+      ✅ HRB  | Conf: 0.69 (Tech: 53.72, AI: 0.8)
+      ✅ WDAY | Conf: 0.71 (Tech: 53.31, AI: 0.82)
+      ❌ BRZE | Conf: 0.50 (Tech: 51.17, AI: 0.5)
+
+📊 SCOUT SUMMARY:
+   Analyzed: 50
+   Approved: 19 (38%)
+   Avg Confidence: 0.71
+
+3. Saving Results...
+
+4. Beaming active_targets.json to Beelink...
+   ✅ Transfer Complete (Attempt 1).
+[Tue 02/17/2026  9:13:56.72] 🏁 MISSION COMPLETE. 
+========================================================== 
+========================================================== 
+[Tue 02/17/2026  9:15:01.55] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Tue 02/17/2026  9:15:01.55] Phase 1: Launching Market Scanner... 
+--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---
+1. Fetching asset list from Alpaca...
+   -> Found 4914 tradeable assets.
+2. Filtering for Liquidity (Vol > 1.5M)...
+   -> Batch 0/4914: Found 67 candidates...   -> Batch 200/4914: Found 156 candidates...   -> Batch 400/4914: Found 254 candidates...   -> Batch 600/4914: Found 297 candidates...   -> Batch 800/4914: Found 305 candidates...   -> Batch 1000/4914: Found 318 candidates...   -> Batch 1200/4914: Found 336 candidates...   -> Batch 1400/4914: Found 352 candidates...   -> Batch 1600/4914: Found 369 candidates...   -> Batch 1800/4914: Found 380 candidates...   -> Batch 2000/4914: Found 396 candidates...   -> Batch 2200/4914: Found 420 candidates...   -> Batch 2400/4914: Found 465 candidates...   -> Batch 2600/4914: Found 499 candidates...   -> Batch 2800/4914: Found 549 candidates...   -> Batch 3000/4914: Found 597 candidates...   -> Batch 3200/4914: Found 625 candidates...   -> Batch 3400/4914: Found 637 candidates...   -> Batch 3600/4914: Found 642 candidates...   -> Batch 3800/4914: Found 665 candidates...   -> Batch 4000/4914: Found 722 candidates...   -> Batch 4200/4914: Found 793 candidates...   -> Batch 4400/4914: Found 874 candidates...   -> Batch 4600/4914: Found 953 candidates...   -> Batch 4800/4914: Found 1006 candidates...
+   -> Final Liquid List: 1006 stocks.
+3. Analyzing Technicals (Segregated Lists) for 1006 stocks...
+
+5 Failed downloads:
+['SHOP', 'DHT', 'ENTG', 'HTGC', 'VSH']: TypeError("'NoneType' object is not subscriptable")
+
+4. Checking Earnings Calendar (Safety Guard)...
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JAAA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IMFL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FENY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IGV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FENI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VYMI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IVLU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EMXC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VCSH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EMLC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EFV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IHI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPDW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VEA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ARKB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GBTC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: HODL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BITB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BTC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IBIT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FBTC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SHY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ETHE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FETH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ETH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ILF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ETHU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IXUS"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VEU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XOP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWZ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ACWX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VXUS"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPLV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IEMG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PAVE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IEFA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EEM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FBND"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PYLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWJ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EFA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VTV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPIB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VUG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VONG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FNDX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XHB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DGRO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VGK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VWO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: CGCP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BSV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPHQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLRE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IYR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: CGGR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: MAGS"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VIXY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: TQQQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PSQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: KWEB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QID"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IVW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AIQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: BKLN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QQQM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SRLN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SVXY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QQQI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UPRO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPXL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SSO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AGQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JEPQ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XLV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: YINN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: MCHI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QYLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: USMV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ITOT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: FXI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VTI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XME"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GRNY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DYNF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SLV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SIVR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: HYG"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JQUA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XBI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: URA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SILJ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: INDA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: QUAL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPHY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SIL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: XRT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DFAC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: PFF"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: JNK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: KBWB"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: COPX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: USHY"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GDXJ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ACWI"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UDOW"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UGL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GDX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: VT"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: RSP"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SGOL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IAUM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AAAU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GLD"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: GLDM"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IAU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: DIA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: OUNZ"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: EWC"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SOXL"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHA"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: UCO"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SMH"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SJNK"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ASHR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: MUU"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: ICLN"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SOXX"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: IWR"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPYV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SCHE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: CGDV"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: KBE"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPEM"}}}
+
+--- 🎯 DRAGNET RESULTS ---
+{
+    "trend_targets": [
+        {
+            "symbol": "JAAA",
+            "tech_score": 70.17
+        },
+        {
+            "symbol": "KMT",
+            "tech_score": 60.9
+        },
+        {
+            "symbol": "SCHD",
+            "tech_score": 58.34
+        },
+        {
+            "symbol": "TER",
+            "tech_score": 58.28
+        },
+        {
+            "symbol": "CVX",
+            "tech_score": 56.03
+        },
+        {
+            "symbol": "IMFL",
+            "tech_score": 55.43
+        },
+        {
+            "symbol": "XOM",
+            "tech_score": 55.3
+        },
+        {
+            "symbol": "EXAS",
+            "tech_score": 53.54
+        },
+        {
+            "symbol": "XLE",
+            "tech_score": 52.4
+        },
+        {
+            "symbol": "MT",
+            "tech_score": 52.38
+        }
+    ],
+    "survivor_targets": [
+        {
+            "symbol": "W",
+            "tech_score": 23.38
+        },
+        {
+            "symbol": "MAGS",
+            "tech_score": 23.26
+        },
+        {
+            "symbol": "GOOGL",
+            "tech_score": 22.07
+        },
+        {
+            "symbol": "GOOG",
+            "tech_score": 21.86
+        },
+        {
+            "symbol": "ILMN",
+            "tech_score": 20.51
+        },
+        {
+            "symbol": "XLY",
+            "tech_score": 19.0
+        },
+        {
+            "symbol": "UBS",
+            "tech_score": 18.28
+        },
+        {
+            "symbol": "XLG",
+            "tech_score": 16.91
+        },
+        {
+            "symbol": "KRMN",
+            "tech_score": 16.46
+        },
+        {
+            "symbol": "FLNC",
+            "tech_score": 15.05
+        }
+    ],
+    "wheel_targets": [
+        {
+            "symbol": "MCHI",
+            "tech_score": 9.99
+        },
+        {
+            "symbol": "QYLD",
+            "tech_score": 9.92
+        },
+        {
+            "symbol": "SPYM",
+            "tech_score": 9.64
+        },
+        {
+            "symbol": "SCHX",
+            "tech_score": 9.55
+        },
+        {
+            "symbol": "MS",
+            "tech_score": 9.48
+        },
+        {
+            "symbol": "ASTS",
+            "tech_score": 9.47
+        },
+        {
+            "symbol": "BBVA",
+            "tech_score": 9.39
+        },
+        {
+            "symbol": "LSTR",
+            "tech_score": 9.36
+        },
+        {
+            "symbol": "BABA",
+            "tech_score": 9.27
+        },
+        {
+            "symbol": "NWG",
+            "tech_score": 9.11
+        }
+    ],
+    "condor_targets": [
+        {
+            "symbol": "STWD",
+            "tech_score": 10.66
+        },
+        {
+            "symbol": "AR",
+            "tech_score": 10.22
+        },
+        {
+            "symbol": "XLV",
+            "tech_score": 10.15
+        },
+        {
+            "symbol": "USMV",
+            "tech_score": 9.85
+        },
+        {
+            "symbol": "BIRK",
+            "tech_score": 7.82
+        },
+        {
+            "symbol": "RRC",
+            "tech_score": 7.53
+        },
+        {
+            "symbol": "CRWV",
+            "tech_score": 7.43
+        },
+        {
+            "symbol": "ZTS",
+            "tech_score": 6.96
+        },
+        {
+            "symbol": "SNY",
+            "tech_score": 6.78
+        },
+        {
+            "symbol": "NKE",
+            "tech_score": 6.69
+        }
+    ],
+    "short_targets": [
+        {
+            "symbol": "MNDY",
+            "tech_score": 64.39
+        },
+        {
+            "symbol": "DOCS",
+            "tech_score": 62.07
+        },
+        {
+            "symbol": "ROP",
+            "tech_score": 61.42
+        },
+        {
+            "symbol": "FIS",
+            "tech_score": 55.95
+        },
+        {
+            "symbol": "INTU",
+            "tech_score": 55.46
+        },
+        {
+            "symbol": "INTA",
+            "tech_score": 54.21
+        },
+        {
+            "symbol": "FLUT",
+            "tech_score": 53.79
+        },
+        {
+            "symbol": "HRB",
+            "tech_score": 53.72
+        },
+        {
+            "symbol": "WDAY",
+            "tech_score": 53.34
+        },
+        {
+            "symbol": "BRZE",
+            "tech_score": 51.2
+        }
+    ]
+}
+   ✅ Saved to dragnet_candidates.json
+[Tue 02/17/2026  9:17:49.23] ✅ Scanner Complete. Dragnet file ready. 
+[Tue 02/17/2026  9:17:49.24] Phase 2: Launching Sector Scout... 
+--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---
+✅ Loaded Candidates: 10 Bull, 10 Dip
+
+2. Deep Diving Candidates...
+   👉 Analyzing trend_targets...
+      ✅ JAAA | Conf: 0.75 (Tech: 70.17, AI: 0.78)
+      ✅ KMT  | Conf: 0.72 (Tech: 60.9, AI: 0.8)
+      ✅ SCHD | Conf: 0.80 (Tech: 58.34, AI: 0.95)
+   [!] TER: Weak reasoning (3 chars)
+      ❌ TER  | Conf: 0.23 (Tech: 58.28, AI: 0.0)
+      ✅ CVX  | Conf: 0.72 (Tech: 56.03, AI: 0.82)
+      ✅ IMFL | Conf: 0.71 (Tech: 55.43, AI: 0.82)
+      ✅ XOM  | Conf: 0.73 (Tech: 55.3, AI: 0.85)
+      ✅ EXAS | Conf: 0.66 (Tech: 53.54, AI: 0.75)
+      ✅ XLE  | Conf: 0.69 (Tech: 52.4, AI: 0.8)
+      ❌ MT   | Conf: 0.60 (Tech: 52.38, AI: 0.65)
+   👉 Analyzing survivor_targets...
+      ✅ W    | Conf: 0.65 (Tech: 23.38, AI: 0.93)
+      ✅ MAGS | Conf: 0.60 (Tech: 23.26, AI: 0.85)
+      ✅ GOOGL | Conf: 0.64 (Tech: 22.07, AI: 0.92)
+      ❌ GOOG | Conf: 0.60 (Tech: 21.86, AI: 0.85)
+      ❌ ILMN | Conf: 0.59 (Tech: 20.51, AI: 0.85)
+      ❌ XLY  | Conf: 0.59 (Tech: 19.0, AI: 0.85)
+      ❌ UBS  | Conf: 0.58 (Tech: 18.28, AI: 0.85)
+      ✅ XLG  | Conf: 0.62 (Tech: 16.91, AI: 0.92)
+      ❌ KRMN | Conf: 0.55 (Tech: 16.46, AI: 0.8)
+      ❌ FLNC | Conf: 0.51 (Tech: 15.05, AI: 0.75)
+   👉 Analyzing wheel_targets...
+      ✅ MCHI | Conf: 0.61 (Tech: 9.99, AI: 0.95)
+      ❌ QYLD | Conf: 0.55 (Tech: 9.92, AI: 0.85)
+      ❌ SPYM | Conf: 0.43 (Tech: 9.64, AI: 0.65)
+      ❌ SCHX | Conf: 0.54 (Tech: 9.55, AI: 0.83)
+      ❌ MS   | Conf: 0.51 (Tech: 9.48, AI: 0.78)
+      ❌ ASTS | Conf: 0.52 (Tech: 9.47, AI: 0.8)
+      ❌ BBVA | Conf: 0.55 (Tech: 9.39, AI: 0.85)
+      ✅ LSTR | Conf: 0.61 (Tech: 9.36, AI: 0.95)
+      ❌ BABA | Conf: 0.59 (Tech: 9.27, AI: 0.92)
+      ❌ NWG  | Conf: 0.55 (Tech: 9.11, AI: 0.85)
+   👉 Analyzing condor_targets...
+      ❌ STWD | Conf: 0.49 (Tech: 10.66, AI: 0.75)
+      ❌ AR   | Conf: 0.59 (Tech: 10.22, AI: 0.92)
+      ❌ XLV  | Conf: 0.52 (Tech: 10.15, AI: 0.8)
+      ❌ USMV | Conf: 0.59 (Tech: 9.85, AI: 0.92)
+      ❌ BIRK | Conf: 0.46 (Tech: 7.82, AI: 0.72)
+      ❌ RRC  | Conf: 0.48 (Tech: 7.53, AI: 0.75)
+      ❌ CRWV | Conf: 0.51 (Tech: 7.43, AI: 0.8)
+      ❌ ZTS  | Conf: 0.48 (Tech: 6.96, AI: 0.75)
+      ❌ SNY  | Conf: 0.48 (Tech: 6.78, AI: 0.75)
+      ❌ NKE  | Conf: 0.48 (Tech: 6.69, AI: 0.75)
+   👉 Analyzing short_targets...
+      ✅ MNDY | Conf: 0.74 (Tech: 64.39, AI: 0.8)
+      ❌ DOCS | Conf: 0.58 (Tech: 62.07, AI: 0.55)
+      ✅ ROP  | Conf: 0.64 (Tech: 61.42, AI: 0.65)
+      ✅ FIS  | Conf: 0.69 (Tech: 55.95, AI: 0.78)
+      ✅ INTU | Conf: 0.63 (Tech: 55.46, AI: 0.68)
+      ❌ INTA | Conf: 0.55 (Tech: 54.21, AI: 0.55)
+      ❌ FLUT | Conf: 0.46 (Tech: 53.79, AI: 0.4)
+      ✅ HRB  | Conf: 0.68 (Tech: 53.72, AI: 0.78)
+      ✅ WDAY | Conf: 0.66 (Tech: 53.34, AI: 0.75)
+      ❌ BRZE | Conf: 0.46 (Tech: 51.2, AI: 0.42)
+
+📊 SCOUT SUMMARY:
+   Analyzed: 50
+   Approved: 20 (40%)
+   Avg Confidence: 0.68
+
+3. Saving Results...
+
+4. Beaming active_targets.json to Beelink...
+   ✅ Transfer Complete (Attempt 1).
+[Tue 02/17/2026  9:21:33.87] 🏁 MISSION COMPLETE. 
+========================================================== 
+========================================================== 
+[Tue 02/17/2026  9:30:01.55] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Tue 02/17/2026  9:30:01.56] Phase 1: Launching Market Scanner... 
+--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---
+1. Fetching asset list from Alpaca...
+   -> Found 4914 tradeable assets.
+2. Filtering for Liquidity (Vol > 1.5M)...
+
+1 Failed download:
+['LNTH']: TypeError("'NoneType' object is not subscriptable")
+   -> Batch 0/4914: Found 71 candidates...   -> Batch 200/4914: Found 169 candidates...   -> Batch 400/4914: Found 259 candidates...   -> Batch 600/4914: Found 291 candidates...   -> Batch 800/4914: Found 298 candidates...   -> Batch 1000/4914: Found 313 candidates...   -> Batch 1200/4914: Found 330 candidates...   -> Batch 1400/4914: Found 348 candidates...   -> Batch 1600/4914: Found 364 candidates...   -> Batch 1800/4914: Found 379 candidates...   -> Batch 2000/4914: Found 390 candidates...   -> Batch 2200/4914: Found 420 candidates...   -> Batch 2400/4914: Found 459 candidates...   -> Batch 2600/4914: Found 504 candidates...   -> Batch 2800/4914: Found 549 candidates...   -> Batch 3000/4914: Found 591 candidates...   -> Batch 3200/4914: Found 625 candidates...   -> Batch 3400/4914: Found 629 candidates...   -> Batch 3600/4914: Found 636 candidates...   -> Batch 3800/4914: Found 663 candidates...   -> Batch 4000/4914: Found 730 candidates...   -> Batch 4200/4914: Found 801 candidates...   -> Batch 4400/4914: Found 888 candidates...   -> Batch 4600/4914: Found 968 candidates...   -> Batch 4800/4914: Found 1014 candidates...
+   -> Final Liquid List: 1014 stocks.
+3. Analyzing Technicals (Segregated Lists) for 1014 stocks...
+
+4. Checking Earnings Calendar (Safety Guard)...
+
+--- 🎯 DRAGNET RESULTS ---
+{
+    "trend_targets": [
+        {
+            "symbol": "KMT",
+            "tech_score": 60.9
+        },
+        {
+            "symbol": "SCHD",
+            "tech_score": 58.34
+        },
+        {
+            "symbol": "TER",
+            "tech_score": 58.28
+        },
+        {
+            "symbol": "CVX",
+            "tech_score": 56.03
+        },
+        {
+            "symbol": "IMFL",
+            "tech_score": 55.43
+        },
+        {
+            "symbol": "XOM",
+            "tech_score": 55.3
+        },
+        {
+            "symbol": "EXAS",
+            "tech_score": 53.54
+        },
+        {
+            "symbol": "MT",
+            "tech_score": 52.47
+        },
+        {
+            "symbol": "XLE",
+            "tech_score": 52.39
+        },
+        {
+            "symbol": "TXN",
+            "tech_score": 51.95
+        }
+    ],
+    "survivor_targets": [
+        {
+            "symbol": "W",
+            "tech_score": 23.74
+        },
+        {
+            "symbol": "MAGS",
+            "tech_score": 23.54
+        },
+        {
+            "symbol": "GOOGL",
+            "tech_score": 22.26
+        },
+        {
+            "symbol": "GOOG",
+            "tech_score": 22.1
+        },
+        {
+            "symbol": "ILMN",
+            "tech_score": 20.65
+        },
+        {
+            "symbol": "UBS",
+            "tech_score": 19.0
+        },
+        {
+            "symbol": "XLG",
+            "tech_score": 17.16
+        },
+        {
+            "symbol": "KRMN",
+            "tech_score": 16.46
+        },
+        {
+            "symbol": "FLNC",
+            "tech_score": 15.22
+        },
+        {
+            "symbol": "LMND",
+            "tech_score": 14.76
+        }
+    ],
+    "wheel_targets": [
+        {
+            "symbol": "QYLD",
+            "tech_score": 9.92
+        },
+        {
+            "symbol": "SPYM",
+            "tech_score": 9.76
+        },
+        {
+            "symbol": "ASTS",
+            "tech_score": 9.7
+        },
+        {
+            "symbol": "SCHX",
+            "tech_score": 9.64
+        },
+        {
+            "symbol": "SGI",
+            "tech_score": 9.62
+        },
+        {
+            "symbol": "NU",
+            "tech_score": 9.41
+        },
+        {
+            "symbol": "BIDU",
+            "tech_score": 9.33
+        },
+        {
+            "symbol": "FXI",
+            "tech_score": 9.17
+        },
+        {
+            "symbol": "LSTR",
+            "tech_score": 9.14
+        },
+        {
+            "symbol": "RKLB",
+            "tech_score": 9.09
+        }
+    ],
+    "condor_targets": [
+        {
+            "symbol": "STWD",
+            "tech_score": 10.39
+        },
+        {
+            "symbol": "XLV",
+            "tech_score": 10.15
+        },
+        {
+            "symbol": "AR",
+            "tech_score": 10.13
+        },
+        {
+            "symbol": "USMV",
+            "tech_score": 9.85
+        },
+        {
+            "symbol": "CRWV",
+            "tech_score": 8.11
+        },
+        {
+            "symbol": "BIRK",
+            "tech_score": 7.73
+        },
+        {
+            "symbol": "RRC",
+            "tech_score": 7.53
+        },
+        {
+            "symbol": "ZTS",
+            "tech_score": 6.96
+        },
+        {
+            "symbol": "SNY",
+            "tech_score": 6.78
+        },
+        {
+            "symbol": "NKE",
+            "tech_score": 6.69
+        }
+    ],
+    "short_targets": [
+        {
+            "symbol": "GDDY",
+            "tech_score": 65.76
+        },
+        {
+            "symbol": "MNDY",
+            "tech_score": 64.39
+        },
+        {
+            "symbol": "DOCS",
+            "tech_score": 62.07
+        },
+        {
+            "symbol": "ROP",
+            "tech_score": 61.43
+        },
+        {
+            "symbol": "FIS",
+            "tech_score": 55.95
+        },
+        {
+            "symbol": "INTU",
+            "tech_score": 55.47
+        },
+        {
+            "symbol": "INTA",
+            "tech_score": 54.21
+        },
+        {
+            "symbol": "FLUT",
+            "tech_score": 53.79
+        },
+        {
+            "symbol": "HRB",
+            "tech_score": 53.72
+        },
+        {
+            "symbol": "WDAY",
+            "tech_score": 53.38
+        }
+    ]
+}
+   ✅ Saved to dragnet_candidates.json
+[Tue 02/17/2026  9:32:49.43] ✅ Scanner Complete. Dragnet file ready. 
+[Tue 02/17/2026  9:32:49.44] Phase 2: Launching Sector Scout... 
+--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---
+✅ Loaded Candidates: 10 Bull, 10 Dip
+
+2. Deep Diving Candidates...
+   👉 Analyzing trend_targets...
+      ✅ KMT  | Conf: 0.75 (Tech: 60.9, AI: 0.85)
+      ✅ SCHD | Conf: 0.79 (Tech: 58.34, AI: 0.92)
+      ✅ TER  | Conf: 0.68 (Tech: 58.28, AI: 0.75)
+      ✅ CVX  | Conf: 0.73 (Tech: 56.03, AI: 0.85)
+      ✅ IMFL | Conf: 0.77 (Tech: 55.43, AI: 0.92)
+      ✅ XOM  | Conf: 0.77 (Tech: 55.3, AI: 0.92)
+      ❌ EXAS | Conf: 0.54 (Tech: 53.54, AI: 0.55)
+      ✅ MT   | Conf: 0.76 (Tech: 52.47, AI: 0.92)
+      ✅ XLE  | Conf: 0.72 (Tech: 52.39, AI: 0.85)
+      ✅ TXN  | Conf: 0.72 (Tech: 51.95, AI: 0.85)
+   👉 Analyzing survivor_targets...
+      ✅ W    | Conf: 0.60 (Tech: 23.74, AI: 0.85)
+      ✅ MAGS | Conf: 0.66 (Tech: 23.54, AI: 0.95)
+      ✅ GOOGL | Conf: 0.62 (Tech: 22.26, AI: 0.88)
+      ❌ GOOG | Conf: 0.54 (Tech: 22.1, AI: 0.75)
+      ✅ ILMN | Conf: 0.63 (Tech: 20.65, AI: 0.92)
+      ❌ UBS  | Conf: 0.53 (Tech: 19.0, AI: 0.75)
+      ❌ XLG  | Conf: 0.52 (Tech: 17.16, AI: 0.75)
+      ❌ KRMN | Conf: 0.58 (Tech: 16.46, AI: 0.85)
+      ❌ FLNC | Conf: 0.57 (Tech: 15.22, AI: 0.85)
+      ✅ LMND | Conf: 0.61 (Tech: 14.76, AI: 0.92)
+   👉 Analyzing wheel_targets...
+      ❌ QYLD | Conf: 0.55 (Tech: 9.92, AI: 0.85)
+      ❌ SPYM | Conf: 0.43 (Tech: 9.76, AI: 0.65)
+      ❌ ASTS | Conf: 0.43 (Tech: 9.7, AI: 0.65)
+      ❌ SCHX | Conf: 0.59 (Tech: 9.64, AI: 0.92)
+      ❌ SGI  | Conf: 0.55 (Tech: 9.62, AI: 0.85)
+      ❌ NU   | Conf: 0.52 (Tech: 9.41, AI: 0.8)
+      ❌ BIDU | Conf: 0.49 (Tech: 9.33, AI: 0.75)
+      ❌ FXI  | Conf: 0.49 (Tech: 9.17, AI: 0.75)
+      ❌ LSTR | Conf: 0.59 (Tech: 9.14, AI: 0.92)
+      ❌ RKLB | Conf: 0.59 (Tech: 9.09, AI: 0.92)
+   👉 Analyzing condor_targets...
+      ❌ STWD | Conf: 0.49 (Tech: 10.39, AI: 0.75)
+      ❌ XLV  | Conf: 0.55 (Tech: 10.15, AI: 0.85)
+      ❌ AR   | Conf: 0.41 (Tech: 10.13, AI: 0.62)
+      ❌ USMV | Conf: 0.55 (Tech: 9.85, AI: 0.85)
+      ✅ CRWV | Conf: 0.60 (Tech: 8.11, AI: 0.95)
+      ❌ BIRK | Conf: 0.48 (Tech: 7.73, AI: 0.75)
+      ❌ RRC  | Conf: 0.42 (Tech: 7.53, AI: 0.65)
+      ❌ ZTS  | Conf: 0.54 (Tech: 6.96, AI: 0.85)
+      ❌ SNY  | Conf: 0.42 (Tech: 6.78, AI: 0.65)
+      ❌ NKE  | Conf: 0.54 (Tech: 6.69, AI: 0.85)
+   👉 Analyzing short_targets...
+      ✅ GDDY | Conf: 0.71 (Tech: 65.76, AI: 0.75)
+      ✅ MNDY | Conf: 0.69 (Tech: 64.39, AI: 0.72)
+      ✅ DOCS | Conf: 0.70 (Tech: 62.07, AI: 0.75)
+      ✅ ROP  | Conf: 0.64 (Tech: 61.43, AI: 0.65)
+      ✅ FIS  | Conf: 0.61 (Tech: 55.95, AI: 0.65)
+      ✅ INTU | Conf: 0.61 (Tech: 55.47, AI: 0.65)
+      ✅ INTA | Conf: 0.61 (Tech: 54.21, AI: 0.65)
+      ❌ FLUT | Conf: 0.47 (Tech: 53.79, AI: 0.42)
+      ✅ HRB  | Conf: 0.72 (Tech: 53.72, AI: 0.85)
+      ✅ WDAY | Conf: 0.75 (Tech: 53.38, AI: 0.9)
+
+📊 SCOUT SUMMARY:
+   Analyzed: 50
+   Approved: 24 (48%)
+   Avg Confidence: 0.69
+
+3. Saving Results...
+
+4. Beaming active_targets.json to Beelink...
+   ✅ Transfer Complete (Attempt 1).
+[Tue 02/17/2026  9:36:37.66] 🏁 MISSION COMPLETE. 
+========================================================== 
+========================================================== 
+[Tue 02/17/2026  9:45:01.54] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Tue 02/17/2026  9:45:01.55] Phase 1: Launching Market Scanner... 
+--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---
+1. Fetching asset list from Alpaca...
+   -> Found 4914 tradeable assets.
+2. Filtering for Liquidity (Vol > 1.5M)...
+   -> Batch 0/4914: Found 70 candidates...   -> Batch 200/4914: Found 170 candidates...   -> Batch 400/4914: Found 261 candidates...   -> Batch 600/4914: Found 289 candidates...   -> Batch 800/4914: Found 298 candidates...

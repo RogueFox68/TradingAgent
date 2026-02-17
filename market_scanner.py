@@ -197,39 +197,85 @@ def analyze_technicals(tickers):
     return candidates
 
 
+# Known ETF suffixes and patterns to skip
+ETF_KEYWORDS = ["SPY", "QQQ", "IWM", "ETF"]  # Specific known ones
+ETF_PATTERNS = ["SCH", "VT", "IQ", "XL", "GLD", "SLV"]  # Common ETF prefixes
+
+def is_etf(symbol):
+    """
+    Quick heuristic to detect ETFs before calling Yahoo.
+    ETFs are typically 3-4 chars, no numbers, often end in specific patterns.
+    """
+    # Length check - most ETFs are 3-4 chars
+    if len(symbol) <= 4 and symbol.isalpha():
+        # Check Alpaca asset info (you already have this client!)
+        # For dragnet speed, we just use heuristics + yahoo 404 suppression
+        for p in ETF_PATTERNS:
+            if symbol.startswith(p): return True
+        return False
+    return False
+
 def get_earnings_date(ticker_symbol):
     """
     Checks if earnings are within the next 2 days.
     Returns: True if SAFE (No earnings soon), False if DANGER.
+    Skips ETFs gracefully.
     """
+    # Quick ETF Check
+    if is_etf(ticker_symbol):
+        return True
+
     try:
         ticker = yf.Ticker(ticker_symbol)
-        # Get next earnings date
-        calendar = ticker.calendar
-        if calendar is not None and not calendar.empty:
-             # yfinance calendar structure varies. Usually 'Earnings Date' or 'Earnings Date' index
-             # Let's try to find the next date.
-             # Typically calendar keys are 0, 1... or dates.
-             # For safety, let's look at the first available date.
-             next_earnings = calendar.iloc[0][0] # Often a Timestamp
-             if isinstance(next_earnings, datetime.date) or isinstance(next_earnings, datetime.datetime):
-                 # Convert to naive datetime for comparison if needed
-                 if isinstance(next_earnings, pd.Timestamp):
-                     next_earnings = next_earnings.to_pydatetime()
-                 
-                 # Strip timezone if present
-                 if next_earnings.tzinfo:
-                     next_earnings = next_earnings.replace(tzinfo=None)
+        
+        # Suppress 404s - ETFs and some stocks simply don't have calendars
+        import contextlib
+        import io
+        
+        with contextlib.redirect_stderr(io.StringIO()):
+            calendar = ticker.calendar
+            
+        # If calendar is None or empty, assume safe (ETF or no data)
+        if calendar is None:
+            return True
+            
+        # Handle different calendar formats yfinance returns
+        if hasattr(calendar, 'empty') and calendar.empty:
+            return True
+            
+        if isinstance(calendar, dict) and not calendar:
+            return True
 
-                 now = datetime.datetime.now()
-                 days_until = (next_earnings - now).days
-                 
-                 if 0 <= days_until <= 2:
-                     print(f"   [!] {ticker_symbol} has earnings in {days_until} days. Skipping.")
-                     return False
-    except: 
-        # If we can't verify, we assume safe (or risky? Let's assume safe to not block everything)
+        # --- Earning Date Extraction ---
+        if hasattr(calendar, 'iloc'):
+            next_earnings = calendar.iloc[0][0]
+        elif isinstance(calendar, dict):
+            earnings_dates = calendar.get('Earnings Date', [])
+            if not earnings_dates:
+                return True
+            next_earnings = earnings_dates[0]
+        else:
+            return True
+
+        if isinstance(next_earnings, (datetime.date, datetime.datetime)):
+            if isinstance(next_earnings, pd.Timestamp):
+                next_earnings = next_earnings.to_pydatetime()
+            
+            if next_earnings.tzinfo:
+                next_earnings = next_earnings.replace(tzinfo=None)
+
+            now = datetime.datetime.now()
+            days_until = (next_earnings - now).days
+            
+            if 0 <= days_until <= 2:
+                print(f"   [!] {ticker_symbol} has earnings in {days_until} days. Skipping.")
+                return False
+                
+    except Exception:
+        # Silently pass - 404s, missing data, ETFs all land here
+        # Default to SAFE so we don't block valid tickers
         pass
+        
     return True
 
 def run_dragnet():

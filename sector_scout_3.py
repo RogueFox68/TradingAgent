@@ -288,18 +288,34 @@ def run_scout():
     # Discord report
     if WEBHOOK_OVERSEER:
         try:
-            requests.post(WEBHOOK_OVERSEER, json={
-                "content": (
-                    f"📊 **SCOUT COMPLETE**\n"
-                    f"Analyzed: {total_analyzed}\n"
-                    f"Approved: {total_approved} ({approval_rate*100:.0f}%)\n"
-                    f"Avg Confidence: {avg_confidence:.2f}"
-                ),
-                "username": "Sector Scout"
-            })
+            # Alert if TOO conservative (0 targets)
+            if total_approved == 0:
+                 requests.post(WEBHOOK_OVERSEER, json={
+                    "content": (
+                        f"⚠️ **SCOUT ALERT: 0 TARGETS**\n"
+                        f"Analysis complete but nothing approved.\n"
+                        f"Bots will STAND BY (No fallback).\n"
+                        f"Avg Confidence: {avg_confidence:.2f}"
+                    ),
+                    "username": "Sector Scout"
+                })
+            else:
+                requests.post(WEBHOOK_OVERSEER, json={
+                    "content": (
+                        f"📊 **SCOUT COMPLETE**\n"
+                        f"Analyzed: {total_analyzed}\n"
+                        f"Approved: {total_approved} ({approval_rate*100:.0f}%)\n"
+                        f"Avg Confidence: {avg_confidence:.2f}"
+                    ),
+                    "username": "Sector Scout"
+                })
         except: pass
 
     print("\n3. Saving Results...")
+    
+    # [PHASE 2.5] Add Success Flag
+    final_targets["scan_status"] = "success"
+    
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(final_targets, f, indent=4)
         

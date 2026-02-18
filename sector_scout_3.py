@@ -1,3 +1,4 @@
+# --- IMPORTS ---
 import requests
 import json
 import os
@@ -7,6 +8,7 @@ import yfinance as yf
 import subprocess
 import sys
 import config
+from psaw import PushshiftAPI
 
 # Force UTF-8 Output for Windows Console
 import builtins
@@ -38,6 +40,10 @@ BEELINK_USER = "trader"
 BEELINK_PATH = "~/bots/repo/active_targets.json"
 WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER') 
 
+# --- REDDIT API ---
+reddit_api = PushshiftAPI()
+last_reddit_call = 0 
+
 # --- CORE BACKUP (Unchanged) ---
 CORE_WATCHLIST = {
     "condor_targets": ["SPY", "IWM", "QQQ"],
@@ -61,39 +67,125 @@ def get_candidates():
         except: pass
     return CORE_WATCHLIST
 
-TRUSTED_SOURCES = ["Bloomberg", "Reuters", "WSJ", "CNBC", "Financial Times"]
+# --- NEWS SOURCE TIERS ---
+TIER_1_ELITE = [
+    "Bloomberg", "Reuters", "WSJ", "CNBC", "Financial Times"
+]
 
-def get_news_summary(ticker):
+TIER_2_MAINSTREAM = [
+    "MarketWatch", "Barron's", "Investor's Business Daily", 
+    "The Motley Fool", "Yahoo Finance", "Forbes", "Fortune"
+]
+
+TIER_3_SPECIALTY = [
+    "Seeking Alpha", "TheStreet", "Benzinga", 
+    "Business Insider", "TipRanks"
+]
+
+TIER_4_INDUSTRY = [
+    "TechCrunch", "The Verge", "Ars Technica", 
+    "BioSpace", "OilPrice.com", "Mining.com", "FiercePharma"
+]
+
+# Combined set for fast lookup
+ALL_TRUSTED_SOURCES = set(TIER_1_ELITE + TIER_2_MAINSTREAM + TIER_3_SPECIALTY + TIER_4_INDUSTRY)
+
+def get_reddit_sentiment(ticker):
+    """
+    Scrapes recent Reddit posts using Pushshift.
+    Returns a summary string or None.
+    """
+    global last_reddit_call
+    
+    # Rate Limit (1s)
+    elapsed = time.time() - last_reddit_call
+    if elapsed < 1.0:
+        time.sleep(1.0 - elapsed)
+    last_reddit_call = time.time()
+
+    try:
+        # 7-day lookback
+        after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
+        
+        # Strict Query: $TICKER to avoid generic word matches (e.g. $PUMP vs PUMP)
+        query = f"${ticker}"
+        
+        # Search relevant subreddits
+        submissions = reddit_api.search_submissions(
+            q=query,
+            subreddit="wallstreetbets,stocks,investing,options,thetagang,pennystocks",
+            after=after,
+            limit=50
+        )
+        
+        mentions = []
+        for post in submissions:
+            # Filter low quality / spam
+            if post.score < 5: continue 
+            # Note: Pushshift might not always have up-to-date scores/karma, but we try.
+            
+            mentions.append({
+                "title": post.title,
+                "score": post.score,
+                "sub": post.subreddit,
+                "url": post.full_link
+            })
+            
+        if not mentions: return None
+        
+        # Sort by engagement (Score)
+        mentions.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Take Top 3
+        summary_lines = []
+        for m in mentions[:3]:
+            summary_lines.append(f"- [r/{m['sub']}] {m['title']} ({m['score']} pts)")
+            
+        return "\n".join(summary_lines)
+
+    except Exception as e:
+        print(f"   [!] Reddit Error ({ticker}): {e}")
+        return None
+
+def get_tiered_news(ticker):
+    """
+    Fetches news from Yahoo and organizes into Tiers.
+    Returns dict: {'tier1': [], 'tier2': [], 'tier3': []}
+    """
     try:
         stock = yf.Ticker(ticker)
         news = stock.news
         
-        recent_news = []
+        tiered_news = {
+            "tier1": [],
+            "tier2": [],
+            "tier3": [] # Using Tier 3 bucket for Specialty + Industry + Unknowns
+        }
+        
         now = time.time()
         
         for n in news:
-            # Check recency
+            # Recency Check (7 days)
             pub_time = n.get('providerPublishTime', 0)
-            age_hours = (now - pub_time) / 3600
+            if (now - pub_time) > (168 * 3600): continue
             
-            # [Revised] 7 Days (was 48h)
-            if age_hours > 168:
-                continue
-            
-            # Boost trusted sources
             publisher = n.get('publisher', '')
-            if any(src in publisher for src in TRUSTED_SOURCES):
-                recent_news.insert(0, n)
+            title = n.get('title', '')
+            link = n.get('link', '')
+            item = f"- [{publisher}] {title}"
+            
+            # Bucketing
+            if any(src in publisher for src in TIER_1_ELITE):
+                tiered_news['tier1'].append(item)
+            elif any(src in publisher for src in TIER_2_MAINSTREAM):
+                tiered_news['tier2'].append(item)
             else:
-                recent_news.append(n)
-        
-        headlines = []
-        for n in recent_news[:3]:
-            headlines.append(f"- {n.get('title', '')}")
-        
-        return "\n".join(headlines) if headlines else "No recent news."
+                # Everyone else goes to Tier 3 (Specialty/Industry/Other)
+                tiered_news['tier3'].append(item)
+                
+        return tiered_news
     except:
-        return "No recent news found."
+        return {"tier1": [], "tier2": [], "tier3": []}
 
 def validate_llm_response(score, reason, ticker):
     if not (0.0 <= score <= 1.0):
@@ -110,35 +202,45 @@ def validate_llm_response(score, reason, ticker):
     
     return score, reason
 
-def ask_llama(ticker, strategy, headlines):
-    if not headlines: return 0.0, "No Data"
+def ask_llama(ticker, strategy, content_text, source_type="news"):
+    """
+    source_type: 'tier1_news', 'tier2_news', 'social'
+    """
+    if not content_text: return 0.5, "Insufficient Data"
 
     if strategy == "short_targets":
         role = "short seller"
         goal = "identifying weakness, bad earnings, or regulatory trouble"
-        scoring = "High score (1.0) means the stock is likely to CRASH. Low score means it is strong/safe."
-    
+        scoring = "High score (1.0) means CRASH LIKELY. Low score (0.0) means STRONG/SAFE."
     elif strategy == "survivor_targets":
         role = "value investor"
         goal = "identifying if a recent price drop is an overreaction"
-        scoring = "High score (1.0) means the DIP IS SAFE TO BUY. Low score means 'catching a falling knife'."
-        
+        scoring = "High score (1.0) means SAFE TO BUY. Low score (0.0) means FALLING KNIFE."
     elif strategy in ["condor_targets", "wheel_targets"]:
         role = "options income trader"
         goal = "identifying STABILITY and LACK of volatility"
-        scoring = "High score (1.0) means the stock is BORING/FLAT. Low score means it is volatile/risky."
-        
+        scoring = "High score (1.0) means BORING/STABLE. Low score (0.0) means VOLATILE/RISKY."
     else: 
         role = "growth investor"
         goal = "identifying breakouts, strong earnings, and momentum"
-        scoring = "High score (1.0) means the stock is likely to RALLY."
+        scoring = "High score (1.0) means RALLY LIKELY. Low score (0.0) means WEAKNESS."
+
+    # Adjust perspective based on Source Type
+    if source_type == "social":
+        context = "Reddit/Social Media Sentiment"
+        instruction = "Analyze the retail sentiment. Look for hype, panic, or irrational exuberance."
+    else:
+        context = "Financial News"
+        instruction = "Analyze the fundamental and headline risks."
 
     system_prompt = (
-        f"You are a hedge fund {role}. Analyze {ticker} for the purpose of {goal}.\n"
-        f"News:\n{headlines}\n\n"
+        f"You are a hedge fund {role}. Analyze {ticker} based on this {context}.\n"
+        f"Goal: {goal}\n\n"
+        f"DATA:\n{content_text}\n\n"
         "Instructions:\n"
-        f"1. {scoring}\n"
-        "2. Return JSON: {\"score\": 0.85, \"reason\": \"Analysis...\"}"
+        f"1. {instruction}\n"
+        f"2. {scoring}\n"
+        "3. Return JSON: {\"score\": 0.85, \"reason\": \"Analysis...\"}"
     )
 
     try:
@@ -236,33 +338,94 @@ def run_scout():
                 # Score 30 -> 1.0
                 tech_norm = min(max(tech_score / 30.0, 0.0), 1.0)
 
-            # 2. Get AI Opinion
-            headlines = get_news_summary(ticker)
+            # 2. Gather Intelligence
+            news_map = get_tiered_news(ticker)
+            reddit_text = get_reddit_sentiment(ticker)
             
-            # [Revised] Intelligent Fallback
-            if "No recent news" in headlines:
-                 # If no news, trust the technicals completely (especially for Condors)
-                 llm_score = tech_norm
-                 reason = "No recent news - relying on technical analysis"
+            # 3. Multi-Factor Scoring
+            scores = []
+            weights = []
+            reasons = []
+
+            # --- A. Technicals (30%) ---
+            scores.append(tech_norm)
+            weights.append(0.30)
+            reasons.append(f"Tech: {tech_norm:.2f}")
+
+            # --- B. Elite News (30%) ---
+            if news_map['tier1']:
+                txt = "\n".join(news_map['tier1'][:3])
+                s, r = ask_llama(ticker, category, txt, "tier1_news")
+                scores.append(s)
+                weights.append(0.30)
+                reasons.append(f"T1: {s:.2f}")
             else:
-                 llm_score, reason = ask_llama(ticker, category, headlines)
+                # Reallocate weight to Tech
+                weights[0] += 0.30 
+                reasons.append("T1: N/A")
+
+            # --- C. Mainstream News (20%) ---
+            if news_map['tier2']:
+                txt = "\n".join(news_map['tier2'][:3])
+                s, r = ask_llama(ticker, category, txt, "tier2_news")
+                scores.append(s)
+                weights.append(0.20)
+                reasons.append(f"T2: {s:.2f}")
+            else:
+                # Reallocate to Tech (or T1/T3 if we had complex logic, but simplifying)
+                weights[0] += 0.20
+                reasons.append("T2: N/A")
+
+            # --- D. Specialty/Industry News (10%) ---
+            if news_map['tier3']:
+                txt = "\n".join(news_map['tier3'][:3])
+                s, r = ask_llama(ticker, category, txt, "tier3_news")
+                scores.append(s)
+                weights.append(0.10)
+                reasons.append(f"T3: {s:.2f}")
+            else:
+                weights[0] += 0.10
+                reasons.append("T3: N/A")
+
+            # --- E. Social/Reddit (10%) ---
+            if reddit_text:
+                s, r = ask_llama(ticker, category, reddit_text, "social")
+                scores.append(s)
+                weights.append(0.10)
+                reasons.append(f"Soc: {s:.2f}")
+            else:
+                weights[0] += 0.10
+                reasons.append("Soc: N/A")
+
+            # 4. Calculate Weighted Final Score
+            final_confidence = 0.0
+            total_weight = sum(weights)
             
-            # 3. Weighted Final Confidence
-            # tech_norm is now properly scaled for the strategy
-            final_confidence = (tech_norm * 0.4) + (llm_score * 0.6)
+            if total_weight > 0:
+                for i in range(len(scores)):
+                    final_confidence += scores[i] * weights[i]
+                
+                # Normalize if re-allocation messed up sums (shouldn't, but safety)
+                if abs(total_weight - 1.0) > 0.01:
+                    final_confidence = final_confidence / total_weight
             
             is_approved = False
-            # [Revised] Lower Threshold (was 0.60, then 0.50)
+            # Threshold Check
             if final_confidence > 0.50: is_approved = True
             
             emoji = "✅" if is_approved else "❌"
-            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} (Tech: {tech_score:>4.1f} -> {tech_norm:.2f}, AI: {llm_score:.2f})")
+            breakdown = " | ".join(reasons)
+            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} [{breakdown}]")
             
             if is_approved:
+                # Synthesize a master reason from available data
+                master_reason = f"Tech Score: {tech_score} -> {tech_norm:.2f}. "
+                if reddit_text: master_reason += f"Social: {s:.2f}. "
+                
                 final_targets[category].append({
                     "symbol": ticker,
                     "confidence": round(final_confidence, 2),
-                    "reason": reason
+                    "reason": master_reason
                 })
 
 

@@ -1,6 +1,83 @@
 {
-    "condor_targets": [],
-    "wheel_targets": [],
+    "condor_targets": [
+        {
+            "symbol": "STWD",
+            "confidence": 0.68,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "AR",
+            "confidence": 0.68,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "CRWV",
+            "confidence": 0.54,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "NKE",
+            "confidence": 0.53,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "NBIS",
+            "confidence": 0.53,
+            "reason": "No recent news - relying on technical analysis"
+        }
+    ],
+    "wheel_targets": [
+        {
+            "symbol": "RYAAY",
+            "confidence": 0.98,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "QQQM",
+            "confidence": 0.94,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "IVW",
+            "confidence": 0.93,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "SPYG",
+            "confidence": 0.91,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "SPYI",
+            "confidence": 0.88,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "IE",
+            "confidence": 0.87,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "SYF",
+            "confidence": 0.87,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "ASTS",
+            "confidence": 0.86,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "RKT",
+            "confidence": 0.84,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "AXP",
+            "confidence": 0.84,
+            "reason": "No recent news - relying on technical analysis"
+        }
+    ],
     "trend_targets": [
         {
             "symbol": "JAAA",
@@ -8,52 +85,93 @@
             "reason": "No recent news - relying on technical analysis"
         },
         {
-            "symbol": "KMT",
-            "confidence": 0.61,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "TER",
-            "confidence": 0.58,
+            "symbol": "BKD",
+            "confidence": 0.63,
             "reason": "No recent news - relying on technical analysis"
         },
         {
             "symbol": "SCHD",
-            "confidence": 0.58,
+            "confidence": 0.59,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "TER",
+            "confidence": 0.59,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "CL",
+            "confidence": 0.55,
             "reason": "No recent news - relying on technical analysis"
         },
         {
             "symbol": "CVX",
-            "confidence": 0.56,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "IPGP",
-            "confidence": 0.56,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "IMFL",
             "confidence": 0.55,
             "reason": "No recent news - relying on technical analysis"
         },
         {
             "symbol": "XOM",
+            "confidence": 0.54,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "HON",
+            "confidence": 0.53,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "TXN",
+            "confidence": 0.52,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "MT",
+            "confidence": 0.52,
+            "reason": "No recent news - relying on technical analysis"
+        }
+    ],
+    "survivor_targets": [
+        {
+            "symbol": "ILMN",
+            "confidence": 0.66,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "MAGS",
+            "confidence": 0.6,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "GOOG",
+            "confidence": 0.57,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "MDT",
+            "confidence": 0.56,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "GOOGL",
             "confidence": 0.55,
             "reason": "No recent news - relying on technical analysis"
         },
         {
-            "symbol": "ALGM",
-            "confidence": 0.54,
+            "symbol": "XLY",
+            "confidence": 0.52,
             "reason": "No recent news - relying on technical analysis"
         },
         {
-            "symbol": "EXAS",
-            "confidence": 0.54,
+            "symbol": "TECH",
+            "confidence": 0.51,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "KRMN",
+            "confidence": 0.51,
             "reason": "No recent news - relying on technical analysis"
         }
     ],
-    "survivor_targets": [],
     "short_targets": [
         {
             "symbol": "GDDY",
@@ -61,28 +179,8 @@
             "reason": "No recent news - relying on technical analysis"
         },
         {
-            "symbol": "MNDY",
-            "confidence": 0.64,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
             "symbol": "DOCS",
-            "confidence": 0.62,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "ROP",
-            "confidence": 0.61,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "BR",
-            "confidence": 0.58,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "FIS",
-            "confidence": 0.56,
+            "confidence": 0.63,
             "reason": "No recent news - relying on technical analysis"
         },
         {
@@ -91,21 +189,41 @@
             "reason": "No recent news - relying on technical analysis"
         },
         {
-            "symbol": "INTA",
-            "confidence": 0.54,
+            "symbol": "FIS",
+            "confidence": 0.56,
             "reason": "No recent news - relying on technical analysis"
         },
         {
             "symbol": "FLUT",
-            "confidence": 0.54,
+            "confidence": 0.56,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "INTA",
+            "confidence": 0.55,
             "reason": "No recent news - relying on technical analysis"
         },
         {
             "symbol": "HRB",
             "confidence": 0.54,
             "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "BRZE",
+            "confidence": 0.52,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "PYPL",
+            "confidence": 0.51,
+            "reason": "No recent news - relying on technical analysis"
+        },
+        {
+            "symbol": "HIMS",
+            "confidence": 0.5,
+            "reason": "No recent news - relying on technical analysis"
         }
     ],
-    "updated": "2026-02-17 15:30:02.668614",
+    "updated": "2026-02-18 08:32:26.007704",
     "status": "success"
 }

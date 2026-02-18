@@ -16951,3 +16951,383 @@ HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","desc
    ✅ Transfer Complete (Attempt 1).
 [Tue 02/17/2026 15:30:11.65] 🏁 MISSION COMPLETE. 
 ========================================================== 
+========================================================== 
+[Wed 02/18/2026  8:00:01.35] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Wed 02/18/2026  8:00:01.35] Phase 1: Launching Market Scanner... 
+[Gatekeeper] Time is 08:00. Market Closed. Aborting.
+[Wed 02/18/2026  8:00:03.47] ✅ Scanner Complete. Dragnet file ready. 
+[Wed 02/18/2026  8:00:03.48] Phase 2: Launching Sector Scout... 
+--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---
+✅ Loaded Candidates: 10 Bull, 10 Dip
+
+2. Deep Diving Candidates...
+   👉 Analyzing trend_targets...
+      ✅ JAAA | Conf: 0.70 (Tech: 70.2 -> 0.70, AI: 0.70)
+      ✅ KMT  | Conf: 0.61 (Tech: 60.9 -> 0.61, AI: 0.61)
+      ✅ TER  | Conf: 0.58 (Tech: 58.3 -> 0.58, AI: 0.58)
+      ✅ SCHD | Conf: 0.58 (Tech: 57.9 -> 0.58, AI: 0.58)
+      ✅ CVX  | Conf: 0.56 (Tech: 56.0 -> 0.56, AI: 0.56)
+      ✅ IPGP | Conf: 0.56 (Tech: 55.5 -> 0.56, AI: 0.56)
+      ✅ IMFL | Conf: 0.55 (Tech: 55.4 -> 0.55, AI: 0.55)
+      ✅ XOM  | Conf: 0.55 (Tech: 55.3 -> 0.55, AI: 0.55)
+      ✅ ALGM | Conf: 0.54 (Tech: 54.1 -> 0.54, AI: 0.54)
+      ✅ EXAS | Conf: 0.54 (Tech: 53.5 -> 0.54, AI: 0.54)
+   👉 Analyzing survivor_targets...
+      ✅ GOOGL | Conf: 0.67 (Tech: 20.0 -> 0.67, AI: 0.67)
+      ✅ ILMN | Conf: 0.65 (Tech: 19.6 -> 0.65, AI: 0.65)
+      ✅ MAGS | Conf: 0.65 (Tech: 19.6 -> 0.65, AI: 0.65)
+      ✅ GOOG | Conf: 0.65 (Tech: 19.6 -> 0.65, AI: 0.65)
+      ✅ CWAN | Conf: 0.61 (Tech: 18.4 -> 0.61, AI: 0.61)
+      ✅ W    | Conf: 0.58 (Tech: 17.5 -> 0.58, AI: 0.58)
+      ✅ DYN  | Conf: 0.57 (Tech: 17.1 -> 0.57, AI: 0.57)
+      ✅ UBS  | Conf: 0.55 (Tech: 16.6 -> 0.55, AI: 0.55)
+      ✅ MDT  | Conf: 0.54 (Tech: 16.2 -> 0.54, AI: 0.54)
+      ✅ KRMN | Conf: 0.52 (Tech: 15.7 -> 0.52, AI: 0.52)
+   👉 Analyzing wheel_targets...
+      ✅ XLC  | Conf: 0.99 (Tech:  9.9 -> 0.99, AI: 0.99)
+      ✅ IVW  | Conf: 0.98 (Tech:  9.8 -> 0.98, AI: 0.98)
+      ✅ SPYG | Conf: 0.97 (Tech:  9.7 -> 0.97, AI: 0.97)
+      ✅ AXP  | Conf: 0.95 (Tech:  9.5 -> 0.95, AI: 0.95)
+      ✅ QQQM | Conf: 0.95 (Tech:  9.5 -> 0.95, AI: 0.95)
+      ✅ MS   | Conf: 0.94 (Tech:  9.4 -> 0.94, AI: 0.94)
+      ✅ SGI  | Conf: 0.93 (Tech:  9.3 -> 0.93, AI: 0.93)
+      ✅ IE   | Conf: 0.93 (Tech:  9.3 -> 0.93, AI: 0.93)
+      ✅ TVTX | Conf: 0.92 (Tech:  9.2 -> 0.92, AI: 0.92)
+      ✅ BIDU | Conf: 0.91 (Tech:  9.1 -> 0.91, AI: 0.91)
+   👉 Analyzing condor_targets...
+      ✅ STWD | Conf: 0.68 (Tech: 10.3 -> 0.68, AI: 0.68)
+      ✅ CYTK | Conf: 0.68 (Tech: 10.2 -> 0.68, AI: 0.68)
+      ✅ YINN | Conf: 0.67 (Tech: 10.0 -> 0.67, AI: 0.67)
+      ✅ AR   | Conf: 0.66 (Tech:  9.9 -> 0.66, AI: 0.66)
+      ✅ USMV | Conf: 0.66 (Tech:  9.8 -> 0.66, AI: 0.66)
+      ✅ GNTX | Conf: 0.60 (Tech:  8.9 -> 0.60, AI: 0.60)
+      ✅ ALC  | Conf: 0.59 (Tech:  8.9 -> 0.59, AI: 0.59)
+      ✅ CRWV | Conf: 0.54 (Tech:  8.2 -> 0.54, AI: 0.54)
+      ✅ RRC  | Conf: 0.51 (Tech:  7.6 -> 0.51, AI: 0.51)
+      ❌ BIRK | Conf: 0.49 (Tech:  7.4 -> 0.49, AI: 0.49)
+   👉 Analyzing short_targets...
+      ✅ GDDY | Conf: 0.65 (Tech: 65.1 -> 0.65, AI: 0.65)
+      ✅ MNDY | Conf: 0.64 (Tech: 64.4 -> 0.64, AI: 0.64)
+      ✅ DOCS | Conf: 0.62 (Tech: 62.1 -> 0.62, AI: 0.62)
+      ✅ ROP  | Conf: 0.61 (Tech: 61.5 -> 0.61, AI: 0.61)
+      ✅ BR   | Conf: 0.58 (Tech: 58.2 -> 0.58, AI: 0.58)
+      ✅ FIS  | Conf: 0.56 (Tech: 56.0 -> 0.56, AI: 0.56)
+      ✅ INTU | Conf: 0.56 (Tech: 55.5 -> 0.56, AI: 0.56)
+      ✅ INTA | Conf: 0.54 (Tech: 54.2 -> 0.54, AI: 0.54)
+      ✅ FLUT | Conf: 0.54 (Tech: 53.8 -> 0.54, AI: 0.54)
+      ✅ HRB  | Conf: 0.54 (Tech: 53.7 -> 0.54, AI: 0.54)
+
+📊 SCOUT SUMMARY:
+   Analyzed: 50
+   Approved: 49 (98%)
+   Avg Confidence: 0.67
+
+3. Saving Results...
+
+4. Beaming active_targets.json to Beelink...
+   ✅ Transfer Complete (Attempt 1).
+[Wed 02/18/2026  8:00:12.75] 🏁 MISSION COMPLETE. 
+========================================================== 
+========================================================== 
+[Wed 02/18/2026  8:30:01.62] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Wed 02/18/2026  8:30:01.63] Phase 1: Launching Market Scanner... 
+--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---
+1. Fetching asset list from Alpaca...
+   -> Found 4848 tradeable assets.
+2. Filtering for Liquidity (Vol > 1.5M)...
+   -> Batch 0/4848: Found 17 candidates...   -> Batch 200/4848: Found 44 candidates...   -> Batch 400/4848: Found 82 candidates...   -> Batch 600/4848: Found 117 candidates...   -> Batch 800/4848: Found 164 candidates...   -> Batch 1000/4848: Found 188 candidates...   -> Batch 1200/4848: Found 213 candidates...   -> Batch 1400/4848: Found 226 candidates...   -> Batch 1600/4848: Found 231 candidates...   -> Batch 1800/4848: Found 241 candidates...   -> Batch 2000/4848: Found 285 candidates...   -> Batch 2200/4848: Found 329 candidates...   -> Batch 2400/4848: Found 375 candidates...   -> Batch 2600/4848: Found 410 candidates...   -> Batch 2800/4848: Found 451 candidates...   -> Batch 3000/4848: Found 482 candidates...   -> Batch 3200/4848: Found 521 candidates...
+6 Failed downloads:
+['EBC', 'EFT', 'EGBN', 'ECVT', 'DXUV', 'ENPH']: TypeError("'NoneType' object is not subscriptable")
+   -> Batch 3400/4848: Found 551 candidates...   -> Batch 3600/4848: Found 584 candidates...   -> Batch 3800/4848: Found 626 candidates...   -> Batch 4000/4848: Found 656 candidates...   -> Batch 4200/4848: Found 684 candidates...   -> Batch 4400/4848: Found 707 candidates...   -> Batch 4600/4848: Found 732 candidates...   -> Batch 4800/4848: Found 746 candidates...
+   -> Final Liquid List: 746 stocks.
+3. Analyzing Technicals (Segregated Lists) for 746 stocks...
+
+4. Checking Earnings Calendar (Safety Guard)...
+
+--- 🎯 DRAGNET RESULTS ---
+{
+    "trend_targets": [
+        {
+            "symbol": "JAAA",
+            "tech_score": 69.77
+        },
+        {
+            "symbol": "BKD",
+            "tech_score": 62.51
+        },
+        {
+            "symbol": "SCHD",
+            "tech_score": 58.91
+        },
+        {
+            "symbol": "TER",
+            "tech_score": 58.8
+        },
+        {
+            "symbol": "CL",
+            "tech_score": 55.1
+        },
+        {
+            "symbol": "CVX",
+            "tech_score": 54.85
+        },
+        {
+            "symbol": "XOM",
+            "tech_score": 53.87
+        },
+        {
+            "symbol": "HON",
+            "tech_score": 52.82
+        },
+        {
+            "symbol": "TXN",
+            "tech_score": 52.46
+        },
+        {
+            "symbol": "MT",
+            "tech_score": 52.21
+        }
+    ],
+    "survivor_targets": [
+        {
+            "symbol": "ILMN",
+            "tech_score": 19.68
+        },
+        {
+            "symbol": "MAGS",
+            "tech_score": 17.86
+        },
+        {
+            "symbol": "GOOG",
+            "tech_score": 17.24
+        },
+        {
+            "symbol": "MDT",
+            "tech_score": 16.88
+        },
+        {
+            "symbol": "GOOGL",
+            "tech_score": 16.57
+        },
+        {
+            "symbol": "XLY",
+            "tech_score": 15.53
+        },
+        {
+            "symbol": "TECH",
+            "tech_score": 15.35
+        },
+        {
+            "symbol": "KRMN",
+            "tech_score": 15.34
+        },
+        {
+            "symbol": "FLNC",
+            "tech_score": 13.85
+        },
+        {
+            "symbol": "W",
+            "tech_score": 13.68
+        }
+    ],
+    "wheel_targets": [
+        {
+            "symbol": "RYAAY",
+            "tech_score": 9.79
+        },
+        {
+            "symbol": "QQQM",
+            "tech_score": 9.39
+        },
+        {
+            "symbol": "IVW",
+            "tech_score": 9.34
+        },
+        {
+            "symbol": "SPYG",
+            "tech_score": 9.13
+        },
+        {
+            "symbol": "SPYI",
+            "tech_score": 8.83
+        },
+        {
+            "symbol": "IE",
+            "tech_score": 8.71
+        },
+        {
+            "symbol": "SYF",
+            "tech_score": 8.66
+        },
+        {
+            "symbol": "ASTS",
+            "tech_score": 8.56
+        },
+        {
+            "symbol": "RKT",
+            "tech_score": 8.41
+        },
+        {
+            "symbol": "AXP",
+            "tech_score": 8.37
+        }
+    ],
+    "condor_targets": [
+        {
+            "symbol": "STWD",
+            "tech_score": 10.21
+        },
+        {
+            "symbol": "AR",
+            "tech_score": 10.14
+        },
+        {
+            "symbol": "CRWV",
+            "tech_score": 8.15
+        },
+        {
+            "symbol": "NKE",
+            "tech_score": 7.9
+        },
+        {
+            "symbol": "NBIS",
+            "tech_score": 7.9
+        },
+        {
+            "symbol": "BN",
+            "tech_score": 7.14
+        },
+        {
+            "symbol": "ZTS",
+            "tech_score": 6.99
+        },
+        {
+            "symbol": "SMCI",
+            "tech_score": 6.8
+        },
+        {
+            "symbol": "CRDO",
+            "tech_score": 6.76
+        },
+        {
+            "symbol": "MTCH",
+            "tech_score": 6.75
+        }
+    ],
+    "short_targets": [
+        {
+            "symbol": "GDDY",
+            "tech_score": 65.2
+        },
+        {
+            "symbol": "DOCS",
+            "tech_score": 63.45
+        },
+        {
+            "symbol": "INTU",
+            "tech_score": 56.46
+        },
+        {
+            "symbol": "FIS",
+            "tech_score": 56.4
+        },
+        {
+            "symbol": "FLUT",
+            "tech_score": 55.5
+        },
+        {
+            "symbol": "INTA",
+            "tech_score": 54.94
+        },
+        {
+            "symbol": "HRB",
+            "tech_score": 54.01
+        },
+        {
+            "symbol": "BRZE",
+            "tech_score": 52.05
+        },
+        {
+            "symbol": "PYPL",
+            "tech_score": 50.68
+        },
+        {
+            "symbol": "HIMS",
+            "tech_score": 50.4
+        }
+    ]
+}
+   ✅ Saved to dragnet_candidates.json
+[Wed 02/18/2026  8:32:25.50] ✅ Scanner Complete. Dragnet file ready. 
+[Wed 02/18/2026  8:32:25.51] Phase 2: Launching Sector Scout... 
+--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---
+✅ Loaded Candidates: 10 Bull, 10 Dip
+
+2. Deep Diving Candidates...
+   👉 Analyzing trend_targets...
+      ✅ JAAA | Conf: 0.70 (Tech: 69.8 -> 0.70, AI: 0.70)
+      ✅ BKD  | Conf: 0.63 (Tech: 62.5 -> 0.63, AI: 0.63)
+      ✅ SCHD | Conf: 0.59 (Tech: 58.9 -> 0.59, AI: 0.59)
+      ✅ TER  | Conf: 0.59 (Tech: 58.8 -> 0.59, AI: 0.59)
+      ✅ CL   | Conf: 0.55 (Tech: 55.1 -> 0.55, AI: 0.55)
+      ✅ CVX  | Conf: 0.55 (Tech: 54.9 -> 0.55, AI: 0.55)
+      ✅ XOM  | Conf: 0.54 (Tech: 53.9 -> 0.54, AI: 0.54)
+      ✅ HON  | Conf: 0.53 (Tech: 52.8 -> 0.53, AI: 0.53)
+      ✅ TXN  | Conf: 0.52 (Tech: 52.5 -> 0.52, AI: 0.52)
+      ✅ MT   | Conf: 0.52 (Tech: 52.2 -> 0.52, AI: 0.52)
+   👉 Analyzing survivor_targets...
+      ✅ ILMN | Conf: 0.66 (Tech: 19.7 -> 0.66, AI: 0.66)
+      ✅ MAGS | Conf: 0.60 (Tech: 17.9 -> 0.60, AI: 0.60)
+      ✅ GOOG | Conf: 0.57 (Tech: 17.2 -> 0.57, AI: 0.57)
+      ✅ MDT  | Conf: 0.56 (Tech: 16.9 -> 0.56, AI: 0.56)
+      ✅ GOOGL | Conf: 0.55 (Tech: 16.6 -> 0.55, AI: 0.55)
+      ✅ XLY  | Conf: 0.52 (Tech: 15.5 -> 0.52, AI: 0.52)
+      ✅ TECH | Conf: 0.51 (Tech: 15.3 -> 0.51, AI: 0.51)
+      ✅ KRMN | Conf: 0.51 (Tech: 15.3 -> 0.51, AI: 0.51)
+      ❌ FLNC | Conf: 0.46 (Tech: 13.8 -> 0.46, AI: 0.46)
+      ❌ W    | Conf: 0.46 (Tech: 13.7 -> 0.46, AI: 0.46)
+   👉 Analyzing wheel_targets...
+      ✅ RYAAY | Conf: 0.98 (Tech:  9.8 -> 0.98, AI: 0.98)
+      ✅ QQQM | Conf: 0.94 (Tech:  9.4 -> 0.94, AI: 0.94)
+      ✅ IVW  | Conf: 0.93 (Tech:  9.3 -> 0.93, AI: 0.93)
+      ✅ SPYG | Conf: 0.91 (Tech:  9.1 -> 0.91, AI: 0.91)
+      ✅ SPYI | Conf: 0.88 (Tech:  8.8 -> 0.88, AI: 0.88)
+      ✅ IE   | Conf: 0.87 (Tech:  8.7 -> 0.87, AI: 0.87)
+      ✅ SYF  | Conf: 0.87 (Tech:  8.7 -> 0.87, AI: 0.87)
+      ✅ ASTS | Conf: 0.86 (Tech:  8.6 -> 0.86, AI: 0.86)
+      ✅ RKT  | Conf: 0.84 (Tech:  8.4 -> 0.84, AI: 0.84)
+      ✅ AXP  | Conf: 0.84 (Tech:  8.4 -> 0.84, AI: 0.84)
+   👉 Analyzing condor_targets...
+      ✅ STWD | Conf: 0.68 (Tech: 10.2 -> 0.68, AI: 0.68)
+      ✅ AR   | Conf: 0.68 (Tech: 10.1 -> 0.68, AI: 0.68)
+      ✅ CRWV | Conf: 0.54 (Tech:  8.2 -> 0.54, AI: 0.54)
+      ✅ NKE  | Conf: 0.53 (Tech:  7.9 -> 0.53, AI: 0.53)
+      ✅ NBIS | Conf: 0.53 (Tech:  7.9 -> 0.53, AI: 0.53)
+      ❌ BN   | Conf: 0.48 (Tech:  7.1 -> 0.48, AI: 0.48)
+      ❌ ZTS  | Conf: 0.47 (Tech:  7.0 -> 0.47, AI: 0.47)
+      ❌ SMCI | Conf: 0.45 (Tech:  6.8 -> 0.45, AI: 0.45)
+      ❌ CRDO | Conf: 0.45 (Tech:  6.8 -> 0.45, AI: 0.45)
+      ❌ MTCH | Conf: 0.45 (Tech:  6.8 -> 0.45, AI: 0.45)
+   👉 Analyzing short_targets...
+      ✅ GDDY | Conf: 0.65 (Tech: 65.2 -> 0.65, AI: 0.65)
+      ✅ DOCS | Conf: 0.63 (Tech: 63.5 -> 0.63, AI: 0.63)
+      ✅ INTU | Conf: 0.56 (Tech: 56.5 -> 0.56, AI: 0.56)
+      ✅ FIS  | Conf: 0.56 (Tech: 56.4 -> 0.56, AI: 0.56)
+      ✅ FLUT | Conf: 0.56 (Tech: 55.5 -> 0.56, AI: 0.56)
+      ✅ INTA | Conf: 0.55 (Tech: 54.9 -> 0.55, AI: 0.55)
+      ✅ HRB  | Conf: 0.54 (Tech: 54.0 -> 0.54, AI: 0.54)
+      ✅ BRZE | Conf: 0.52 (Tech: 52.0 -> 0.52, AI: 0.52)
+      ✅ PYPL | Conf: 0.51 (Tech: 50.7 -> 0.51, AI: 0.51)
+      ✅ HIMS | Conf: 0.50 (Tech: 50.4 -> 0.50, AI: 0.50)
+
+📊 SCOUT SUMMARY:
+   Analyzed: 50
+   Approved: 43 (86%)
+   Avg Confidence: 0.64
+
+3. Saving Results...
+
+4. Beaming active_targets.json to Beelink...
+   ✅ Transfer Complete (Attempt 1).
+[Wed 02/18/2026  8:32:35.19] 🏁 MISSION COMPLETE. 
+========================================================== 

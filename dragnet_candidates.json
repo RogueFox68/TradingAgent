@@ -2,211 +2,211 @@
     "trend_targets": [
         {
             "symbol": "JAAA",
-            "tech_score": 70.17
+            "tech_score": 69.77
         },
         {
-            "symbol": "KMT",
-            "tech_score": 60.9
-        },
-        {
-            "symbol": "TER",
-            "tech_score": 58.28
+            "symbol": "BKD",
+            "tech_score": 62.51
         },
         {
             "symbol": "SCHD",
-            "tech_score": 57.91
+            "tech_score": 58.91
+        },
+        {
+            "symbol": "TER",
+            "tech_score": 58.8
+        },
+        {
+            "symbol": "CL",
+            "tech_score": 55.1
         },
         {
             "symbol": "CVX",
-            "tech_score": 55.97
-        },
-        {
-            "symbol": "IPGP",
-            "tech_score": 55.55
-        },
-        {
-            "symbol": "IMFL",
-            "tech_score": 55.4
+            "tech_score": 54.85
         },
         {
             "symbol": "XOM",
-            "tech_score": 55.27
+            "tech_score": 53.87
         },
         {
-            "symbol": "ALGM",
-            "tech_score": 54.07
+            "symbol": "HON",
+            "tech_score": 52.82
         },
         {
-            "symbol": "EXAS",
-            "tech_score": 53.54
+            "symbol": "TXN",
+            "tech_score": 52.46
+        },
+        {
+            "symbol": "MT",
+            "tech_score": 52.21
         }
     ],
     "survivor_targets": [
         {
-            "symbol": "GOOGL",
-            "tech_score": 19.96
-        },
-        {
             "symbol": "ILMN",
-            "tech_score": 19.65
+            "tech_score": 19.68
         },
         {
             "symbol": "MAGS",
-            "tech_score": 19.63
+            "tech_score": 17.86
         },
         {
             "symbol": "GOOG",
-            "tech_score": 19.58
-        },
-        {
-            "symbol": "CWAN",
-            "tech_score": 18.45
-        },
-        {
-            "symbol": "W",
-            "tech_score": 17.48
-        },
-        {
-            "symbol": "DYN",
-            "tech_score": 17.12
-        },
-        {
-            "symbol": "UBS",
-            "tech_score": 16.58
+            "tech_score": 17.24
         },
         {
             "symbol": "MDT",
-            "tech_score": 16.21
+            "tech_score": 16.88
+        },
+        {
+            "symbol": "GOOGL",
+            "tech_score": 16.57
+        },
+        {
+            "symbol": "XLY",
+            "tech_score": 15.53
+        },
+        {
+            "symbol": "TECH",
+            "tech_score": 15.35
         },
         {
             "symbol": "KRMN",
-            "tech_score": 15.69
+            "tech_score": 15.34
+        },
+        {
+            "symbol": "FLNC",
+            "tech_score": 13.85
+        },
+        {
+            "symbol": "W",
+            "tech_score": 13.68
         }
     ],
     "wheel_targets": [
         {
-            "symbol": "XLC",
-            "tech_score": 9.87
-        },
-        {
-            "symbol": "IVW",
-            "tech_score": 9.82
-        },
-        {
-            "symbol": "SPYG",
-            "tech_score": 9.69
-        },
-        {
-            "symbol": "AXP",
-            "tech_score": 9.5
+            "symbol": "RYAAY",
+            "tech_score": 9.79
         },
         {
             "symbol": "QQQM",
-            "tech_score": 9.5
+            "tech_score": 9.39
         },
         {
-            "symbol": "MS",
-            "tech_score": 9.36
+            "symbol": "IVW",
+            "tech_score": 9.34
         },
         {
-            "symbol": "SGI",
-            "tech_score": 9.32
+            "symbol": "SPYG",
+            "tech_score": 9.13
+        },
+        {
+            "symbol": "SPYI",
+            "tech_score": 8.83
         },
         {
             "symbol": "IE",
-            "tech_score": 9.26
+            "tech_score": 8.71
         },
         {
-            "symbol": "TVTX",
-            "tech_score": 9.23
+            "symbol": "SYF",
+            "tech_score": 8.66
         },
         {
-            "symbol": "BIDU",
-            "tech_score": 9.11
+            "symbol": "ASTS",
+            "tech_score": 8.56
+        },
+        {
+            "symbol": "RKT",
+            "tech_score": 8.41
+        },
+        {
+            "symbol": "AXP",
+            "tech_score": 8.37
         }
     ],
     "condor_targets": [
         {
             "symbol": "STWD",
-            "tech_score": 10.26
-        },
-        {
-            "symbol": "CYTK",
             "tech_score": 10.21
         },
         {
-            "symbol": "YINN",
-            "tech_score": 10.0
-        },
-        {
             "symbol": "AR",
-            "tech_score": 9.95
-        },
-        {
-            "symbol": "USMV",
-            "tech_score": 9.85
-        },
-        {
-            "symbol": "GNTX",
-            "tech_score": 8.94
-        },
-        {
-            "symbol": "ALC",
-            "tech_score": 8.89
+            "tech_score": 10.14
         },
         {
             "symbol": "CRWV",
             "tech_score": 8.15
         },
         {
-            "symbol": "RRC",
-            "tech_score": 7.58
+            "symbol": "NKE",
+            "tech_score": 7.9
         },
         {
-            "symbol": "BIRK",
-            "tech_score": 7.41
+            "symbol": "NBIS",
+            "tech_score": 7.9
+        },
+        {
+            "symbol": "BN",
+            "tech_score": 7.14
+        },
+        {
+            "symbol": "ZTS",
+            "tech_score": 6.99
+        },
+        {
+            "symbol": "SMCI",
+            "tech_score": 6.8
+        },
+        {
+            "symbol": "CRDO",
+            "tech_score": 6.76
+        },
+        {
+            "symbol": "MTCH",
+            "tech_score": 6.75
         }
     ],
     "short_targets": [
         {
             "symbol": "GDDY",
-            "tech_score": 65.07
-        },
-        {
-            "symbol": "MNDY",
-            "tech_score": 64.39
+            "tech_score": 65.2
         },
         {
             "symbol": "DOCS",
-            "tech_score": 62.09
-        },
-        {
-            "symbol": "ROP",
-            "tech_score": 61.45
-        },
-        {
-            "symbol": "BR",
-            "tech_score": 58.16
-        },
-        {
-            "symbol": "FIS",
-            "tech_score": 55.95
+            "tech_score": 63.45
         },
         {
             "symbol": "INTU",
+            "tech_score": 56.46
+        },
+        {
+            "symbol": "FIS",
+            "tech_score": 56.4
+        },
+        {
+            "symbol": "FLUT",
             "tech_score": 55.5
         },
         {
             "symbol": "INTA",
-            "tech_score": 54.21
-        },
-        {
-            "symbol": "FLUT",
-            "tech_score": 53.79
+            "tech_score": 54.94
         },
         {
             "symbol": "HRB",
-            "tech_score": 53.72
+            "tech_score": 54.01
+        },
+        {
+            "symbol": "BRZE",
+            "tech_score": 52.05
+        },
+        {
+            "symbol": "PYPL",
+            "tech_score": 50.68
+        },
+        {
+            "symbol": "HIMS",
+            "tech_score": 50.4
         }
     ]
 }

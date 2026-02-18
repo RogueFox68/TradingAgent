@@ -177,6 +177,10 @@ def get_reddit_sentiment(ticker):
     except Exception as e:
         print(f"   [!] Reddit Error ({ticker}): {e}")
         return None
+    except Exception as e:
+        print(f"   [!] Error in get_tiered_news({ticker}): {e}")
+        return {"tier1": [], "tier2": [], "tier3": []}
+
 def get_tiered_news(ticker):
     """
     Fetches news from Yahoo and organizes into Tiers.
@@ -194,14 +198,47 @@ def get_tiered_news(ticker):
         
         now = time.time()
         
+        if not news:
+            print(f"   [!] No news found for {ticker} from yfinance.")
+            return tiered_news
+
         for n in news:
+            if not n: continue
+            
+            # Handle new vs old structure
+            info = n.get('content', n)
+            if not info: continue
+            
+            # 1. Get Time
+            pub_time = info.get('providerPublishTime', 0)
+            if not pub_time and 'pubDate' in info:
+                try:
+                    # Parse ISO: 2026-02-18T14:43:06Z
+                    dt = datetime.datetime.strptime(info['pubDate'], "%Y-%m-%dT%H:%M:%SZ")
+                    # Convert to epoch
+                    pub_time = dt.replace(tzinfo=datetime.timezone.utc).timestamp()
+                except Exception as e:
+                    pass
+
             # Recency Check (7 days)
-            pub_time = n.get('providerPublishTime', 0)
+            age_hours = (now - pub_time) / 3600
+            
             if (now - pub_time) > (168 * 3600): continue
             
-            publisher = n.get('publisher', '')
-            title = n.get('title', '')
-            link = n.get('link', '')
+            # 2. Get Publisher
+            publisher = info.get('publisher', '')
+            if not publisher:
+                # Safe get for nested provider
+                provider = info.get('provider') or {}
+                publisher = provider.get('displayName', 'Unknown')
+                
+            title = info.get('title', '')
+            link = info.get('link', '')
+            if not link:
+                 # Safe get for nested clickThroughUrl
+                 ctu = info.get('clickThroughUrl') or {}
+                 link = ctu.get('url', '')
+                 
             item = f"- [{publisher}] {title}"
             
             # Bucketing
@@ -214,7 +251,8 @@ def get_tiered_news(ticker):
                 tiered_news['tier3'].append(item)
                 
         return tiered_news
-    except:
+    except Exception as e:
+        print(f"   [!] Error getting news for {ticker}: {e}")
         return {"tier1": [], "tier2": [], "tier3": []}
 
 def validate_llm_response(score, reason, ticker):

@@ -1,229 +1,244 @@
 {
     "condor_targets": [
         {
+            "symbol": "FLEX",
+            "confidence": 0.8,
+            "reason": "Tech Score: 12.07 -> 0.80. Social: 0.75. "
+        },
+        {
             "symbol": "STWD",
-            "confidence": 0.68,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.7,
+            "reason": "Tech Score: 10.21 -> 0.68. Social: 0.85. "
         },
         {
             "symbol": "AR",
-            "confidence": 0.68,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.66,
+            "reason": "Tech Score: 10.14 -> 0.68. Social: 0.55. "
+        },
+        {
+            "symbol": "USMV",
+            "confidence": 0.6,
+            "reason": "Tech Score: 9.68 -> 0.65. Social: 0.15. "
+        },
+        {
+            "symbol": "APH",
+            "confidence": 0.61,
+            "reason": "Tech Score: 9.2 -> 0.61. "
+        },
+        {
+            "symbol": "UDOW",
+            "confidence": 0.61,
+            "reason": "Tech Score: 9.09 -> 0.61. "
         },
         {
             "symbol": "CRWV",
-            "confidence": 0.54,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.6,
+            "reason": "Tech Score: 8.96 -> 0.60. "
         },
         {
-            "symbol": "NKE",
-            "confidence": 0.53,
-            "reason": "No recent news - relying on technical analysis"
+            "symbol": "ABBV",
+            "confidence": 0.6,
+            "reason": "Tech Score: 8.94 -> 0.60. "
         },
         {
-            "symbol": "NBIS",
-            "confidence": 0.53,
-            "reason": "No recent news - relying on technical analysis"
+            "symbol": "ACWI",
+            "confidence": 0.59,
+            "reason": "Tech Score: 8.88 -> 0.59. "
+        },
+        {
+            "symbol": "DFAC",
+            "confidence": 0.58,
+            "reason": "Tech Score: 8.7 -> 0.58. "
         }
     ],
     "wheel_targets": [
         {
-            "symbol": "RYAAY",
-            "confidence": 0.98,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "QQQM",
+            "symbol": "VUG",
             "confidence": 0.94,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 9.94 -> 0.99. Social: 0.45. "
         },
         {
-            "symbol": "IVW",
-            "confidence": 0.93,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "SPYG",
-            "confidence": 0.91,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "SPYI",
-            "confidence": 0.88,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "IE",
-            "confidence": 0.87,
-            "reason": "No recent news - relying on technical analysis"
+            "symbol": "BKLN",
+            "confidence": 0.94,
+            "reason": "Tech Score: 9.78 -> 0.98. Social: 0.60. "
         },
         {
             "symbol": "SYF",
-            "confidence": 0.87,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.94,
+            "reason": "Tech Score: 9.36 -> 0.94. Social: 0.95. "
         },
         {
-            "symbol": "ASTS",
+            "symbol": "QQQI",
+            "confidence": 0.88,
+            "reason": "Tech Score: 9.09 -> 0.91. Social: 0.65. "
+        },
+        {
+            "symbol": "UBS",
+            "confidence": 0.85,
+            "reason": "Tech Score: 9.07 -> 0.91. Social: 0.35. "
+        },
+        {
+            "symbol": "LQDA",
             "confidence": 0.86,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 9.05 -> 0.91. Social: 0.50. "
         },
         {
-            "symbol": "RKT",
-            "confidence": 0.84,
-            "reason": "No recent news - relying on technical analysis"
+            "symbol": "ROL",
+            "confidence": 0.85,
+            "reason": "Tech Score: 8.83 -> 0.88. Social: 0.55. "
         },
         {
-            "symbol": "AXP",
+            "symbol": "SRLN",
+            "confidence": 0.88,
+            "reason": "Tech Score: 8.77 -> 0.88. "
+        },
+        {
+            "symbol": "RYAAY",
             "confidence": 0.84,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 8.28 -> 0.83. Social: 0.90. "
+        },
+        {
+            "symbol": "XLG",
+            "confidence": 0.8,
+            "reason": "Tech Score: 8.0 -> 0.80. Social: 0.80. "
         }
     ],
     "trend_targets": [
         {
             "symbol": "JAAA",
-            "confidence": 0.7,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "BKD",
-            "confidence": 0.63,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.69,
+            "reason": "Tech Score: 69.77 -> 0.70. Social: 0.65. "
         },
         {
             "symbol": "SCHD",
-            "confidence": 0.59,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.56,
+            "reason": "Tech Score: 58.91 -> 0.59. Social: 0.25. "
         },
         {
             "symbol": "TER",
             "confidence": 0.59,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "CL",
-            "confidence": 0.55,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 58.9 -> 0.59. Social: 0.55. "
         },
         {
             "symbol": "CVX",
-            "confidence": 0.55,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.57,
+            "reason": "Tech Score: 54.85 -> 0.55. Social: 0.80. "
+        },
+        {
+            "symbol": "O",
+            "confidence": 0.53,
+            "reason": "Tech Score: 54.07 -> 0.54. Social: 0.40. "
         },
         {
             "symbol": "XOM",
-            "confidence": 0.54,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.58,
+            "reason": "Tech Score: 53.87 -> 0.54. Social: 0.92. "
         },
         {
             "symbol": "HON",
-            "confidence": 0.53,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.55,
+            "reason": "Tech Score: 52.82 -> 0.53. Social: 0.70. "
+        },
+        {
+            "symbol": "EXAS",
+            "confidence": 0.56,
+            "reason": "Tech Score: 52.61 -> 0.53. Social: 0.90. "
         },
         {
             "symbol": "TXN",
-            "confidence": 0.52,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.56,
+            "reason": "Tech Score: 52.46 -> 0.52. Social: 0.85. "
         },
         {
             "symbol": "MT",
-            "confidence": 0.52,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.55,
+            "reason": "Tech Score: 52.23 -> 0.52. Social: 0.75. "
         }
     ],
     "survivor_targets": [
         {
-            "symbol": "ILMN",
-            "confidence": 0.66,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "MAGS",
-            "confidence": 0.6,
-            "reason": "No recent news - relying on technical analysis"
+            "symbol": "GOOGL",
+            "confidence": 0.62,
+            "reason": "Tech Score: 17.83 -> 0.59. Social: 0.85. "
         },
         {
             "symbol": "GOOG",
-            "confidence": 0.57,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.6,
+            "reason": "Tech Score: 17.62 -> 0.59. Social: 0.68. "
         },
         {
             "symbol": "MDT",
-            "confidence": 0.56,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "GOOGL",
             "confidence": 0.55,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 16.59 -> 0.55. Social: 0.55. "
         },
         {
-            "symbol": "XLY",
-            "confidence": 0.52,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "TECH",
+            "symbol": "GMAB",
             "confidence": 0.51,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 16.46 -> 0.55. Social: 0.20. "
         },
         {
-            "symbol": "KRMN",
+            "symbol": "ILMN",
+            "confidence": 0.53,
+            "reason": "Tech Score: 15.9 -> 0.53. Social: 0.55. "
+        },
+        {
+            "symbol": "MAGS",
             "confidence": 0.51,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 14.45 -> 0.48. Social: 0.73. "
         }
     ],
     "short_targets": [
         {
             "symbol": "GDDY",
             "confidence": 0.65,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 65.2 -> 0.65. "
+        },
+        {
+            "symbol": "MNDY",
+            "confidence": 0.65,
+            "reason": "Tech Score: 65.14 -> 0.65. "
         },
         {
             "symbol": "DOCS",
             "confidence": 0.63,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 63.45 -> 0.63. "
         },
         {
             "symbol": "INTU",
             "confidence": 0.56,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 56.46 -> 0.56. "
         },
         {
             "symbol": "FIS",
             "confidence": 0.56,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 56.04 -> 0.56. "
         },
         {
             "symbol": "FLUT",
-            "confidence": 0.56,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.55,
+            "reason": "Tech Score: 55.08 -> 0.55. "
         },
         {
             "symbol": "INTA",
             "confidence": 0.55,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 54.94 -> 0.55. "
+        },
+        {
+            "symbol": "WDAY",
+            "confidence": 0.57,
+            "reason": "Tech Score: 54.2 -> 0.54. Social: 0.85. "
         },
         {
             "symbol": "HRB",
-            "confidence": 0.54,
-            "reason": "No recent news - relying on technical analysis"
+            "confidence": 0.53,
+            "reason": "Tech Score: 54.01 -> 0.54. Social: 0.40. "
         },
         {
             "symbol": "BRZE",
-            "confidence": 0.52,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "PYPL",
             "confidence": 0.51,
-            "reason": "No recent news - relying on technical analysis"
-        },
-        {
-            "symbol": "HIMS",
-            "confidence": 0.5,
-            "reason": "No recent news - relying on technical analysis"
+            "reason": "Tech Score: 52.05 -> 0.52. Social: 0.45. "
         }
     ],
-    "updated": "2026-02-18 08:32:26.007704",
+    "updated": "2026-02-18 09:11:55.183134",
     "status": "success"
 }

@@ -8,7 +8,6 @@ import yfinance as yf
 import subprocess
 import sys
 import config
-from psaw import PushshiftAPI
 
 # Force UTF-8 Output for Windows Console
 import builtins
@@ -40,8 +39,8 @@ BEELINK_USER = "trader"
 BEELINK_PATH = "~/bots/repo/active_targets.json"
 WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER') 
 
-# --- REDDIT API ---
-reddit_api = PushshiftAPI()
+# --- REDDIT CONFIG ---
+REDDIT_SUBS = ["wallstreetbets", "stocks", "investing", "options", "thetagang"]
 last_reddit_call = 0 
 
 # --- CORE BACKUP (Unchanged) ---
@@ -92,61 +91,92 @@ ALL_TRUSTED_SOURCES = set(TIER_1_ELITE + TIER_2_MAINSTREAM + TIER_3_SPECIALTY + 
 
 def get_reddit_sentiment(ticker):
     """
-    Scrapes recent Reddit posts using Pushshift.
+    Scrapes recent Reddit posts using Reddit's public JSON API.
     Returns a summary string or None.
+    NO AUTH REQUIRED (Rate Limited).
     """
     global last_reddit_call
     
-    # Rate Limit (1s)
-    elapsed = time.time() - last_reddit_call
-    if elapsed < 1.0:
-        time.sleep(1.0 - elapsed)
-    last_reddit_call = time.time()
+    mentions = []
+    
+    # We must treat the ticker carefully. $TICKER is safer.
+    query = f"${ticker}"
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
 
     try:
-        # 7-day lookback
-        after = int((datetime.datetime.now() - datetime.timedelta(days=7)).timestamp())
-        
-        # Strict Query: $TICKER to avoid generic word matches (e.g. $PUMP vs PUMP)
-        query = f"${ticker}"
-        
-        # Search relevant subreddits
-        submissions = reddit_api.search_submissions(
-            q=query,
-            subreddit="wallstreetbets,stocks,investing,options,thetagang,pennystocks",
-            after=after,
-            limit=50
-        )
-        
-        mentions = []
-        for post in submissions:
-            # Filter low quality / spam
-            if post.score < 5: continue 
-            # Note: Pushshift might not always have up-to-date scores/karma, but we try.
+        # Scan Top Subreddits (limit to 3 most relevant to save time/requests)
+        for sub in ["wallstreetbets", "stocks", "investing"]:
             
-            mentions.append({
-                "title": post.title,
-                "score": post.score,
-                "sub": post.subreddit,
-                "url": post.full_link
-            })
+            # Rate Limit (1.5s per request to be safe)
+            elapsed = time.time() - last_reddit_call
+            if elapsed < 1.5:
+                time.sleep(1.5 - elapsed)
+            last_reddit_call = time.time()
+            
+            url = f"https://www.reddit.com/r/{sub}/search.json"
+            params = {
+                "q": query,
+                "restrict_sr": 1,
+                "sort": "new",
+                "limit": 10
+            }
+            
+            try:
+                resp = requests.get(url, headers=headers, params=params, timeout=10)
+                
+                if resp.status_code == 429:
+                    print(f"   [!] Reddit Rate Limit. Skipping {sub}...")
+                    continue
+                if resp.status_code != 200:
+                    continue
+                    
+                data = resp.json()
+                children = data.get("data", {}).get("children", [])
+                
+                for post in children:
+                    p_data = post.get("data", {})
+                    title = p_data.get("title", "")
+                    score = p_data.get("score", 0)
+                    url_link = p_data.get("permalink", "")
+                    
+                    # Score Filter (Noise Reduction)
+                    if score < 5: continue
+                    
+                    mentions.append({
+                        "title": title,
+                        "score": score,
+                        "sub": sub,
+                        "url": f"https://reddit.com{url_link}"
+                    })
+            except Exception:
+                continue # Skip sub on error
             
         if not mentions: return None
         
-        # Sort by engagement (Score)
+        # Sort by Score
         mentions.sort(key=lambda x: x['score'], reverse=True)
         
-        # Take Top 3
+        # Take Top 3 Uniques
+        seen_titles = set()
         summary_lines = []
-        for m in mentions[:3]:
+        count = 0
+        
+        for m in mentions:
+            if m['title'] in seen_titles: continue
+            seen_titles.add(m['title'])
+            
             summary_lines.append(f"- [r/{m['sub']}] {m['title']} ({m['score']} pts)")
+            count += 1
+            if count >= 3: break
             
         return "\n".join(summary_lines)
 
     except Exception as e:
         print(f"   [!] Reddit Error ({ticker}): {e}")
         return None
-
 def get_tiered_news(ticker):
     """
     Fetches news from Yahoo and organizes into Tiers.

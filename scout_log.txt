@@ -17331,3 +17331,45 @@ HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","desc
    ✅ Transfer Complete (Attempt 1).
 [Wed 02/18/2026  8:32:35.19] 🏁 MISSION COMPLETE. 
 ========================================================== 
+========================================================== 
+[Wed 02/18/2026  9:00:02.13] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed) 
+[Wed 02/18/2026  9:00:02.14] Phase 1: Launching Market Scanner... 
+--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---
+1. Fetching asset list from Alpaca...
+   [!] Alpaca Error: HTTPSConnectionPool(host='paper-api.alpaca.markets', port=443): Read timed out. (read timeout=None)
+2. Filtering for Liquidity (Vol > 1.5M)...
+
+   -> Final Liquid List: 0 stocks.
+3. Analyzing Technicals (Segregated Lists) for 0 stocks...
+
+4. Checking Earnings Calendar (Safety Guard)...
+
+--- 🎯 DRAGNET RESULTS ---
+{
+    "trend_targets": [],
+    "survivor_targets": [],
+    "wheel_targets": [],
+    "condor_targets": [],
+    "short_targets": []
+}
+   ✅ Saved to dragnet_candidates.json
+[Wed 02/18/2026  9:00:22.27] ✅ Scanner Complete. Dragnet file ready. 
+[Wed 02/18/2026  9:00:22.28] Phase 2: Launching Sector Scout... 
+C:\Users\rogue\AppData\Local\Programs\Python\Python311\Lib\site-packages\psaw\PushshiftAPI.py:192: UserWarning: Got non 200 code 404
+  warnings.warn("Got non 200 code %s" % response.status_code)
+C:\Users\rogue\AppData\Local\Programs\Python\Python311\Lib\site-packages\psaw\PushshiftAPI.py:180: UserWarning: Unable to connect to pushshift.io. Retrying after backoff.
+  warnings.warn("Unable to connect to pushshift.io. Retrying after backoff.")
+Traceback (most recent call last):
+  File "C:\Trading System\TradingAgent\sector_scout_3.py", line 44, in <module>
+    REDDIT_SUBS = ["wallstreetbets", "stocks", "investing", "options", "thetagang"]
+                 ^^^^^^^^^^^^^^
+  File "C:\Users\rogue\AppData\Local\Programs\Python\Python311\Lib\site-packages\psaw\PushshiftAPI.py", line 326, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\rogue\AppData\Local\Programs\Python\Python311\Lib\site-packages\psaw\PushshiftAPI.py", line 94, in __init__
+    response = self._get(self.base_url.format(endpoint='meta'))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rogue\AppData\Local\Programs\Python\Python311\Lib\site-packages\psaw\PushshiftAPI.py", line 194, in _get
+    raise Exception("Unable to connect to pushshift.io. Max retries exceeded.")
+Exception: Unable to connect to pushshift.io. Max retries exceeded.
+[Wed 02/18/2026  9:06:47.83] 🏁 MISSION COMPLETE. 
+========================================================== 

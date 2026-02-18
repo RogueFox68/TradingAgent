@@ -94,18 +94,23 @@ class TechnicalMath:
 def get_market_universe(client):
     print("--- 🕸️ DEPLOYING DRAGNET (Universe Scan) ---")
     print("1. Fetching asset list from Alpaca...")
-    try:
-        req = GetAssetsRequest(status=AssetStatus.ACTIVE, asset_class=AssetClass.US_EQUITY)
-        assets = client.get_all_assets(req)
-        clean_list = [
-            a.symbol for a in assets 
-            if a.tradable and a.marginable and a.shortable and "." not in a.symbol
-        ]
-        print(f"   -> Found {len(clean_list)} tradeable assets.")
-        return clean_list
-    except Exception as e:
-        print(f"   [!] Alpaca Error: {e}")
-        return []
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            req = GetAssetsRequest(status=AssetStatus.ACTIVE, asset_class=AssetClass.US_EQUITY)
+            assets = client.get_all_assets(req)
+            clean_list = [
+                a.symbol for a in assets 
+                if a.tradable and a.marginable and a.shortable and "." not in a.symbol
+            ]
+            print(f"   -> Found {len(clean_list)} tradeable assets.")
+            return clean_list
+        except Exception as e:
+            print(f"   [!] Alpaca Error (Attempt {attempt+1}/{max_retries}): {e}")
+            time.sleep(2 * (attempt + 1))
+    
+    print("   [!] Failed to fetch assets after retries.")
+    return []
 
 def filter_by_volume(tickers, chunk_size=200):
     print(f"2. Filtering for Liquidity (Vol > {MIN_VOLUME/1_000_000:.1f}M)...")

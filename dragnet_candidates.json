@@ -5,12 +5,12 @@
             "tech_score": 69.77
         },
         {
-            "symbol": "SCHD",
-            "tech_score": 58.91
+            "symbol": "TER",
+            "tech_score": 58.94
         },
         {
-            "symbol": "TER",
-            "tech_score": 58.9
+            "symbol": "SCHD",
+            "tech_score": 58.91
         },
         {
             "symbol": "CVX",
@@ -22,7 +22,7 @@
         },
         {
             "symbol": "XOM",
-            "tech_score": 53.87
+            "tech_score": 53.88
         },
         {
             "symbol": "HON",
@@ -44,85 +44,85 @@
     "survivor_targets": [
         {
             "symbol": "GOOGL",
-            "tech_score": 17.83
+            "tech_score": 18.39
         },
         {
             "symbol": "GOOG",
-            "tech_score": 17.62
-        },
-        {
-            "symbol": "MDT",
-            "tech_score": 16.59
+            "tech_score": 18.38
         },
         {
             "symbol": "GMAB",
-            "tech_score": 16.46
+            "tech_score": 16.16
+        },
+        {
+            "symbol": "MDT",
+            "tech_score": 15.88
         },
         {
             "symbol": "ILMN",
-            "tech_score": 15.9
+            "tech_score": 15.82
         },
         {
             "symbol": "MAGS",
-            "tech_score": 14.45
+            "tech_score": 14.15
         },
         {
             "symbol": "FLNC",
-            "tech_score": 12.94
+            "tech_score": 13.07
         },
         {
             "symbol": "TECH",
-            "tech_score": 12.43
+            "tech_score": 12.23
         },
         {
             "symbol": "KRMN",
-            "tech_score": 12.13
+            "tech_score": 11.44
         },
         {
             "symbol": "AMD",
-            "tech_score": 11.78
+            "tech_score": 11.17
         }
     ],
     "wheel_targets": [
         {
-            "symbol": "VUG",
-            "tech_score": 9.94
+            "symbol": "LQDA",
+            "tech_score": 9.98
         },
         {
             "symbol": "BKLN",
             "tech_score": 9.78
         },
         {
-            "symbol": "SYF",
-            "tech_score": 9.36
+            "symbol": "AMTM",
+            "tech_score": 9.77
         },
         {
-            "symbol": "QQQI",
-            "tech_score": 9.09
+            "symbol": "SYF",
+            "tech_score": 9.75
         },
         {
             "symbol": "UBS",
-            "tech_score": 9.07
+            "tech_score": 9.34
         },
         {
-            "symbol": "LQDA",
-            "tech_score": 9.05
+            "symbol": "VUG",
+            "tech_score": 9.33
         },
         {
             "symbol": "ROL",
-            "tech_score": 8.83
+            "tech_score": 8.63
         },
         {
-            "symbol": "SRLN",
-            "tech_score": 8.77
+            "symbol": "QQQI",
+            "tech_score": 8.47
         },
         {
             "symbol": "RYAAY",
-            "tech_score": 8.28
+            "tech_score": 8.17
         },
         {
-            "symbol": "XLG",
-            "tech_score": 8.0
+            "symbol": "XLC",
+            "tech_score": 7.89
         }
     ],
     "condor_targets": [
@@ -132,7 +132,7 @@
         },
         {
             "symbol": "STWD",
-            "tech_score": 10.21
+            "tech_score": 10.28
         },
         {
             "symbol": "AR",
@@ -147,24 +147,24 @@
             "tech_score": 9.2
         },
         {
+            "symbol": "GNTX",
+            "tech_score": 9.08
+        },
+        {
+            "symbol": "ABBV",
+            "tech_score": 9.02
+        },
+        {
             "symbol": "UDOW",
-            "tech_score": 9.09
+            "tech_score": 9.0
         },
         {
             "symbol": "CRWV",
             "tech_score": 8.96
         },
         {
-            "symbol": "ABBV",
-            "tech_score": 8.94
-        },
-        {
             "symbol": "ACWI",
-            "tech_score": 8.88
-        },
-        {
-            "symbol": "DFAC",
-            "tech_score": 8.7
+            "tech_score": 8.81
         }
     ],
     "short_targets": [
@@ -174,7 +174,7 @@
         },
         {
             "symbol": "MNDY",
-            "tech_score": 65.14
+            "tech_score": 65.1
         },
         {
             "symbol": "DOCS",

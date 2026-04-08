@@ -1,0 +1,11 @@
+[Unit]
+Description=Sector Scout AI Trading Pipeline
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=trader
+WorkingDirectory=/home/trader/trading_desk/TradingAgent
+# Crucial: Notice we dropped the '-it' flags here so it runs headlessly!
+ExecStart=/usr/bin/docker exec sector_scout_bot ./run_scout.sh

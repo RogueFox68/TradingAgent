@@ -315,7 +315,7 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
         payload = {
             "model": MODEL_NAME, "prompt": system_prompt, "stream": False, "format": "json" 
         }
-        response = requests.post(OLLAMA_URL, json=payload, timeout=30)
+        response = requests.post(OLLAMA_URL, json=payload, timeout=300)
         response_json = response.json()
         
         raw_text = response_json['response']

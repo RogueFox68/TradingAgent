@@ -31,7 +31,7 @@ print = safe_print
 
 # --- CONFIGURATION ---
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.1"
+MODEL_NAME = "llama3.3:70b"
 INPUT_FILE = "dragnet_candidates.json"
 OUTPUT_FILE = "active_targets.json"
 BEELINK_IP = "192.168.5.87"

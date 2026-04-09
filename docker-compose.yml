@@ -7,14 +7,15 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - .:/app  # Live mounts your code so you can edit scripts without rebuilding
-      - ~/.ssh:/root/.ssh:ro # Mounts your host SSH keys so SCP to Beelink works
+      - .:/app
+      - ~/.ssh:/root/.ssh:ro
+    depends_on:
+      - ollama-rocm
 
   ollama-rocm:
     image: ollama/ollama:rocm
     container_name: ollama_backend
     network_mode: "host"
-    # Pass the APU into the Ollama container
     devices:
       - /dev/kfd:/dev/kfd
       - /dev/dri:/dev/dri
@@ -24,6 +25,20 @@ services:
       - HSA_OVERRIDE_GFX_VERSION=11.0.0
     volumes:
       - ollama_models:/root/.ollama
+    restart: unless-stopped
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    network_mode: "host"
+    environment:
+      - OLLAMA_BASE_URL=http://localhost:11434
+    volumes:
+      - open-webui:/app/backend/data
+    depends_on:
+      - ollama-rocm
+    restart: unless-stopped
 
 volumes:
   ollama_models:
+  open-webui:

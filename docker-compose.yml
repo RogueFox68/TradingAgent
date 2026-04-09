@@ -1,0 +1,29 @@
+# docker-compose.yml
+services:
+  sector-scout:
+    build: .
+    container_name: sector_scout_bot
+    network_mode: "host"
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - .:/app  # Live mounts your code so you can edit scripts without rebuilding
+      - ~/.ssh:/root/.ssh:ro # Mounts your host SSH keys so SCP to Beelink works
+
+  ollama-rocm:
+    image: ollama/ollama:rocm
+    container_name: ollama_backend
+    network_mode: "host"
+    # Pass the APU into the Ollama container
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=11.0.0
+    volumes:
+      - ollama_models:/root/.ollama
+
+volumes:
+  ollama_models:

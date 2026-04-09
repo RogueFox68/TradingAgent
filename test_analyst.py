@@ -4,7 +4,7 @@ import yfinance as yf
 
 # --- CONFIGURATION ---
 SYMBOL = "TSLA"
-MODEL = "llama3.1"
+MODEL = "gemma4:31b"
 
 def get_market_data(ticker):
     print(f"1. Fetching Price for {ticker}...")

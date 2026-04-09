@@ -31,7 +31,7 @@ print = safe_print
 
 # --- CONFIGURATION ---
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "gemma4:31b"
+MODEL_NAME = "gemma4-scout"
 INPUT_FILE = "dragnet_candidates.json"
 OUTPUT_FILE = "active_targets.json"
 BEELINK_IP = "192.168.5.87"

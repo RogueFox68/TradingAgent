@@ -21,8 +21,7 @@ services:
       - /dev/dri:/dev/dri
     group_add:
       - video
-    environment:
-      - HSA_OVERRIDE_GFX_VERSION=11.0.0
+    environment: []
     volumes:
       - ollama_models:/root/.ollama
     restart: unless-stopped
@@ -35,6 +34,7 @@ services:
       - OLLAMA_BASE_URL=http://localhost:11434
     volumes:
       - open-webui:/app/backend/data
+      - ~/trading_desk:/workspace:ro
     depends_on:
       - ollama-rocm
     restart: unless-stopped

@@ -30,8 +30,8 @@ def safe_print(*args, **kwargs):
 print = safe_print
 
 # --- CONFIGURATION ---
-OLLAMA_URL = "http://localhost:8081/v1/chat/completions"
-MODEL_NAME = "gemma-3-27b"
+OLLAMA_URL = "http://localhost:1234/v1/chat/completions"
+MODEL_NAME = "google/gemma-4-26b-a4b"
 INPUT_FILE = "dragnet_candidates.json"
 OUTPUT_FILE = "active_targets.json"
 BEELINK_IP = "192.168.5.87"
@@ -312,7 +312,7 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
     )
 
     try:
-payload = {
+        payload = {
             "model": MODEL_NAME,
             "messages": [{"role": "user", "content": system_prompt}],
             "max_tokens": 512,

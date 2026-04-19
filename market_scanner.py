@@ -6,6 +6,7 @@ import numpy as np
 import yfinance as yf
 import os
 import sys
+import config
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import GetAssetsRequest
 from alpaca.trading.enums import AssetClass, AssetStatus
@@ -15,7 +16,6 @@ MIN_VOLUME = 2_000_000   # Increased liquidity floor
 MIN_PRICE = 15.00        
 MAX_PRICE = 1000.00
 OUTPUT_FILE = "dragnet_candidates.json"
-KEYS_FILE = "keys.json"
 BENCHMARK_TICKER = "SPY"
 
 # Institutional Seed List: Ensures we analyze the "Leaders" first
@@ -44,11 +44,9 @@ def is_mission_time():
 # --- AUTHENTICATION ---
 def get_alpaca_client():
     try:
-        with open(KEYS_FILE, 'r') as f:
-            keys = json.load(f)
-        return TradingClient(keys['APCA_API_KEY_ID'], keys['APCA_API_SECRET_KEY'], paper=True)
+        return TradingClient(config.API_KEY, config.SECRET_KEY, paper=config.PAPER)
     except Exception as e:
-        print(f"[!] Error loading keys.json: {e}")
+        print(f"[!] Error loading Alpaca client from config: {e}")
         return None
 
 # --- NATIVE MATH ENGINE ---

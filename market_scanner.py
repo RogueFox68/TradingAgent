@@ -157,6 +157,8 @@ def analyze_technicals(tickers):
     # Download Benchmark (SPY) for Relative Strength calculations
     try:
         spy_data = yf.download(BENCHMARK_TICKER, period="2y", interval="1d", progress=False)['Close']
+        if isinstance(spy_data, pd.DataFrame):
+            spy_data = spy_data.squeeze()
     except Exception as e:
         print(f"[!] Benchmark Error: {e}. RS Filtering disabled.")
         spy_data = None
@@ -180,6 +182,9 @@ def analyze_technicals(tickers):
                 
                 # Core Math
                 close = df['Close']
+                if isinstance(close, pd.DataFrame):
+                    close = close.squeeze()
+                
                 rsi = TechnicalMath.get_rsi(close)
                 adx = TechnicalMath.get_adx(df['High'], df['Low'], close)
                 sma200 = TechnicalMath.get_sma(close, 200)

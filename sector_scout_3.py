@@ -315,7 +315,7 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
         payload = {
             "model": MODEL_NAME,
             "messages": [{"role": "user", "content": system_prompt}],
-            "max_tokens": 512,
+            "max_tokens": 2048,
             "temperature": 0.1
         }
         response = requests.post(OLLAMA_URL, json=payload, timeout=300)

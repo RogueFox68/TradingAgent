@@ -144,8 +144,11 @@ def filter_by_volume(tickers):
                     curr_price = float(data['Close'].iloc[-1])
                     if avg_vol > MIN_VOLUME and MIN_PRICE < curr_price < MAX_PRICE:
                         liquid_tickers.append(sym)
-                except: continue
-        except: pass
+                except Exception as e:
+                    print(f"Warning skipping liquid {sym}: {e}")
+                    continue
+        except Exception as e:
+            print(f"Warning fetch liquid error: {e}")
     print(f"   -> Final Liquid List: {len(liquid_tickers)} stocks.")
     return liquid_tickers
 
@@ -219,12 +222,8 @@ def analyze_technicals(tickers):
                 elif curr_price > sma200.iloc[-1] and 40 <= curr_rsi <= 55 and curr_adx < 25:
                     candidates.append({"symbol": sym, "type": "wheel_targets", "score": (50 - curr_rsi)})
                 
-                # 4. CONDOR TARGETS (The Chop/Sideways Setup)
-                elif curr_adx < 20 and 40 < curr_rsi < 60:
-                    candidates.append({"symbol": sym, "type": "condor_targets", "score": (20 - curr_adx)})
-                
-                # 5. SHORT TARGETS (The Breakdown)
-                elif curr_price < sma200.iloc[-1] and curr_adx > 25:
+                # 4. SHORT TARGETS (The Breakdown)
+                elif curr_price < sma200.iloc[-1]:
                     candidates.append({"symbol": sym, "type": "short_targets", "score": curr_adx})
 
             except: continue
@@ -277,7 +276,7 @@ def run_dragnet():
     
     final_output = {
         "trend_targets": [], "survivor_targets": [],
-        "wheel_targets": [], "condor_targets": [], "short_targets": []
+        "wheel_targets": [], "short_targets": []
     }
     
     results.sort(key=lambda x: x['score'], reverse=True)

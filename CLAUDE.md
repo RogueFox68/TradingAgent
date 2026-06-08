@@ -9,7 +9,7 @@
 
 TradingAgent is an automated stock scanning and AI analysis system. It scans the US equity
 market via the Alpaca API, filters candidates using technical indicators (RSI, ADX, SMA), then
-scores them with a **local Ollama LLM (Llama 3.3 70B)** for multi-source sentiment analysis.
+scores them with a **local LM Studio LLM (Gemma 4 21B MoE)** for multi-source sentiment analysis.
 
 The output is a JSON payload (`active_targets.json`) that gets SCP'd to the Beelink execution
 node where the trading bot fleet consumes it.
@@ -24,17 +24,16 @@ Stocks are categorized into 5 trading strategies:
 ## Platform History
 
 This repo originated on a **Windows desktop (MSI Aegis / RTX 5080)** running Llama 3.1 8B via
-Ollama, scheduled through Windows Task Scheduler every 30 minutes. In April 2026, the entire
-sector scout pipeline was **migrated to the Corsair AI Workstation** for three reasons:
+Ollama, scheduled through Windows Task Scheduler every 30 minutes. The entire
+sector scout pipeline was **migrated to the Corsair AI Workstation** and now runs **Gemma 4 21B MoE** via **LM Studio**.
 
-1. **Model upgrade:** 70B parameters vs 8B — dramatically better analysis quality
+1. **Model upgrade:** 21B MoE provides fast inference with near-dense-model quality.
 2. **GPU freedom:** The RTX 5080 is now dedicated to ComfyUI/creative AI work without
-   scheduling conflicts
-3. **Frequency reduction:** From every 30 minutes (mostly redundant) to 3x daily, eliminating
-   ~80% of inference cycles with negligible signal loss
+   scheduling conflicts.
+3. **Frequency reduction:** Runs 3x daily, eliminating
+   ~80% of inference cycles with negligible signal loss.
 
-The Windows-era files (`run_scout.bat`, Task Scheduler references) remain in the repo for
-historical context but are no longer used. The active execution path is Dockerized on Corsair.
+The pipeline runs entirely natively on Windows via Task Scheduler. (A previous brief excursion to Ubuntu/Docker/ROCm was abandoned in favor of Windows stability).
 
 ## Project Structure
 
@@ -47,26 +46,18 @@ TradingAgent/
 ├── test_analyst.py              # Manual single-ticker test script
 ├── test_parser_logic.py         # Unit tests for LLM JSON response parsing
 ├── requirements.txt             # Python dependencies
-├── Dockerfile                   # Python 3.11 container for sector_scout_bot
-├── docker-compose.yml           # Orchestrates ollama_backend + sector_scout_bot
-├── run_scout.sh                 # Entrypoint script for the Docker container
-│
-├── (Legacy - Windows era)
-│   └── run_scout.bat            # Windows Task Scheduler automation (no longer used)
+├── run_scout.bat                # Windows Task Scheduler automation
 │
 ├── (Gitignored - Runtime state)
 │   ├── keys.json                # Alpaca API credentials
 │   ├── active_targets.json      # Generated output — current trading targets
 │   ├── dragnet_candidates.json  # Generated output — scanned candidates
 │   └── scout_log.txt            # Execution log
-│
-└── (Gitignored - Systemd)
-    └── systemd/                 # Timer and service unit files for scheduling
 ```
 
 ## How It Runs (Corsair)
 
-The pipeline is fully autonomous, triggered by **systemd timers** on the Corsair host:
+The pipeline is fully autonomous, triggered by **Windows Task Scheduler** on the Corsair host:
 
 **Schedule:** Monday–Friday, 3x daily (Central Time):
 - `08:30` — Market open scan
@@ -75,10 +66,10 @@ The pipeline is fully autonomous, triggered by **systemd timers** on the Corsair
 
 **Mechanism:**
 ```
-systemd timer → systemd service → docker exec -it sector_scout_bot ./run_scout.sh
+Task Scheduler → run_scout.bat
 ```
 
-`run_scout.sh` runs Phase 1 (market_scanner.py) then Phase 2 (sector_scout_3.py) sequentially.
+`run_scout.bat` runs Phase 1 (market_scanner.py) then Phase 2 (sector_scout_3.py) sequentially.
 
 ### Phase 1: Market Scanner (`market_scanner.py`)
 
@@ -99,9 +90,9 @@ For each candidate from Phase 1:
    - Tier 3: Additional context
    - Social: Reddit/social sentiment
 
-2. **Scores via Llama 3.3 70B** — each source gets its own LLM call with a role-specific
+2. **Scores via Gemma 4 21B MoE** — each source gets its own LLM call with a role-specific
    system prompt (hedge fund analyst for trend, value investor for survivor, options income
-   trader for wheel/condor, short seller for shorts)
+   trader for wheel, short seller for shorts)
 
 3. **Calculates composite confidence:**
    ```
@@ -118,25 +109,13 @@ For each candidate from Phase 1:
    - 3 retry attempts with 5-second backoff
    - Discord webhook alert on transfer failure
 
-## Container Topology (Corsair)
-
-Two Docker containers, defined in `docker-compose.yml`:
-
-| Container | Purpose | Key Config |
-|-----------|---------|------------|
-| `ollama_backend` | Llama 3.3 70B inference | `HSA_OVERRIDE_GFX_VERSION=11.0.0` for AMD ROCm, port 11434 |
-| `sector_scout_bot` | Python 3.11 runner | Volume mount `~/trading_desk/TradingAgent/:/app` for live code updates |
-
-The volume mount means code changes on the Corsair host are immediately reflected inside the
-container — no rebuild needed for script edits.
-
 ## Tech Stack
 
 - **Language:** Python 3.11
-- **LLM:** Llama 3.3 70B via Ollama (Dockerized, AMD ROCm, ~80GB VRAM during inference)
+- **LLM:** Gemma 4 21B MoE via LM Studio (Native Windows)
 - **Secondary models available:** `qwen2.5-coder` (local dev/scripting on Corsair)
 - **Key dependencies:** yfinance, pandas, numpy, alpaca-py, requests, GoogleNews
-- **Scheduling:** systemd timers (Linux)
+- **Scheduling:** Windows Task Scheduler
 - **Transfer:** SCP to Beelink execution node
 - **Alerts:** Discord webhooks for failures
 
@@ -145,8 +124,8 @@ container — no rebuild needed for script edits.
 Key parameters are in the Python files:
 - `MIN_VOLUME`: 1,500,000 (liquidity filter)
 - `MIN_PRICE` / `MAX_PRICE`: $15 – $500
-- `OLLAMA_URL`: `http://ollama_backend:11434/api/generate` (container-to-container)
-- `MODEL_NAME`: `llama3.3` (was `llama3.1` on Windows)
+- `LM_STUDIO_URL`: `http://localhost:1234/v1/chat/completions`
+- `MODEL_NAME`: `gemma4-21b`
 - `BEELINK_USER` / `BEELINK_IP` / `BEELINK_PATH`: SCP transfer target
 
 API credentials loaded from `keys.json` (gitignored).
@@ -167,8 +146,7 @@ API credentials loaded from `keys.json` (gitignored).
 
 Strict separation of state and code:
 
-- **Tracked:** `sector_scout_3.py`, `market_scanner.py`, `test_*.py`, `Dockerfile`,
-  `docker-compose.yml`, `requirements.txt`, `CLAUDE.md`, `CORSAIR_ARCHITECTURE.md`
+- **Tracked:** `sector_scout_3.py`, `market_scanner.py`, `test_*.py`, `requirements.txt`, `CLAUDE.md`, `CORSAIR_ARCHITECTURE.md`, `run_scout.bat`
 - **Untracked:** `keys.json`, `*.log`, `scout_log.txt`, `active_targets.json`,
   `dragnet_candidates.json`
 
@@ -181,7 +159,7 @@ Same as fleet repo: lowercase, concise, no conventional commit prefixes.
 - **Scout frequency was massively over-engineered.** Running every 30 minutes produced nearly
   identical target lists. 3x daily captures all meaningful market shifts with negligible signal
   loss and eliminates ~80% of GPU inference time.
-- **LLM response parsing must be defensive.** The Llama model occasionally wraps JSON in
+- **LLM response parsing must be defensive.** The model occasionally wraps JSON in
   markdown code blocks, adds preamble text, or returns non-JSON entirely. The regex fallback
   extractor (`re.search(r'\{.*\}', raw_text, re.DOTALL)`) is critical.
 - **Tech score anchors confidence.** The technical indicator score from Phase 1 carries the

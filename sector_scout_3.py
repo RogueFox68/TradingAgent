@@ -45,7 +45,6 @@ last_reddit_call = 0
 
 # --- CORE BACKUP (Unchanged) ---
 CORE_WATCHLIST = {
-    "condor_targets": ["SPY", "IWM", "QQQ"],
     "wheel_targets": ["F", "PLTR", "SOFI", "AMD"],
     "trend_targets": ["NVDA", "TSLA", "COIN", "MSTR"],
     "survivor_targets": ["TQQQ", "SOXL", "UPRO"], 
@@ -284,7 +283,7 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
         role = "value investor"
         goal = "identifying if a recent price drop is an overreaction"
         scoring = "High score (1.0) means SAFE TO BUY. Low score (0.0) means FALLING KNIFE."
-    elif strategy in ["condor_targets", "wheel_targets"]:
+    elif strategy in ["wheel_targets"]:
         role = "options income trader"
         goal = "identifying STABILITY and LACK of volatility"
         scoring = "High score (1.0) means BORING/STABLE. Low score (0.0) means VOLATILE/RISKY."
@@ -369,15 +368,20 @@ def run_scout():
     print("--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---")
     candidates = get_candidates()
     final_targets = {
-        "condor_targets": [], "wheel_targets": [],
-        "trend_targets": [], "survivor_targets": [],
-        "short_targets": [], "updated": str(datetime.datetime.now())
+        "version": "1.1",
+        "status": "success",
+        "updated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "wheel_targets": {},
+        "trend_targets": {}, 
+        "survivor_targets": {},
+        "short_targets": {}
     }
 
     print("\n2. Deep Diving Candidates...")
 
     for category, tickers in candidates.items():
-        if category == "updated" or not tickers: continue
+        if category not in final_targets or category in ["updated", "version", "status"]: continue
+        if not tickers: continue
         
         print(f"   👉 Analyzing {category}...")
         for item in tickers:
@@ -394,20 +398,19 @@ def run_scout():
             # Default scaling (0-100)
             tech_norm = min(max(tech_score / 100.0, 0.0), 1.0)
             
-            if category == "condor_targets":
-                # Condor scores are 0-20 (Low ADX). 20 is perfect.
-                # Score 15 -> 1.0
-                tech_norm = min(max(tech_score / 15.0, 0.0), 1.0)
-                
+            if category in ["trend_targets", "short_targets"]:
+                # ADX-based scores. Target > 40.0
+                tech_norm = min(max(tech_score / 40.0, 0.0), 1.0)
             elif category == "wheel_targets":
                 # Wheel scores are -5 to 10 (RSI 40-55). 10 is perfect.
                 # Score 8 -> 0.8
                 tech_norm = min(max(tech_score / 10.0, 0.0), 1.0)
-                
             elif category == "survivor_targets":
                 # Survivor scores are 10-50 (50-RSI). 30 (RSI 20) is perfect.
                 # Score 30 -> 1.0
                 tech_norm = min(max(tech_score / 30.0, 0.0), 1.0)
+            else:
+                tech_norm = min(max(tech_score / 100.0, 0.0), 1.0)
 
             # 2. Gather Intelligence
             news_map = get_tiered_news(ticker)
@@ -493,23 +496,21 @@ def run_scout():
                 master_reason = f"Tech Score: {tech_score} -> {tech_norm:.2f}. "
                 if reddit_text: master_reason += f"Social: {s:.2f}. "
                 
-                final_targets[category].append({
-                    "symbol": ticker,
+                final_targets[category][ticker] = {
                     "confidence": round(final_confidence, 2),
                     "reason": master_reason
-                })
+                }
 
 
-    total_analyzed = sum(len(v) for k, v in candidates.items() if k != "updated")
-    total_approved = sum(len(v) for k, v in final_targets.items() if k != "updated")
+    total_analyzed = sum(len(v) for k, v in candidates.items() if isinstance(v, list))
+    total_approved = sum(len(v) for k, v in final_targets.items() if isinstance(v, dict) and k.endswith('_targets'))
     approval_rate = total_approved / total_analyzed if total_analyzed > 0 else 0
 
     all_confidences = []
-    for category in final_targets:
-        if category == "updated": continue
-        for item in final_targets[category]:
-            if isinstance(item, dict):
-                all_confidences.append(item.get('confidence', 0))
+    for category, data in final_targets.items():
+        if not isinstance(data, dict) or not category.endswith('_targets'): continue
+        for ticker, item in data.items():
+            all_confidences.append(item.get('confidence', 0))
 
     avg_confidence = sum(all_confidences) / len(all_confidences) if all_confidences else 0
 
@@ -543,9 +544,7 @@ def run_scout():
         except: pass
 
     print("\n3. Saving Results...")
-    
-    # [PHASE 2.5] Add Success Flag
-    final_targets["status"] = "success"
+
     
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(final_targets, f, indent=4)

@@ -1,0 +1,18 @@
+{
+  "version": "1.1",
+  "status": "success",
+  "updated": "2026-06-08T08:15:00Z",
+  "trend_targets": { 
+    "AAPL": { "confidence": 0.85 },
+    "NVDA": { "confidence": 0.75 }
+  },
+  "survivor_targets": { 
+    "TQQQ": { "confidence": 0.65 } 
+  },
+  "wheel_targets": { 
+    "MSFT": { "confidence": 0.70 } 
+  },
+  "short_targets": { 
+    "PEGA": { "confidence": 0.90 } 
+  }
+}

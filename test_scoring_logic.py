@@ -29,11 +29,11 @@ def test_weighted_scoring():
         # 1. All Data Present (0.3, 0.3, 0.2, 0.1, 0.1)
         {"tech": 0.5, "t1": 0.5, "t2": 0.5, "t3": 0.5, "soc": 0.5, "exp": 0.50},
         
-        # 2. Tech Only (No reallocation)
-        {"tech": 0.8, "t1": None, "t2": None, "t3": None, "soc": None, "exp": 0.24},
+        # 2. Tech Only (No reallocation, neutral missing)
+        {"tech": 0.8, "t1": None, "t2": None, "t3": None, "soc": None, "exp": 0.59},
         
         # 3. Tech + Elite News (Rest missing)
-        {"tech": 0.5, "t1": 0.8, "t2": None, "t3": None, "soc": None, "exp": 0.39},
+        {"tech": 0.5, "t1": 0.8, "t2": None, "t3": None, "soc": None, "exp": 0.59},
         
         # 4. Full Bullish 
         {"tech": 1.0, "t1": 1.0, "t2": 1.0, "t3": 1.0, "soc": 1.0, "exp": 1.00},
@@ -55,17 +55,29 @@ def test_weighted_scoring():
         if t1 is not None:
             scores.append(t1)
             weights.append(0.30)
+        else:
+            scores.append(0.50)
+            weights.append(0.30)
             
         if t2 is not None:
             scores.append(t2)
+            weights.append(0.20)
+        else:
+            scores.append(0.50)
             weights.append(0.20)
             
         if t3 is not None:
             scores.append(t3)
             weights.append(0.10)
+        else:
+            scores.append(0.50)
+            weights.append(0.10)
             
         if soc is not None:
             scores.append(soc)
+            weights.append(0.10)
+        else:
+            scores.append(0.50)
             weights.append(0.10)
             
         final = 0.0

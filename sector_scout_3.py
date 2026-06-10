@@ -434,6 +434,8 @@ def run_scout():
                 weights.append(0.30)
                 reasons.append(f"T1: {s:.2f}")
             else:
+                scores.append(0.50)
+                weights.append(0.30)
                 reasons.append("T1: N/A")
 
             # --- C. Mainstream News (20%) ---
@@ -444,6 +446,8 @@ def run_scout():
                 weights.append(0.20)
                 reasons.append(f"T2: {s:.2f}")
             else:
+                scores.append(0.50)
+                weights.append(0.20)
                 reasons.append("T2: N/A")
 
             # --- D. Specialty/Industry News (10%) ---
@@ -454,6 +458,8 @@ def run_scout():
                 weights.append(0.10)
                 reasons.append(f"T3: {s:.2f}")
             else:
+                scores.append(0.50)
+                weights.append(0.10)
                 reasons.append("T3: N/A")
 
             # --- E. Social/Reddit (10%) ---
@@ -463,6 +469,8 @@ def run_scout():
                 weights.append(0.10)
                 reasons.append(f"Soc: {s:.2f}")
             else:
+                scores.append(0.50)
+                weights.append(0.10)
                 reasons.append("Soc: N/A")
 
             # 4. Calculate Weighted Final Score
@@ -475,7 +483,7 @@ def run_scout():
             
             is_approved = False
             # Threshold Check
-            if final_confidence > 0.50: is_approved = True
+            if final_confidence >= 0.70: is_approved = True
             
             emoji = "✅" if is_approved else "❌"
             breakdown = " | ".join(reasons)

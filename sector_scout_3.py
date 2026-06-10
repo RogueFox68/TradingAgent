@@ -434,8 +434,6 @@ def run_scout():
                 weights.append(0.30)
                 reasons.append(f"T1: {s:.2f}")
             else:
-                # Reallocate weight to Tech
-                weights[0] += 0.30 
                 reasons.append("T1: N/A")
 
             # --- C. Mainstream News (20%) ---
@@ -446,8 +444,6 @@ def run_scout():
                 weights.append(0.20)
                 reasons.append(f"T2: {s:.2f}")
             else:
-                # Reallocate to Tech (or T1/T3 if we had complex logic, but simplifying)
-                weights[0] += 0.20
                 reasons.append("T2: N/A")
 
             # --- D. Specialty/Industry News (10%) ---
@@ -458,7 +454,6 @@ def run_scout():
                 weights.append(0.10)
                 reasons.append(f"T3: {s:.2f}")
             else:
-                weights[0] += 0.10
                 reasons.append("T3: N/A")
 
             # --- E. Social/Reddit (10%) ---
@@ -468,7 +463,6 @@ def run_scout():
                 weights.append(0.10)
                 reasons.append(f"Soc: {s:.2f}")
             else:
-                weights[0] += 0.10
                 reasons.append("Soc: N/A")
 
             # 4. Calculate Weighted Final Score
@@ -478,10 +472,6 @@ def run_scout():
             if total_weight > 0:
                 for i in range(len(scores)):
                     final_confidence += scores[i] * weights[i]
-                
-                # Normalize if re-allocation messed up sums (shouldn't, but safety)
-                if abs(total_weight - 1.0) > 0.01:
-                    final_confidence = final_confidence / total_weight
             
             is_approved = False
             # Threshold Check

@@ -483,7 +483,7 @@ def run_scout():
             
             is_approved = False
             # Threshold Check
-            if final_confidence >= 0.70: is_approved = True
+            if final_confidence >= 0.66: is_approved = True
             
             emoji = "✅" if is_approved else "❌"
             breakdown = " | ".join(reasons)

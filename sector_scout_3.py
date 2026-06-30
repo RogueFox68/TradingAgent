@@ -176,9 +176,6 @@ def get_reddit_sentiment(ticker):
     except Exception as e:
         print(f"   [!] Reddit Error ({ticker}): {e}")
         return None
-    except Exception as e:
-        print(f"   [!] Error in get_tiered_news({ticker}): {e}")
-        return {"tier1": [], "tier2": [], "tier3": []}
 
 def get_tiered_news(ticker):
     """
@@ -463,8 +460,10 @@ def run_scout():
                 reasons.append("T3: N/A")
 
             # --- E. Social/Reddit (10%) ---
+            social_score = None
             if reddit_text:
                 s, r = ask_llama(ticker, category, reddit_text, "social")
+                social_score = s
                 scores.append(s)
                 weights.append(0.10)
                 reasons.append(f"Soc: {s:.2f}")
@@ -492,7 +491,7 @@ def run_scout():
             if is_approved:
                 # Synthesize a master reason from available data
                 master_reason = f"Tech Score: {tech_score} -> {tech_norm:.2f}. "
-                if reddit_text: master_reason += f"Social: {s:.2f}. "
+                if social_score is not None: master_reason += f"Social: {social_score:.2f}. "
                 
                 final_targets[category][ticker] = {
                     "confidence": round(final_confidence, 2),

@@ -30,14 +30,14 @@ def safe_print(*args, **kwargs):
 print = safe_print
 
 # --- CONFIGURATION ---
-OLLAMA_URL = "http://localhost:1234/v1/chat/completions"
+LM_STUDIO_URL = "http://localhost:1234/v1/chat/completions"
 MODEL_NAME = "google/gemma-4-26b-a4b"
 INPUT_FILE = "dragnet_candidates.json"
 OUTPUT_FILE = "active_targets.json"
 BEELINK_IP = "192.168.5.87"
 BEELINK_USER = "trader"
 BEELINK_PATH = "~/bots/repo/active_targets.json"
-WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER') 
+WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER', '')
 
 # --- REDDIT CONFIG ---
 REDDIT_SUBS = ["wallstreetbets", "stocks", "investing", "options", "thetagang"]
@@ -317,7 +317,7 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
             "max_tokens": 2048,
             "temperature": 0.1
         }
-        response = requests.post(OLLAMA_URL, json=payload, timeout=300)
+        response = requests.post(LM_STUDIO_URL, json=payload, timeout=300)
         response_json = response.json()
         
         raw_text = response_json['choices'][0]['message']['content']

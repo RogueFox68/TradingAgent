@@ -27,21 +27,21 @@ The AI pipeline runs locally to process live market data without external API co
 ## 3. Deployed Services
 
 ### Market Scanner (`market_scanner.py`)
-* Scans ~4,800 tradeable assets from Alpaca
-* Filters for liquidity (volume > 1.5M, price $15–$500)
+* Scans the active US-equity universe from Alpaca (seed list + all tradeable/marginable/shortable)
+* Filters for liquidity (volume > 2M, price $15–$1000)
 * Calculates technical indicators: RSI(14), ADX(14), SMA(20/50/200)
-* Categorizes into strategy buckets (trend, survivor, wheel, condor, short)
+* Categorizes into strategy buckets (trend, survivor, wheel, short)
 * Outputs top 10 per category to `dragnet_candidates.json`
 
 ### Sector Scout (`sector_scout_3.py`)
 * Analyzes candidates from Market Scanner using multi-source intelligence:
-  - Tier 1: Direct financial news (yfinance)
-  - Tier 2: Broader news (GoogleNews)
-  - Tier 3: Additional context
-  - Social: Reddit sentiment
+  - Tier 1: Elite financial news (yfinance, bucketed by publisher)
+  - Tier 2: Mainstream news (yfinance)
+  - Tier 3: Specialty/industry news (yfinance)
+  - Social: Reddit sentiment (public JSON API)
 * Scores via Gemma 4 21B MoE with role-specific system prompts per strategy
 * Composite confidence: `weighted_average(Tech, T1, T2, T3, Social)`
-* Approval threshold: 0.50
+* Approval threshold: 0.66
 * Writes `active_targets.json` and transfers to Beelink via SCP
 
 ### Fleet Analyst (PLANNED — needs rebuild)
@@ -57,7 +57,7 @@ The AI pipeline runs locally to process live market data without external API co
 
 ## 5. Version Control & Data Separation
 Source code tracked via Git (GitHub). Strict separation of state and code.
-* **Tracked Files:** `market_scanner.py`, `sector_scout_3.py`, `requirements.txt`, `test_analyst.py`
+* **Tracked Files:** `market_scanner.py`, `sector_scout_3.py`, `requirements.txt`, `test_parser_logic.py`, `test_scp_logic.py`, `test_scoring_logic.py`
 * **Untracked (Ignored) Files:**
   * `keys.json` (Alpaca API credentials)
   * `*.log` and `scout_log.txt` (Execution logs)

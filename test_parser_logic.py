@@ -1,54 +1,56 @@
-
 import unittest
 from unittest.mock import patch, MagicMock
-import json
 import sector_scout_3
 
+# Reasons are >= 50 chars so validate_llm_response does not apply its
+# weak-reasoning (x0.7) penalty, and avoid the "insufficient"/"not enough"
+# hedging keywords that force a 0.5 score.
+GOOD_REASON = "Strong revenue growth and broad analyst upgrades support continued upside."
+BAD_REASON = "Margins are compressing and guidance was cut sharply for the next two quarters."
+
+
 class TestParser(unittest.TestCase):
-    @patch('requests.post')
-    def test_clean_json(self, mock_post):
-        # Setup: Clean JSON response
+    def _mock_llm(self, content):
+        """Build a mock matching LM Studio's /v1/chat/completions response shape."""
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            'response': '{"score": 0.9, "reason": "Good"}'
+            "choices": [{"message": {"content": content}}]
         }
-        mock_post.return_value = mock_response
+        return mock_response
 
-        score, reason = sector_scout_3.ask_llama("AAPL", "trend", ["news"])
+    @patch('requests.post')
+    def test_clean_json(self, mock_post):
+        # Clean JSON straight from the model
+        mock_post.return_value = self._mock_llm(
+            f'{{"score": 0.9, "reason": "{GOOD_REASON}"}}'
+        )
+        score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
         self.assertEqual(score, 0.9)
-        self.assertEqual(reason, "Good")
+        self.assertEqual(reason, GOOD_REASON)
 
     @patch('requests.post')
     def test_chatty_json(self, mock_post):
-        # Setup: Chatty JSON response (markdown, extra text)
-        chatty_text = """
-        Here is the analysis you requested:
-        ```json
-        {
-            "score": 0.4,
-            "reason": "Bad"
-        }
-        ```
-        Hope this helps!
-        """
-        mock_response = MagicMock()
-        mock_response.json.return_value = {'response': chatty_text}
-        mock_post.return_value = mock_response
-
-        score, reason = sector_scout_3.ask_llama("AAPL", "trend", ["news"])
+        # Markdown-fenced JSON with preamble/postamble (regex fallback path)
+        chatty = (
+            "Here is the analysis you requested:\n"
+            "```json\n"
+            f'{{"score": 0.4, "reason": "{BAD_REASON}"}}\n'
+            "```\n"
+            "Hope this helps!"
+        )
+        mock_post.return_value = self._mock_llm(chatty)
+        score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
         self.assertEqual(score, 0.4)
-        self.assertEqual(reason, "Bad")
+        self.assertEqual(reason, BAD_REASON)
 
     @patch('requests.post')
     def test_broken_json(self, mock_post):
-        # Setup: Totally broken
-        mock_response = MagicMock()
-        mock_response.json.return_value = {'response': 'I cannot do that.'}
-        mock_post.return_value = mock_response
-
-        score, reason = sector_scout_3.ask_llama("AAPL", "trend", ["news"])
+        # No JSON object anywhere -> JSON Parse Failed
+        mock_post.return_value = self._mock_llm("I cannot do that.")
+        score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
         self.assertEqual(score, 0.0)
         self.assertEqual(reason, "JSON Parse Failed")
+
 
 if __name__ == '__main__':
     unittest.main()

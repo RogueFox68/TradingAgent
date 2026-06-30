@@ -14,12 +14,14 @@ scores them with a **local LM Studio LLM (Gemma 4 21B MoE)** for multi-source se
 The output is a JSON payload (`active_targets.json`) that gets SCP'd to the Beelink execution
 node where the trading bot fleet consumes it.
 
-Stocks are categorized into 5 trading strategies:
+Stocks are categorized into the following strategy buckets:
 - **trend_targets** — Strong bullish momentum
 - **survivor_targets** — Oversold bounce plays (mean reversion)
 - **wheel_targets** — Stable/neutral, good for options premium selling
-- **condor_targets** — Sideways/range-bound (iron condor candidates)
 - **short_targets** — Bearish setups (trend_bot short entries)
+
+(`condor_targets` is deprecated — iron condor is sidelined on the Beelink and is no longer
+emitted by the scout.)
 
 ## Platform History
 
@@ -43,13 +45,15 @@ TradingAgent/
 ├── CORSAIR_ARCHITECTURE.md      # Hardware, containers, scheduling details
 ├── market_scanner.py            # Phase 1: Scans full Alpaca universe, outputs dragnet_candidates.json
 ├── sector_scout_3.py            # Phase 2: AI analysis of candidates, outputs active_targets.json
-├── test_analyst.py              # Manual single-ticker test script
 ├── test_parser_logic.py         # Unit tests for LLM JSON response parsing
+├── test_scp_logic.py            # Unit tests for SCP transfer retry logic
+├── test_scoring_logic.py        # Unit tests for confidence weighting/normalization
 ├── requirements.txt             # Python dependencies
 ├── run_scout.bat                # Windows Task Scheduler automation
+├── TASK_SCHEDULER_SETUP.md      # Windows Task Scheduler setup notes
 │
 ├── (Gitignored - Runtime state)
-│   ├── keys.json                # Alpaca API credentials
+│   ├── config.py                # Alpaca API keys, Discord webhooks, PAPER flag
 │   ├── active_targets.json      # Generated output — current trading targets
 │   ├── dragnet_candidates.json  # Generated output — scanned candidates
 │   └── scout_log.txt            # Execution log
@@ -85,10 +89,10 @@ Task Scheduler → run_scout.bat
 For each candidate from Phase 1:
 
 1. **Gathers multi-source intelligence:**
-   - Tier 1: Direct financial news (yfinance)
-   - Tier 2: Broader news (GoogleNews)
-   - Tier 3: Additional context
-   - Social: Reddit/social sentiment
+   - Tier 1: Elite financial news (yfinance, bucketed by publisher)
+   - Tier 2: Mainstream news (yfinance)
+   - Tier 3: Specialty/industry news (yfinance)
+   - Social: Reddit sentiment (public JSON API)
 
 2. **Scores via Gemma 4 21B MoE** — each source gets its own LLM call with a role-specific
    system prompt (hedge fund analyst for trend, value investor for survivor, options income
@@ -98,7 +102,7 @@ For each candidate from Phase 1:
    ```
    Conf = weighted_average(Tech, T1, T2, T3, Social)
    ```
-   Candidates scoring above 0.50 are approved.
+   Candidates scoring at or above 0.66 are approved.
 
 4. **Validates LLM responses:**
    - Clamps scores to 0.0–1.0
@@ -114,7 +118,7 @@ For each candidate from Phase 1:
 - **Language:** Python 3.11
 - **LLM:** Gemma 4 21B MoE via LM Studio (Native Windows)
 - **Secondary models available:** `qwen2.5-coder` (local dev/scripting on Corsair)
-- **Key dependencies:** yfinance, pandas, numpy, alpaca-py, requests, GoogleNews
+- **Key dependencies:** yfinance, pandas, numpy, alpaca-py, requests
 - **Scheduling:** Windows Task Scheduler
 - **Transfer:** SCP to Beelink execution node
 - **Alerts:** Discord webhooks for failures
@@ -122,19 +126,21 @@ For each candidate from Phase 1:
 ## Configuration
 
 Key parameters are in the Python files:
-- `MIN_VOLUME`: 1,500,000 (liquidity filter)
-- `MIN_PRICE` / `MAX_PRICE`: $15 – $500
+- `MIN_VOLUME`: 2,000,000 (liquidity filter)
+- `MIN_PRICE` / `MAX_PRICE`: $15 – $1000
 - `LM_STUDIO_URL`: `http://localhost:1234/v1/chat/completions`
-- `MODEL_NAME`: `gemma4-21b`
+- `MODEL_NAME`: `google/gemma-4-26b-a4b` (the model id sent to LM Studio)
 - `BEELINK_USER` / `BEELINK_IP` / `BEELINK_PATH`: SCP transfer target
 
-API credentials loaded from `keys.json` (gitignored).
+API credentials are loaded from `config.py` (gitignored) via `import config`
+(`API_KEY`, `SECRET_KEY`, `PAPER`, `WEBHOOK_OVERSEER`).
 
 ## Architecture Notes
 
 - **No build system** — standalone Python scripts, no packaging
-- **Test coverage:** `test_parser_logic.py` covers LLM JSON response parsing (clean, chatty,
-  and broken responses). `test_analyst.py` is for manual ad-hoc single-ticker testing.
+- **Test coverage:** `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken),
+  `test_scp_logic.py` (SCP transfer retry/backoff), and `test_scoring_logic.py` (confidence
+  weighting and technical-score normalization).
 - **No linter/formatter configured** — code follows loose PEP 8 style with 4-space indentation
 - **Logging:** `scout_log.txt` with emoji-annotated output. Typical run: ~50 tickers analyzed,
   95–98% approval rate, average confidence 0.68–0.72.
@@ -147,7 +153,7 @@ API credentials loaded from `keys.json` (gitignored).
 Strict separation of state and code:
 
 - **Tracked:** `sector_scout_3.py`, `market_scanner.py`, `test_*.py`, `requirements.txt`, `CLAUDE.md`, `CORSAIR_ARCHITECTURE.md`, `run_scout.bat`
-- **Untracked:** `keys.json`, `*.log`, `scout_log.txt`, `active_targets.json`,
+- **Untracked:** `config.py`, `keys.json`, `*.log`, `scout_log.txt`, `active_targets.json`,
   `dragnet_candidates.json`
 
 ### Commit Style

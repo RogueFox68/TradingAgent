@@ -4,9 +4,13 @@ Three scheduled tasks run `run_scout.bat` daily:
 
 | Task                              | Time (CST) | Purpose             |
 |-----------------------------------|------------|---------------------|
-| TradingAgent_DailyScout_Open      | 7:30 AM    | Pre-market scan     |
-| TradingAgent_DailyScout_Lunch     | 11:00 AM   | Mid-session refresh |
-| TradingAgent_DailyScout_Close     | 2:00 PM    | Pre-close scan      |
+| TradingAgent_DailyScout_Open      | 8:30 AM    | Market-open scan    |
+| TradingAgent_DailyScout_Lunch     | 12:00 PM   | Mid-session refresh |
+| TradingAgent_DailyScout_Close     | 3:00 PM    | Pre-close scan      |
+
+> **Note:** `market_scanner.py` only proceeds between 08:30 and 15:00 CST (its
+> `is_mission_time()` gate). A task scheduled before 08:30 makes the scan exit
+> immediately, so the first run must be at/after 08:30.
 
 ## Standardized Configuration
 

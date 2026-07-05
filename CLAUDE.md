@@ -79,7 +79,7 @@ Task Scheduler → run_scout.bat
 
 1. Fetches ~4,800 tradeable assets from Alpaca
 2. Downloads price/volume data via yfinance in batches
-3. Filters for liquidity (volume > 1.5M, price $15–$500)
+3. Filters for liquidity (volume > 2M, price $15–$1000)
 4. Calculates technical indicators: RSI(14), ADX(14), SMA(20/50/200)
 5. Categorizes into strategy buckets based on indicator profiles
 6. Outputs top 10 per category to `dragnet_candidates.json`
@@ -130,10 +130,15 @@ Key parameters are in the Python files:
 - `MIN_PRICE` / `MAX_PRICE`: $15 – $1000
 - `LM_STUDIO_URL`: `http://localhost:1234/v1/chat/completions`
 - `MODEL_NAME`: `google/gemma-4-26b-a4b` (the model id sent to LM Studio)
-- `BEELINK_USER` / `BEELINK_IP` / `BEELINK_PATH`: SCP transfer target
+- `BEELINK_USER` / `BEELINK_IP` / `BEELINK_PATH`: SCP transfer target — overridable
+  in `config.py` so infrastructure coordinates stay out of tracked source
 
 API credentials are loaded from `config.py` (gitignored) via `import config`
-(`API_KEY`, `SECRET_KEY`, `PAPER`, `WEBHOOK_OVERSEER`).
+(`API_KEY`, `SECRET_KEY`, `PAPER`, `WEBHOOK_OVERSEER`, optional `BEELINK_*`).
+
+Note: the Beelink-side fleet runs inside the `trading-fleet` Docker container with
+the repo live-mounted from `~/bots/repo/` — which is exactly where `BEELINK_PATH`
+drops `active_targets.json`, so the file is visible in-container immediately.
 
 ## Architecture Notes
 

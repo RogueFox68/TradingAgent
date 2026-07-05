@@ -98,4 +98,6 @@ Once Gemma 4 21B MoE finishes analyzing the market, Sector Scout writes `active_
 ## 8. Known Issues & Tech Debt
 * Fleet Analyst needs full rebuild on Windows/LM Studio
 * `CORSAIR_ARCHITECTURE.md` in the project repo was severely outdated (referenced Ubuntu, Ollama, Llama 3.3 70B, ROCm, Docker containers) — replaced with this version
-* Bare `except: pass` in InfluxDB write functions across the Beelink fleet still needs to be replaced with proper exception logging
+* ~~Bare `except: pass` in InfluxDB write functions across the Beelink fleet~~ — resolved
+  fleet-side: writes check status codes, and `error_watchdog` ships the fleet error
+  registry into InfluxDB (`bot_error_events`)

@@ -23,8 +23,8 @@ BENCHMARK_TICKER = "SPY"
 SEED_LIST = [
     "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AVGO", "PEP", "COST",
     "ADBE", "CSCO", "AMD", "NFLX", "INTC", "TMO", "LIN", "WMT", "SBUX", "INTU",
-    "QCOM", "AMGN", "ISRG", "TXN", "V", "MA", "UNH", "JNJ", "PGE", "PM",
-    "SND", "PLTR", "COIN", "MSTR", "SHOP", "SNOW", "SOTP", "NET", "DDOG"
+    "QCOM", "AMGN", "ISRG", "TXN", "V", "MA", "UNH", "JNJ", "PG", "PM",
+    "PLTR", "COIN", "MSTR", "SHOP", "SNOW", "SPOT", "NET", "DDOG"
 ]
 
 # --- GATEKEEPER (CST EDITION) ---

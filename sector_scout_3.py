@@ -34,9 +34,11 @@ LM_STUDIO_URL = "http://localhost:1234/v1/chat/completions"
 MODEL_NAME = "google/gemma-4-26b-a4b"
 INPUT_FILE = "dragnet_candidates.json"
 OUTPUT_FILE = "active_targets.json"
-BEELINK_IP = "192.168.5.87"
-BEELINK_USER = "trader"
-BEELINK_PATH = "~/bots/repo/active_targets.json"
+# SCP target: overridable in config.py (gitignored) so infrastructure
+# coordinates don't live in tracked source.
+BEELINK_IP = getattr(config, 'BEELINK_IP', "192.168.5.87")
+BEELINK_USER = getattr(config, 'BEELINK_USER', "trader")
+BEELINK_PATH = getattr(config, 'BEELINK_PATH', "~/bots/repo/active_targets.json")
 WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER', '')
 
 # --- REDDIT CONFIG ---
@@ -355,7 +357,7 @@ def beam_to_beelink(retries=3):
             requests.post(WEBHOOK_OVERSEER, json={
                 "content": "🚨 **SCP TRANSFER FAILED**\n"
                            "Targets not updated on Beelink.\n"
-                           "Check 5080 network connection.",
+                           "Check Corsair→Beelink network connection.",
                 "username": "Sector Scout"
             })
     except: pass

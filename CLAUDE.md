@@ -120,8 +120,14 @@ For each candidate from Phase 1:
 6. **Runs shadow specialist advisors** (paper-only measurement layer)
    - Equity specialist: trend/survivor/short stock buckets
    - Options specialist: wheel candidates
-   - Crypto specialist: crypto-shaped candidates if present
+   - Crypto specialist: crypto-shaped candidates if present (dormant today — the
+     scanner emits no crypto candidates, so only two specialist models are exercised)
+   - Specialists see raw evidence only (tech score + headlines/social), **never the
+     scout's confidence or per-source breakdown** — their votes are benchmarked
+     against the scout, and an anchored vote would just measure agreement
    - Writes `shadow_advisor_votes.json` and appends `shadow_advisor_votes.jsonl`
+     (vote snapshots carry an `advisor_failures` count — a wrong model id fails
+     every call, and the run summary calls that out loudly)
    - Does not alter target approval, `active_targets.json`, or Beelink execution
 
 ## Tech Stack

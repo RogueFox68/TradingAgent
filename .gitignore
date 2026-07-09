@@ -34,5 +34,6 @@ influx_data/
 *.json
 !*.template.json
 !*.example.json
+*.jsonl
 *.txt
 !requirements.txt

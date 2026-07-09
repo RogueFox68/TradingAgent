@@ -47,7 +47,11 @@ def risk_flags(category, symbol, confidence, tech_norm, reasoning):
     return flags
 
 
-def build_prompt(symbol, category, tech_norm, scout_confidence, source_context):
+def build_prompt(symbol, category, tech_norm, source_context):
+    """Specialist prompt. Deliberately excludes the scout's confidence and
+    per-source score breakdown: the specialists are benchmarked against the
+    scout, so showing them its answer would anchor their votes toward it and
+    make the comparison measure agreement instead of independent signal."""
     advisor = advisor_for(category, symbol)
     if advisor == "options_specialist":
         role = "options income risk analyst"
@@ -65,10 +69,9 @@ def build_prompt(symbol, category, tech_norm, scout_confidence, source_context):
         f"Asset: {symbol}\n"
         f"Strategy bucket: {category}\n"
         f"Technical score: {tech_norm:.2f}\n"
-        f"Current scout confidence: {scout_confidence:.2f}\n"
         f"Focus: {focus}\n\n"
         f"Evidence:\n{source_context}\n\n"
-        "Return compact JSON only: "
+        "Judge independently from the evidence above. Return compact JSON only: "
         "{\"decision\":\"approve|watch|reject\",\"confidence\":0.0,"
         "\"reasoning\":\"...\",\"risk_flags\":[\"...\"]}"
     )
@@ -92,7 +95,19 @@ def parse_vote(raw_text, symbol, category, tech_norm, scout_confidence):
         return fallback_vote(symbol, category, tech_norm, scout_confidence,
                              "specialist_json_parse_failed", advisor_failed=True)
 
-    confidence = max(0.0, min(1.0, float(payload.get("confidence", scout_confidence))))
+    raw_confidence = payload.get("confidence")
+    missing_confidence = raw_confidence is None
+    if missing_confidence:
+        # No specialist number to use; fall back to the scout's, but flag it so
+        # analysis can exclude these votes instead of mistaking them for
+        # independent agreement.
+        confidence = max(0.0, min(1.0, float(scout_confidence)))
+    else:
+        try:
+            confidence = max(0.0, min(1.0, float(raw_confidence)))
+        except (TypeError, ValueError):
+            return fallback_vote(symbol, category, tech_norm, scout_confidence,
+                                 "specialist_confidence_invalid", advisor_failed=True)
     decision = payload.get("decision") or decision_from_confidence(confidence)
     if decision not in {DECISION_APPROVE, DECISION_WATCH, DECISION_REJECT}:
         decision = decision_from_confidence(confidence)
@@ -100,6 +115,8 @@ def parse_vote(raw_text, symbol, category, tech_norm, scout_confidence):
     flags = payload.get("risk_flags") or []
     if not isinstance(flags, list):
         flags = [str(flags)]
+    if missing_confidence:
+        flags = flags + ["specialist_confidence_missing"]
     flags = list(dict.fromkeys(flags + risk_flags(category, symbol, confidence, tech_norm, reasoning)))
 
     return {
@@ -138,9 +155,12 @@ def fallback_vote(symbol, category, tech_norm, scout_confidence, reason,
 def build_snapshot(votes, updated=None):
     updated = updated or datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     by_advisor = {}
+    failures = 0
     for vote in votes:
         by_advisor.setdefault(vote["advisor"], {"approve": 0, "watch": 0, "reject": 0})
         by_advisor[vote["advisor"]][vote["decision"]] += 1
+        if vote.get("advisor_failed"):
+            failures += 1
     return {
         "version": VERSION,
         "status": "success",
@@ -148,6 +168,10 @@ def build_snapshot(votes, updated=None):
         "shadow_only": True,
         "summary": {
             "total_votes": len(votes),
+            # A misconfigured SHADOW_ADVISOR_MODELS id fails every call and
+            # leaves a plausible-looking file of fallback votes; this count
+            # makes that unmissable.
+            "advisor_failures": failures,
             "by_advisor": by_advisor,
         },
         "votes": votes,

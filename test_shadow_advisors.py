@@ -50,6 +50,33 @@ class ShadowAdvisorVoteTest(unittest.TestCase):
         self.assertTrue(vote["advisor_failed"])
         self.assertIn("weak_technical_base", vote["risk_flags"])
 
+    def test_prompt_contains_no_scout_score_anchor(self):
+        # The specialists are benchmarked against the scout; leaking its score
+        # into the prompt would anchor their votes toward agreement.
+        prompt = shadow_advisors.build_prompt(
+            "AMD", "wheel_targets", 0.80, "TIER1:\nsome headline")
+        self.assertNotIn("scout confidence", prompt.lower())
+        self.assertIn("Technical score: 0.80", prompt)
+        self.assertIn("some headline", prompt)
+
+    def test_missing_confidence_is_flagged_not_silent(self):
+        raw = json.dumps({
+            "decision": "approve",
+            "reasoning": "Liquid, stable premium candidate worth holding.",
+        })
+        vote = shadow_advisors.parse_vote(
+            raw, "AMD", "wheel_targets", tech_norm=0.80, scout_confidence=0.70)
+        self.assertEqual(vote["confidence"], 0.70)
+        self.assertIn("specialist_confidence_missing", vote["risk_flags"])
+        self.assertFalse(vote["advisor_failed"])
+
+    def test_invalid_confidence_becomes_failed_fallback(self):
+        raw = json.dumps({"decision": "approve", "confidence": "very high"})
+        vote = shadow_advisors.parse_vote(
+            raw, "AMD", "wheel_targets", tech_norm=0.80, scout_confidence=0.70)
+        self.assertTrue(vote["advisor_failed"])
+        self.assertEqual(vote["reasoning"], "specialist_confidence_invalid")
+
     def test_snapshot_summarizes_by_advisor(self):
         votes = [
             shadow_advisors.fallback_vote("AMD", "wheel_targets", 0.8, 0.7, "ok"),
@@ -58,9 +85,19 @@ class ShadowAdvisorVoteTest(unittest.TestCase):
         ]
         snap = shadow_advisors.build_snapshot(votes, updated="2026-07-09T00:00:00Z")
         self.assertEqual(snap["summary"]["total_votes"], 3)
+        self.assertEqual(snap["summary"]["advisor_failures"], 0)
         self.assertEqual(snap["summary"]["by_advisor"]["options_specialist"]["approve"], 1)
         self.assertEqual(snap["summary"]["by_advisor"]["equity_specialist"]["watch"], 1)
         self.assertEqual(snap["summary"]["by_advisor"]["crypto_specialist"]["reject"], 1)
+
+    def test_snapshot_counts_failures(self):
+        votes = [
+            shadow_advisors.fallback_vote("AMD", "wheel_targets", 0.8, 0.7,
+                                          "llm down", advisor_failed=True),
+            shadow_advisors.fallback_vote("NVDA", "trend_targets", 0.8, 0.5, "ok"),
+        ]
+        snap = shadow_advisors.build_snapshot(votes, updated="2026-07-09T00:00:00Z")
+        self.assertEqual(snap["summary"]["advisor_failures"], 1)
 
     def test_snapshot_and_history_are_written(self):
         snap = shadow_advisors.build_snapshot([], updated="2026-07-09T00:00:00Z")

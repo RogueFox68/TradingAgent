@@ -361,24 +361,25 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
         print(f"   [!] AI Error on {ticker}: {e}")
         return 0.0, "AI Failed"
 
-def _shadow_source_context(news_map, reddit_text, breakdown):
-    lines = [f"Scout breakdown: {breakdown}"]
+def _shadow_source_context(news_map, reddit_text):
+    # Raw evidence only — the specialist never sees the scout's scores, so its
+    # vote stays independent of the signal it's benchmarked against.
+    lines = []
     for tier in ["tier1", "tier2", "tier3"]:
         items = (news_map or {}).get(tier, [])
         if items:
             lines.append(f"{tier.upper()}:\n" + "\n".join(items[:3]))
     if reddit_text:
         lines.append("SOCIAL:\n" + reddit_text)
-    return "\n\n".join(lines)
+    return "\n\n".join(lines) if lines else "No news or social coverage found."
 
 def ask_shadow_advisor(ticker, category, tech_norm, final_confidence,
-                       news_map, reddit_text, breakdown):
+                       news_map, reddit_text):
     """Ask the asset-specialist shadow advisor. Never affects target approval."""
-    context = _shadow_source_context(news_map, reddit_text, breakdown)
+    context = _shadow_source_context(news_map, reddit_text)
     advisor_name = shadow_advisors.advisor_for(category, ticker)
     model = SHADOW_ADVISOR_MODELS.get(advisor_name, MODEL_NAME) if isinstance(SHADOW_ADVISOR_MODELS, dict) else MODEL_NAME
-    prompt = shadow_advisors.build_prompt(
-        ticker, category, tech_norm, final_confidence, context)
+    prompt = shadow_advisors.build_prompt(ticker, category, tech_norm, context)
     try:
         payload = {
             "model": model,
@@ -560,7 +561,7 @@ def run_scout():
             if ENABLE_SHADOW_ADVISORS:
                 shadow_votes.append(ask_shadow_advisor(
                     ticker, category, tech_norm, final_confidence,
-                    news_map, reddit_text, breakdown))
+                    news_map, reddit_text))
             
             if is_approved:
                 # Synthesize a master reason from available data
@@ -594,7 +595,12 @@ def run_scout():
             shadow_votes, updated=final_targets["updated"])
         shadow_advisors.write_snapshot(SHADOW_ADVISOR_FILE, shadow_snapshot)
         shadow_advisors.append_history(SHADOW_ADVISOR_HISTORY_FILE, shadow_snapshot)
-        print(f"   Shadow Votes: {len(shadow_votes)} -> {SHADOW_ADVISOR_FILE}")
+        shadow_failures = shadow_snapshot["summary"]["advisor_failures"]
+        fail_note = f" ({shadow_failures} failed)" if shadow_failures else ""
+        print(f"   Shadow Votes: {len(shadow_votes)}{fail_note} -> {SHADOW_ADVISOR_FILE}")
+        if shadow_failures == len(shadow_votes) and shadow_votes:
+            print("   [!] Every shadow vote failed — check SHADOW_ADVISOR_MODELS ids "
+                  "against the models loaded in LM Studio.")
 
     if WEBHOOK_OVERSEER:
         try:

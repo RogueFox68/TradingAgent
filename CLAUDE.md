@@ -45,7 +45,9 @@ TradingAgent/
 ├── CORSAIR_ARCHITECTURE.md      # Hardware, containers, scheduling details
 ├── market_scanner.py            # Phase 1: Scans full Alpaca universe, outputs dragnet_candidates.json
 ├── sector_scout_3.py            # Phase 2: AI analysis of candidates, outputs active_targets.json
+├── shadow_advisors.py           # Shadow-only specialist votes for equity/options/crypto targets
 ├── test_parser_logic.py         # Unit tests for LLM JSON response parsing
+├── test_shadow_advisors.py      # Unit tests for specialist routing/vote persistence
 ├── test_scp_logic.py            # Unit tests for SCP transfer retry logic
 ├── test_scoring_logic.py        # Unit tests for confidence weighting/normalization
 ├── requirements.txt             # Python dependencies
@@ -55,6 +57,8 @@ TradingAgent/
 ├── (Gitignored - Runtime state)
 │   ├── config.py                # Alpaca API keys, Discord webhooks, PAPER flag
 │   ├── active_targets.json      # Generated output — current trading targets
+│   ├── shadow_advisor_votes.json  # Generated output — latest shadow specialist votes
+│   ├── shadow_advisor_votes.jsonl # Generated output — append-only shadow vote history
 │   ├── dragnet_candidates.json  # Generated output — scanned candidates
 │   └── scout_log.txt            # Execution log
 ```
@@ -113,6 +117,13 @@ For each candidate from Phase 1:
    - 3 retry attempts with 5-second backoff
    - Discord webhook alert on transfer failure
 
+6. **Runs shadow specialist advisors** (paper-only measurement layer)
+   - Equity specialist: trend/survivor/short stock buckets
+   - Options specialist: wheel candidates
+   - Crypto specialist: crypto-shaped candidates if present
+   - Writes `shadow_advisor_votes.json` and appends `shadow_advisor_votes.jsonl`
+   - Does not alter target approval, `active_targets.json`, or Beelink execution
+
 ## Tech Stack
 
 - **Language:** Python 3.11
@@ -132,6 +143,9 @@ Key parameters are in the Python files:
 - `MODEL_NAME`: `google/gemma-4-26b-a4b` (the model id sent to LM Studio)
 - `BEELINK_USER` / `BEELINK_IP` / `BEELINK_PATH`: SCP transfer target — overridable
   in `config.py` so infrastructure coordinates stay out of tracked source
+- `ENABLE_SHADOW_ADVISORS`: defaults to `True`; set `False` to skip shadow votes
+- `SHADOW_ADVISOR_MODELS`: optional dict mapping `equity_specialist`, `options_specialist`,
+  and `crypto_specialist` to smaller local LM Studio models
 
 API credentials are loaded from `config.py` (gitignored) via `import config`
 (`API_KEY`, `SECRET_KEY`, `PAPER`, `WEBHOOK_OVERSEER`, optional `BEELINK_*`).
@@ -144,6 +158,7 @@ drops `active_targets.json`, so the file is visible in-container immediately.
 
 - **No build system** — standalone Python scripts, no packaging
 - **Test coverage:** `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken),
+  `test_shadow_advisors.py` (specialist routing, parsing, fallback, persistence),
   `test_scp_logic.py` (SCP transfer retry/backoff), and `test_scoring_logic.py` (confidence
   weighting and technical-score normalization).
 - **No linter/formatter configured** — code follows loose PEP 8 style with 4-space indentation

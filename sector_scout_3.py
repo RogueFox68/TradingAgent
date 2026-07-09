@@ -1,13 +1,32 @@
 # --- IMPORTS ---
-import requests
+try:
+    import requests
+except ImportError:
+    class _MissingRequests:
+        def post(self, *args, **kwargs):
+            raise RuntimeError("requests is not installed")
+
+        def get(self, *args, **kwargs):
+            raise RuntimeError("requests is not installed")
+    requests = _MissingRequests()
 import json
 import os
 import time
 import datetime
-import yfinance as yf
+try:
+    import yfinance as yf
+except ImportError:
+    yf = None
 import subprocess
 import sys
-import config
+try:
+    import config
+except ImportError:
+    class _MissingConfig:
+        WEBHOOK_OVERSEER = ""
+    config = _MissingConfig()
+
+import shadow_advisors
 
 # Force UTF-8 Output for Windows Console
 import builtins
@@ -34,6 +53,10 @@ LM_STUDIO_URL = "http://localhost:1234/v1/chat/completions"
 MODEL_NAME = "google/gemma-4-26b-a4b"
 INPUT_FILE = "dragnet_candidates.json"
 OUTPUT_FILE = "active_targets.json"
+SHADOW_ADVISOR_FILE = getattr(config, 'SHADOW_ADVISOR_FILE', "shadow_advisor_votes.json")
+SHADOW_ADVISOR_HISTORY_FILE = getattr(config, 'SHADOW_ADVISOR_HISTORY_FILE', "shadow_advisor_votes.jsonl")
+ENABLE_SHADOW_ADVISORS = getattr(config, 'ENABLE_SHADOW_ADVISORS', True)
+SHADOW_ADVISOR_MODELS = getattr(config, 'SHADOW_ADVISOR_MODELS', {})
 # SCP target: overridable in config.py (gitignored) so infrastructure
 # coordinates don't live in tracked source.
 BEELINK_IP = getattr(config, 'BEELINK_IP', "192.168.5.87")
@@ -185,6 +208,9 @@ def get_tiered_news(ticker):
     Returns dict: {'tier1': [], 'tier2': [], 'tier3': []}
     """
     try:
+        if yf is None:
+            print(f"   [!] yfinance not installed; skipping news for {ticker}.")
+            return {"tier1": [], "tier2": [], "tier3": []}
         stock = yf.Ticker(ticker)
         news = stock.news
         
@@ -335,6 +361,41 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
         print(f"   [!] AI Error on {ticker}: {e}")
         return 0.0, "AI Failed"
 
+def _shadow_source_context(news_map, reddit_text, breakdown):
+    lines = [f"Scout breakdown: {breakdown}"]
+    for tier in ["tier1", "tier2", "tier3"]:
+        items = (news_map or {}).get(tier, [])
+        if items:
+            lines.append(f"{tier.upper()}:\n" + "\n".join(items[:3]))
+    if reddit_text:
+        lines.append("SOCIAL:\n" + reddit_text)
+    return "\n\n".join(lines)
+
+def ask_shadow_advisor(ticker, category, tech_norm, final_confidence,
+                       news_map, reddit_text, breakdown):
+    """Ask the asset-specialist shadow advisor. Never affects target approval."""
+    context = _shadow_source_context(news_map, reddit_text, breakdown)
+    advisor_name = shadow_advisors.advisor_for(category, ticker)
+    model = SHADOW_ADVISOR_MODELS.get(advisor_name, MODEL_NAME) if isinstance(SHADOW_ADVISOR_MODELS, dict) else MODEL_NAME
+    prompt = shadow_advisors.build_prompt(
+        ticker, category, tech_norm, final_confidence, context)
+    try:
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 1024,
+            "temperature": 0.05,
+        }
+        response = requests.post(LM_STUDIO_URL, json=payload, timeout=300)
+        raw_text = response.json()['choices'][0]['message']['content']
+        return shadow_advisors.parse_vote(
+            raw_text, ticker, category, tech_norm, final_confidence)
+    except Exception as e:
+        print(f"   [!] Shadow advisor failed on {ticker}: {e}")
+        return shadow_advisors.fallback_vote(
+            ticker, category, tech_norm, final_confidence,
+            f"shadow_advisor_failed: {e}", advisor_failed=True)
+
 def beam_to_beelink(retries=3):
     print(f"\n4. Beaming {OUTPUT_FILE} to Beelink...")
     
@@ -375,6 +436,7 @@ def run_scout():
         "survivor_targets": {},
         "short_targets": {}
     }
+    shadow_votes = []
 
     print("\n2. Deep Diving Candidates...")
 
@@ -391,7 +453,12 @@ def run_scout():
                 ticker = item
                 tech_score = 50.0 
 
-            if "/" in ticker: continue
+            if "/" in ticker:
+                if ENABLE_SHADOW_ADVISORS:
+                    shadow_votes.append(shadow_advisors.fallback_vote(
+                        ticker, category, 0.50, 0.50,
+                        "crypto candidate observed; scout does not emit crypto targets yet"))
+                continue
             
             # 1. Normalize Technical Score (Strategy-Aware)
             # Default scaling (0-100)
@@ -489,6 +556,11 @@ def run_scout():
             emoji = "✅" if is_approved else "❌"
             breakdown = " | ".join(reasons)
             print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} [{breakdown}]")
+
+            if ENABLE_SHADOW_ADVISORS:
+                shadow_votes.append(ask_shadow_advisor(
+                    ticker, category, tech_norm, final_confidence,
+                    news_map, reddit_text, breakdown))
             
             if is_approved:
                 # Synthesize a master reason from available data
@@ -517,6 +589,12 @@ def run_scout():
     print(f"   Analyzed: {total_analyzed}")
     print(f"   Approved: {total_approved} ({approval_rate*100:.0f}%)")
     print(f"   Avg Confidence: {avg_confidence:.2f}")
+    if ENABLE_SHADOW_ADVISORS:
+        shadow_snapshot = shadow_advisors.build_snapshot(
+            shadow_votes, updated=final_targets["updated"])
+        shadow_advisors.write_snapshot(SHADOW_ADVISOR_FILE, shadow_snapshot)
+        shadow_advisors.append_history(SHADOW_ADVISOR_HISTORY_FILE, shadow_snapshot)
+        print(f"   Shadow Votes: {len(shadow_votes)} -> {SHADOW_ADVISOR_FILE}")
 
     if WEBHOOK_OVERSEER:
         try:

@@ -18,7 +18,7 @@ class TestParser(unittest.TestCase):
         }
         return mock_response
 
-    @patch('requests.post')
+    @patch('sector_scout_3.requests.post')
     def test_clean_json(self, mock_post):
         # Clean JSON straight from the model
         mock_post.return_value = self._mock_llm(
@@ -28,7 +28,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(score, 0.9)
         self.assertEqual(reason, GOOD_REASON)
 
-    @patch('requests.post')
+    @patch('sector_scout_3.requests.post')
     def test_chatty_json(self, mock_post):
         # Markdown-fenced JSON with preamble/postamble (regex fallback path)
         chatty = (
@@ -43,7 +43,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(score, 0.4)
         self.assertEqual(reason, BAD_REASON)
 
-    @patch('requests.post')
+    @patch('sector_scout_3.requests.post')
     def test_broken_json(self, mock_post):
         # No JSON object anywhere -> JSON Parse Failed
         mock_post.return_value = self._mock_llm("I cannot do that.")

@@ -1,3 +1,4 @@
+import json
 import unittest
 from unittest.mock import patch, MagicMock
 import sector_scout_3
@@ -10,11 +11,14 @@ BAD_REASON = "Margins are compressing and guidance was cut sharply for the next 
 
 
 class TestParser(unittest.TestCase):
-    def _mock_llm(self, content):
+    def _mock_llm(self, content, finish_reason="stop"):
         """Build a mock matching LM Studio's /v1/chat/completions response shape."""
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "choices": [{"message": {"content": content}}]
+            "choices": [{
+                "message": {"content": content},
+                "finish_reason": finish_reason,
+            }]
         }
         return mock_response
 
@@ -50,6 +54,116 @@ class TestParser(unittest.TestCase):
         score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
         self.assertEqual(score, 0.0)
         self.assertEqual(reason, "JSON Parse Failed")
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_sends_json_schema(self, mock_post):
+        mock_post.return_value = self._mock_llm(json.dumps({
+            "decision": "approve",
+            "confidence": 0.75,
+            "reasoning": "Durable trend with liquid trading conditions.",
+            "risk_flags": [],
+        }))
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "NVDA", "trend_targets", 0.80, 0.70, {}, "")
+
+        self.assertFalse(vote["advisor_failed"])
+        self.assertEqual(mock_post.call_count, 1)
+        payload = mock_post.call_args.kwargs["json"]
+        self.assertEqual(payload["response_format"]["type"], "json_schema")
+        self.assertEqual(vote["diagnostics"]["model"], sector_scout_3.MODEL_NAME)
+        self.assertEqual(vote["diagnostics"]["attempt_count"], 1)
+        self.assertFalse(vote["diagnostics"]["retry_used"])
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_repairs_one_parse_failure(self, mock_post):
+        mock_post.side_effect = [
+            self._mock_llm("Analysis: {not valid JSON", finish_reason="length"),
+            self._mock_llm(json.dumps({
+                "decision": "watch",
+                "confidence": 0.58,
+                "reasoning": "Evidence is mixed and needs another observation.",
+                "risk_flags": ["mixed_signal"],
+            })),
+        ]
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertEqual(mock_post.call_count, 2)
+        self.assertFalse(vote["advisor_failed"])
+        self.assertEqual(vote["decision"], "watch")
+        diagnostics = vote["diagnostics"]
+        self.assertEqual(diagnostics["attempt_count"], 2)
+        self.assertTrue(diagnostics["retry_used"])
+        self.assertTrue(diagnostics["recovered_after_retry"])
+        self.assertEqual(diagnostics["attempts"][0]["finish_reason"], "length")
+        self.assertIn("parse_error", diagnostics["attempts"][0])
+        retry_payload = mock_post.call_args_list[1].kwargs["json"]
+        self.assertIn("Repair the malformed", retry_payload["messages"][0]["content"])
+        self.assertEqual(retry_payload["temperature"], 0.0)
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_stops_after_one_failed_repair(self, mock_post):
+        mock_post.side_effect = [
+            self._mock_llm("first malformed response"),
+            self._mock_llm("second malformed response"),
+        ]
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertEqual(mock_post.call_count, 2)
+        self.assertTrue(vote["advisor_failed"])
+        self.assertEqual(vote["reasoning"], "specialist_json_parse_failed")
+        self.assertEqual(vote["diagnostics"]["attempt_count"], 2)
+        self.assertIn("raw_response_excerpt", vote["diagnostics"]["attempts"][1])
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_skips_repair_for_empty_response(self, mock_post):
+        # Nothing to repair — a schema-forced retry would fabricate a vote
+        # from zero evidence and record it as a recovery.
+        mock_post.return_value = self._mock_llm("")
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertEqual(mock_post.call_count, 1)
+        self.assertTrue(vote["advisor_failed"])
+        self.assertEqual(vote["reasoning"], "specialist_json_parse_failed")
+        self.assertEqual(vote["diagnostics"]["attempt_count"], 1)
+        self.assertFalse(vote["diagnostics"]["retry_used"])
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_trusts_parsed_sentinel_reasoning(self, mock_post):
+        # A cleanly parsed vote never retries, even if its reasoning text
+        # happens to echo the parse-failure sentinel.
+        mock_post.return_value = self._mock_llm(json.dumps({
+            "decision": "watch",
+            "confidence": 0.52,
+            "reasoning": "specialist_json_parse_failed",
+            "risk_flags": [],
+        }))
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertEqual(mock_post.call_count, 1)
+        self.assertFalse(vote["advisor_failed"])
+        self.assertEqual(vote["decision"], "watch")
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_records_request_failure(self, mock_post):
+        mock_post.side_effect = RuntimeError("LM Studio unavailable")
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertTrue(vote["advisor_failed"])
+        diagnostics = vote["diagnostics"]
+        self.assertEqual(diagnostics["attempt_count"], 1)
+        self.assertEqual(diagnostics["attempts"][0]["finish_reason"], "request_failed")
+        self.assertIn("LM Studio unavailable", diagnostics["api_error"])
 
 
 if __name__ == '__main__':

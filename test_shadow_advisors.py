@@ -49,6 +49,51 @@ class ShadowAdvisorVoteTest(unittest.TestCase):
         self.assertEqual(vote["decision"], "watch")
         self.assertTrue(vote["advisor_failed"])
         self.assertIn("weak_technical_base", vote["risk_flags"])
+        self.assertIn("parse_error", vote["diagnostics"])
+        self.assertEqual(
+            vote["diagnostics"]["raw_response_excerpt"], "no json here")
+
+    def test_parser_finds_first_valid_vote_without_greedy_overmatch(self):
+        raw = (
+            "Thinking with {unfinished notes. Then the vote is "
+            '{"decision":"reject","confidence":0.31,'
+            '"reasoning":"Trend is weakening.","risk_flags":["downtrend"]} '
+            'and a trailing object {"debug":true}.'
+        )
+        vote = shadow_advisors.parse_vote(
+            raw, "NVDA", "trend_targets", tech_norm=0.50, scout_confidence=0.70)
+        self.assertEqual(vote["decision"], "reject")
+        self.assertEqual(vote["confidence"], 0.31)
+        self.assertFalse(vote["advisor_failed"])
+
+    def test_array_wrapped_vote_is_unwrapped(self):
+        raw = ('[{"decision":"approve","confidence":0.71,'
+               '"reasoning":"Stable trend with deep liquidity.","risk_flags":[]}]')
+        vote = shadow_advisors.parse_vote(
+            raw, "NVDA", "trend_targets", tech_norm=0.60, scout_confidence=0.70)
+        self.assertEqual(vote["decision"], "approve")
+        self.assertEqual(vote["confidence"], 0.71)
+        self.assertFalse(vote["advisor_failed"])
+
+    def test_parse_failure_excerpt_is_sanitized_and_bounded(self):
+        raw = "bad\x00\n" + ("x" * 500)
+        vote = shadow_advisors.parse_vote(
+            raw, "NVDA", "trend_targets", tech_norm=0.50, scout_confidence=0.50)
+        excerpt = vote["diagnostics"]["raw_response_excerpt"]
+        self.assertLessEqual(len(excerpt), shadow_advisors.RESPONSE_EXCERPT_LIMIT + 3)
+        self.assertNotIn("\x00", excerpt)
+        self.assertNotIn("\n", excerpt)
+
+    def test_structured_response_format_requires_vote_contract(self):
+        response_format = shadow_advisors.structured_response_format()
+        schema = response_format["json_schema"]["schema"]
+        self.assertEqual(response_format["type"], "json_schema")
+        self.assertTrue(response_format["json_schema"]["strict"])
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(
+            set(schema["required"]),
+            {"decision", "confidence", "reasoning", "risk_flags"},
+        )
 
     def test_prompt_contains_no_scout_score_anchor(self):
         # The specialists are benchmarked against the scout; leaking its score

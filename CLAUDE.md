@@ -125,9 +125,12 @@ For each candidate from Phase 1:
    - Specialists see raw evidence only (tech score + headlines/social), **never the
      scout's confidence or per-source breakdown** — their votes are benchmarked
      against the scout, and an anchored vote would just measure agreement
+   - Uses LM Studio JSON Schema output, then extracts the first valid JSON object
+     defensively and makes one repair attempt if parsing still fails
    - Writes `shadow_advisor_votes.json` and appends `shadow_advisor_votes.jsonl`
      (vote snapshots carry an `advisor_failures` count — a wrong model id fails
-     every call, and the run summary calls that out loudly)
+     every call, and the run summary calls that out loudly). Each vote also records
+     model, attempt count, finish reason, and bounded parse-failure diagnostics
    - Does not alter target approval, `active_targets.json`, or Beelink execution
 
 ## Tech Stack
@@ -192,8 +195,9 @@ Same as fleet repo: lowercase, concise, no conventional commit prefixes.
   identical target lists. 3x daily captures all meaningful market shifts with negligible signal
   loss and eliminates ~80% of GPU inference time.
 - **LLM response parsing must be defensive.** The model occasionally wraps JSON in
-  markdown code blocks, adds preamble text, or returns non-JSON entirely. The regex fallback
-  extractor (`re.search(r'\{.*\}', raw_text, re.DOTALL)`) is critical.
+  markdown code blocks, adds preamble text, or returns non-JSON entirely. Shadow specialists
+  use LM Studio JSON Schema output, a first-valid-object decoder, and one bounded repair attempt;
+  do not replace that decoder with a greedy brace regex.
 - **Tech score anchors confidence.** The technical indicator score from Phase 1 carries the
   most weight — LLM sentiment is a refinement layer, not the primary signal. Candidates with
   weak technicals rarely survive even with strong sentiment.

@@ -373,6 +373,46 @@ def _shadow_source_context(news_map, reddit_text):
         lines.append("SOCIAL:\n" + reddit_text)
     return "\n\n".join(lines) if lines else "No news or social coverage found."
 
+def _request_shadow_completion(model, messages, max_tokens, temperature):
+    payload = {
+        "model": model,
+        "messages": messages,
+        "response_format": shadow_advisors.structured_response_format(),
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    response = requests.post(LM_STUDIO_URL, json=payload, timeout=300)
+    response.raise_for_status()
+    response_json = response.json()
+    choice = response_json["choices"][0]
+    raw_text = choice.get("message", {}).get("content") or ""
+    return raw_text, choice.get("finish_reason")
+
+def _shadow_attempt_diagnostic(number, finish_reason, vote):
+    attempt = {
+        "attempt": number,
+        "finish_reason": finish_reason or "unknown",
+    }
+    parse_diagnostics = vote.get("diagnostics") or {}
+    for key in ["parse_error", "raw_response_excerpt"]:
+        if parse_diagnostics.get(key):
+            attempt[key] = parse_diagnostics[key]
+    return attempt
+
+def _attach_shadow_diagnostics(vote, model, attempts, api_error=None):
+    diagnostics = {
+        "model": model,
+        "attempt_count": len(attempts),
+        "retry_used": len(attempts) > 1,
+        "recovered_after_retry": len(attempts) > 1 and not vote.get("advisor_failed"),
+        "attempts": attempts,
+    }
+    if api_error is not None:
+        diagnostics["api_error"] = shadow_advisors.response_excerpt(
+            f"{type(api_error).__name__}: {api_error}", limit=240)
+    vote["diagnostics"] = diagnostics
+    return vote
+
 def ask_shadow_advisor(ticker, category, tech_norm, final_confidence,
                        news_map, reddit_text):
     """Ask the asset-specialist shadow advisor. Never affects target approval."""
@@ -380,22 +420,43 @@ def ask_shadow_advisor(ticker, category, tech_norm, final_confidence,
     advisor_name = shadow_advisors.advisor_for(category, ticker)
     model = SHADOW_ADVISOR_MODELS.get(advisor_name, MODEL_NAME) if isinstance(SHADOW_ADVISOR_MODELS, dict) else MODEL_NAME
     prompt = shadow_advisors.build_prompt(ticker, category, tech_norm, context)
+    attempts = []
     try:
-        payload = {
-            "model": model,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 1024,
-            "temperature": 0.05,
-        }
-        response = requests.post(LM_STUDIO_URL, json=payload, timeout=300)
-        raw_text = response.json()['choices'][0]['message']['content']
-        return shadow_advisors.parse_vote(
+        raw_text, finish_reason = _request_shadow_completion(
+            model,
+            [{"role": "user", "content": prompt}],
+            max_tokens=1024,
+            temperature=0.05,
+        )
+        vote = shadow_advisors.parse_vote(
             raw_text, ticker, category, tech_norm, final_confidence)
+        attempts.append(_shadow_attempt_diagnostic(1, finish_reason, vote))
+
+        if vote.get("reasoning") == "specialist_json_parse_failed":
+            repair_prompt = shadow_advisors.build_repair_prompt(raw_text)
+            raw_text, finish_reason = _request_shadow_completion(
+                model,
+                [{"role": "user", "content": repair_prompt}],
+                max_tokens=512,
+                temperature=0.0,
+            )
+            vote = shadow_advisors.parse_vote(
+                raw_text, ticker, category, tech_norm, final_confidence)
+            attempts.append(_shadow_attempt_diagnostic(2, finish_reason, vote))
+
+        return _attach_shadow_diagnostics(vote, model, attempts)
     except Exception as e:
         print(f"   [!] Shadow advisor failed on {ticker}: {e}")
-        return shadow_advisors.fallback_vote(
+        attempts.append({
+            "attempt": len(attempts) + 1,
+            "finish_reason": "request_failed",
+            "api_error": shadow_advisors.response_excerpt(
+                f"{type(e).__name__}: {e}", limit=240),
+        })
+        vote = shadow_advisors.fallback_vote(
             ticker, category, tech_norm, final_confidence,
             f"shadow_advisor_failed: {e}", advisor_failed=True)
+        return _attach_shadow_diagnostics(vote, model, attempts, api_error=e)
 
 def beam_to_beelink(retries=3):
     print(f"\n4. Beaming {OUTPUT_FILE} to Beelink...")

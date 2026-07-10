@@ -120,6 +120,39 @@ class TestParser(unittest.TestCase):
         self.assertIn("raw_response_excerpt", vote["diagnostics"]["attempts"][1])
 
     @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_skips_repair_for_empty_response(self, mock_post):
+        # Nothing to repair — a schema-forced retry would fabricate a vote
+        # from zero evidence and record it as a recovery.
+        mock_post.return_value = self._mock_llm("")
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertEqual(mock_post.call_count, 1)
+        self.assertTrue(vote["advisor_failed"])
+        self.assertEqual(vote["reasoning"], "specialist_json_parse_failed")
+        self.assertEqual(vote["diagnostics"]["attempt_count"], 1)
+        self.assertFalse(vote["diagnostics"]["retry_used"])
+
+    @patch('sector_scout_3.requests.post')
+    def test_shadow_advisor_trusts_parsed_sentinel_reasoning(self, mock_post):
+        # A cleanly parsed vote never retries, even if its reasoning text
+        # happens to echo the parse-failure sentinel.
+        mock_post.return_value = self._mock_llm(json.dumps({
+            "decision": "watch",
+            "confidence": 0.52,
+            "reasoning": "specialist_json_parse_failed",
+            "risk_flags": [],
+        }))
+
+        vote = sector_scout_3.ask_shadow_advisor(
+            "AMD", "wheel_targets", 0.65, 0.61, {}, "")
+
+        self.assertEqual(mock_post.call_count, 1)
+        self.assertFalse(vote["advisor_failed"])
+        self.assertEqual(vote["decision"], "watch")
+
+    @patch('sector_scout_3.requests.post')
     def test_shadow_advisor_records_request_failure(self, mock_post):
         mock_post.side_effect = RuntimeError("LM Studio unavailable")
 

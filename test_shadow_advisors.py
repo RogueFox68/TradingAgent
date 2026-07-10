@@ -66,6 +66,15 @@ class ShadowAdvisorVoteTest(unittest.TestCase):
         self.assertEqual(vote["confidence"], 0.31)
         self.assertFalse(vote["advisor_failed"])
 
+    def test_array_wrapped_vote_is_unwrapped(self):
+        raw = ('[{"decision":"approve","confidence":0.71,'
+               '"reasoning":"Stable trend with deep liquidity.","risk_flags":[]}]')
+        vote = shadow_advisors.parse_vote(
+            raw, "NVDA", "trend_targets", tech_norm=0.60, scout_confidence=0.70)
+        self.assertEqual(vote["decision"], "approve")
+        self.assertEqual(vote["confidence"], 0.71)
+        self.assertFalse(vote["advisor_failed"])
+
     def test_parse_failure_excerpt_is_sanitized_and_bounded(self):
         raw = "bad\x00\n" + ("x" * 500)
         vote = shadow_advisors.parse_vote(

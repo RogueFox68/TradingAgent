@@ -134,13 +134,13 @@ def _extract_json(raw_text):
     text = raw_text.strip().lstrip("\ufeff")
     if not text:
         raise ValueError("specialist response was empty")
+    expected_keys = {"decision", "confidence", "reasoning", "risk_flags"}
 
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as initial_error:
         decoder = json.JSONDecoder()
         first_object = None
-        expected_keys = {"decision", "confidence", "reasoning", "risk_flags"}
         for index, char in enumerate(text):
             if char != "{":
                 continue
@@ -157,12 +157,20 @@ def _extract_json(raw_text):
         if first_object is not None:
             return first_object
         raise ValueError(
-            f"no valid JSON object found: {initial_error.msg} at char {initial_error.pos}"
+            f"no valid JSON object found: {initial_error}"
         ) from initial_error
 
-    if not isinstance(payload, dict):
-        raise ValueError("specialist response must be a JSON object")
-    return payload
+    if isinstance(payload, dict):
+        return payload
+    if isinstance(payload, list):
+        # a valid [{vote}] array shouldn't burn the repair attempt
+        dict_items = [item for item in payload if isinstance(item, dict)]
+        for candidate in dict_items:
+            if expected_keys.intersection(candidate):
+                return candidate
+        if dict_items:
+            return dict_items[0]
+    raise ValueError("specialist response must be a JSON object")
 
 
 def parse_vote(raw_text, symbol, category, tech_norm, scout_confidence):

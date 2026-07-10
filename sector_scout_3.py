@@ -432,7 +432,11 @@ def ask_shadow_advisor(ticker, category, tech_norm, final_confidence,
             raw_text, ticker, category, tech_norm, final_confidence)
         attempts.append(_shadow_attempt_diagnostic(1, finish_reason, vote))
 
-        if vote.get("reasoning") == "specialist_json_parse_failed":
+        parse_failed = (vote.get("advisor_failed")
+                        and vote.get("reasoning") == "specialist_json_parse_failed")
+        # an empty response has no intended vote to repair; a schema-forced
+        # retry would just fabricate one
+        if parse_failed and shadow_advisors.response_excerpt(raw_text):
             repair_prompt = shadow_advisors.build_repair_prompt(raw_text)
             raw_text, finish_reason = _request_shadow_completion(
                 model,

@@ -44,8 +44,10 @@ TradingAgent/
 ├── CLAUDE.md                    # This file
 ├── CORSAIR_ARCHITECTURE.md      # Hardware, containers, scheduling details
 ├── market_scanner.py            # Phase 1: Scans full Alpaca universe, outputs dragnet_candidates.json
+│                                #   (dual bar source: yfinance primary, Alpaca fallback)
 ├── sector_scout_3.py            # Phase 2: AI analysis of candidates, outputs active_targets.json
 ├── shadow_advisors.py           # Shadow-only specialist votes for equity/options/crypto targets
+├── test_market_scanner.py       # Unit tests for bar sourcing, liquidity filter, publish guard
 ├── test_parser_logic.py         # Unit tests for LLM JSON response parsing
 ├── test_shadow_advisors.py      # Unit tests for specialist routing/vote persistence
 ├── test_scp_logic.py            # Unit tests for SCP transfer retry logic
@@ -82,11 +84,26 @@ Task Scheduler → run_scout.bat
 ### Phase 1: Market Scanner (`market_scanner.py`)
 
 1. Fetches ~4,800 tradeable assets from Alpaca
-2. Downloads price/volume data via yfinance in batches
+2. Downloads daily OHLCV via `fetch_daily_bars` — **yfinance primary, Alpaca fallback**
 3. Filters for liquidity (volume > 2M, price $15–$1000)
 4. Calculates technical indicators: RSI(14), ADX(14), SMA(20/50/200)
 5. Categorizes into strategy buckets based on indicator profiles
-6. Outputs top 10 per category to `dragnet_candidates.json`
+6. Outputs top 10 per category to `dragnet_candidates.json` — **unless the scan came back
+   near-empty**, in which case it aborts (exit 1 + Discord alert) rather than overwrite the
+   previous scan
+
+**Bar sourcing (added 2026-09, after yfinance broke outright).** `fetch_daily_bars(symbols, days)`
+returns `({symbol: OHLCV DataFrame}, source)`. yfinance stays *primary* because `MIN_VOLUME` is
+calibrated against consolidated volume, which is what Yahoo reports; Alpaca is the fallback and is
+already authenticated here. yfinance is imported **lazily**, so a broken install degrades to the
+fallback instead of killing the scan at import.
+
+Alpaca's free feed is IEX — a single venue, a few percent of consolidated volume — so its `Volume`
+column cannot be compared against `MIN_VOLUME`, and inventing a scale factor to make it fit would
+be calibrating a proxy by eye. On the Alpaca path the liquidity filter therefore switches to a
+**rank**: keep the top `ALPACA_LIQUIDITY_RANK` (400) names by dollar volume, plus the seed list.
+That is scale-invariant, needs no calibration, and preserves the filter's intent. Prices and
+indicators are feed-insensitive — a daily OHLC bar is a daily OHLC bar — so nothing else changes.
 
 ### Phase 2: Sector Scout (`sector_scout_3.py`)
 
@@ -116,6 +133,11 @@ For each candidate from Phase 1:
 5. **Writes `active_targets.json`** and **SCP transfers to Beelink**
    - 3 retry attempts with 5-second backoff
    - Discord webhook alert on transfer failure
+   - **Publish guard:** `0 approved` is a legitimate outcome (the model rejected everything;
+     bots correctly stand by) and still publishes. `0 *analysed*` is not — it means the input
+     was empty, and writing it would SCP an empty file over the Beelink's good targets. The
+     fleet's 24h staleness check cannot catch that, because the file it receives is fresh —
+     just empty. So that case aborts (exit 1 + alert) and the previous targets stand.
 
 6. **Runs shadow specialist advisors** (paper-only measurement layer)
    - Equity specialist: trend/survivor/short stock buckets
@@ -166,7 +188,8 @@ drops `active_targets.json`, so the file is visible in-container immediately.
 ## Architecture Notes
 
 - **No build system** — standalone Python scripts, no packaging
-- **Test coverage:** `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken),
+- **Test coverage:** `test_market_scanner.py` (bar-source fallback, IEX rank filtering, the
+  publish guard), `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken),
   `test_shadow_advisors.py` (specialist routing, parsing, fallback, persistence),
   `test_scp_logic.py` (SCP transfer retry/backoff), and `test_scoring_logic.py` (confidence
   weighting and technical-score normalization).
@@ -204,3 +227,10 @@ Same as fleet repo: lowercase, concise, no conventional commit prefixes.
 - **SCP is the single point of fragile coupling** between the two machines. A network hiccup
   doesn't crash anything (bots use stale targets), but monitoring the transfer success rate
   matters for signal freshness.
+- **An empty result is a failure, not a quiet market.** Both stages used to publish whatever
+  they had, including nothing. Stale targets are a *known, alerted* state on the Beelink; fresh
+  empty ones are silent, and strictly worse. Every stage now refuses to overwrite good output
+  with an empty scan — the guard belongs at the point of publication, not at the point of use.
+- **A single free data provider is a single point of failure.** yfinance carried the scanner's
+  entire price path and the fleet's whole VIX input. Both now have a second source, and both
+  import yfinance lazily so its failures stay contained to the source that uses it.

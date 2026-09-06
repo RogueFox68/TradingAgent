@@ -87,7 +87,19 @@ def get_candidates():
                     if "short_targets" not in data: data["short_targets"] = []
                     print(f"✅ Loaded Candidates: {len(data.get('trend_targets',[]))} Bull, {len(data.get('survivor_targets',[]))} Dip")
                     return data
-        except: pass
+            else:
+                age_h = (time.time() - file_time) / 3600
+                print(f"[!] {INPUT_FILE} is {age_h:.1f}h old (>24h) — "
+                      f"the scanner has not produced a fresh dragnet. "
+                      f"Falling back to CORE_WATCHLIST.")
+        except Exception as e:
+            # Was `except: pass`. A corrupt candidate file silently downgrading
+            # the whole scan to the static watchlist is exactly the kind of
+            # quiet degradation that hides an upstream outage for days.
+            print(f"[!] Could not read {INPUT_FILE} ({type(e).__name__}: {e}) — "
+                  f"falling back to CORE_WATCHLIST.")
+    else:
+        print(f"[!] {INPUT_FILE} missing — falling back to CORE_WATCHLIST.")
     return CORE_WATCHLIST
 
 # --- NEWS SOURCE TIERS ---
@@ -689,11 +701,32 @@ def run_scout():
                     ),
                     "username": "Sector Scout"
                 })
-        except: pass
+        except Exception as e:
+            print(f"[!] Scout summary webhook failed: {e}")
 
     print("\n3. Saving Results...")
 
-    
+    # Publish guard. `total_approved == 0` is a LEGITIMATE outcome — the model
+    # rejecting everything in a bad tape is a real signal, and the bots standing
+    # by is the correct response to it. `total_analyzed == 0` is not: it means
+    # there was nothing to analyse, i.e. the scanner produced nothing and even
+    # CORE_WATCHLIST came back empty. Writing that would SCP an empty file over
+    # the Beelink's good targets, and the fleet's 24h staleness check cannot
+    # catch it because the file it receives is fresh — just empty.
+    if total_analyzed == 0:
+        msg = (f"Scout had 0 candidates to analyse. Refusing to write and beam "
+               f"{OUTPUT_FILE} — the Beelink keeps its previous targets "
+               f"(which will age into a STALE TARGETS alert if this persists).")
+        print(f"[!] PUBLISH ABORTED: {msg}")
+        if WEBHOOK_OVERSEER:
+            try:
+                requests.post(WEBHOOK_OVERSEER, json={
+                    "content": f"🚨 **SCOUT PUBLISH ABORTED**\n{msg}",
+                    "username": "Sector Scout"}, timeout=10)
+            except Exception as e:
+                print(f"[!] Abort alert failed: {e}")
+        sys.exit(1)
+
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(final_targets, f, indent=4)
         

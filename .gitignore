@@ -37,3 +37,6 @@ influx_data/
 *.jsonl
 *.txt
 !requirements.txt
+# --- Backtest (backtest/) ---
+backtest_cache/
+backtest_out/

@@ -95,6 +95,39 @@ def _cache_path(cache_dir, kind, sym, start, end):
     return Path(cache_dir) / kind / f"{safe}_{start:%Y%m%d}_{end:%Y%m%d}.pkl"
 
 
+def _like(t, tz):
+    """t as a Timestamp comparable with an index in timezone `tz`."""
+    t = pd.Timestamp(t)
+    if tz is None:
+        return t.tz_localize(None) if t.tzinfo is not None else t
+    return t.tz_localize(tz) if t.tzinfo is None else t.tz_convert(tz)
+
+
+def _covering_cache(cache_dir, kind, sym, start, end):
+    """A cached file for `sym` whose date range contains [start, end], if
+    any - so a run over a sub-window (the wheel backtest over the research
+    run's download) reuses bars instead of fetching them again. The frame is
+    sliced to the requested window; ends are compared as dates, because the
+    cache name carries dates."""
+    safe = sym.replace("/", "_")
+    d = Path(cache_dir) / kind
+    if not d.is_dir():
+        return None
+    s0, e0 = f"{start:%Y%m%d}", f"{end:%Y%m%d}"
+    for p in d.glob(f"{safe}_*_*.pkl"):
+        parts = p.stem.rsplit("_", 2)
+        if len(parts) != 3 or parts[0] != safe:
+            continue
+        if parts[1] <= s0 and parts[2] >= e0:
+            with open(p, "rb") as f:
+                df = pickle.load(f)
+            if df.empty:
+                return df
+            idx = pd.DatetimeIndex(df.index)
+            return df[(idx >= _like(start, idx.tz)) & (idx <= _like(end, idx.tz))]
+    return None
+
+
 def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk, adjustment=None):
     """`adjustment`: None = the API default (raw), which is what the bots
     trade on and what the 3-month ablation uses. Multi-year research must
@@ -109,6 +142,10 @@ def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk, adjustment=No
         if p.exists():
             with open(p, "rb") as f:
                 out[s] = pickle.load(f)
+            continue
+        cov = _covering_cache(cache_dir, kind, s, start, end)
+        if cov is not None:
+            out[s] = cov
         else:
             missing.append(s)
     if missing:

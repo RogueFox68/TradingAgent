@@ -264,10 +264,39 @@ class CoveringCacheTest(unittest.TestCase):
             p = data._cache_path(tmp, "1d_all", "AAA", datetime(2020, 1, 1), datetime(2020, 12, 31))
             p.parent.mkdir(parents=True)
             df.to_pickle(p)
-            got = data._covering_cache(tmp, "1d_all", "AAA", datetime(2020, 3, 1), datetime(2020, 3, 31))
+            index = data._cache_index(tmp, "1d_all")
+            got = data._covering_cache(index, "AAA", datetime(2020, 3, 1), datetime(2020, 3, 31))
             self.assertEqual(len(got), 31)
-            self.assertIsNone(data._covering_cache(tmp, "1d_all", "AAA", datetime(2019, 3, 1),
+            self.assertIsNone(data._covering_cache(index, "AAA", datetime(2019, 3, 1),
                                                    datetime(2020, 3, 31)))
+
+    def test_cache_directory_is_listed_once_not_per_symbol(self):
+        """The first version globbed the cache per symbol: ~15,000 symbols x
+        ~15,000 files, which looked like a hang on the Corsair."""
+        import os as _os
+        from backtest import data
+        syms = [f"S{i:04d}" for i in range(3000)]
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp) / "1d_all"
+            d.mkdir()
+            idx = pd.DatetimeIndex(pd.date_range("2020-01-01", "2020-12-31", tz="UTC"))
+            df = pd.DataFrame({"open": 1.0, "high": 1.0, "low": 1.0, "close": 1.0, "volume": 1.0}, index=idx)
+            df.to_pickle(d / "S0000_20200101_20201231.pkl")
+            for s_ in syms[1:]:
+                (d / f"{s_}_20200101_20201231.pkl").write_bytes((d / "S0000_20200101_20201231.pkl").read_bytes())
+            calls = []
+            real = _os.scandir
+
+            def counting(path):
+                calls.append(path)
+                return real(path)
+            with mock.patch.object(data.os, "scandir", counting), \
+                    mock.patch.object(data, "data_client", lambda: self.fail("fetched: the cache covered it")):
+                out = data.bars_daily(syms, datetime(2020, 3, 1), datetime(2020, 3, 31), tmp,
+                                      adjustment="all")
+            self.assertEqual(len(calls), 1)
+            self.assertEqual(len(out), 3000)
+            self.assertEqual(len(out["S2999"]), 31)
 
 
 @unittest.skipUnless((FLEET / "wheel_bot.py").exists(), "trading-bot-fleet checkout not found")

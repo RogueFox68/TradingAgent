@@ -10,6 +10,7 @@ and truncates, which is how three of the fleet's four fetch sites traded on
 weeks-old data (trading-bot-fleet CLAUDE.md, "Market Data Correctness").
 Requests here page the whole window.
 """
+import os
 import pickle
 import re
 import time
@@ -103,22 +104,37 @@ def _like(t, tz):
     return t.tz_localize(tz) if t.tzinfo is None else t.tz_convert(tz)
 
 
-def _covering_cache(cache_dir, kind, sym, start, end):
-    """A cached file for `sym` whose date range contains [start, end], if
+def _cache_index(cache_dir, kind):
+    """{symbol: [(start, end, path)]} for every cached file of `kind`, from ONE
+    directory listing.
+
+    The first version globbed the directory once per symbol. With ~15,000
+    symbols and ~15,000 cached files that is ~225 million directory entries
+    read, silently - on the Corsair it looked like a hang after the
+    "Universe and daily bars" line."""
+    d = Path(cache_dir) / kind
+    idx = {}
+    if not d.is_dir():
+        return idx
+    with os.scandir(d) as it:
+        for e in it:
+            if not e.name.endswith(".pkl"):
+                continue
+            parts = e.name[:-4].rsplit("_", 2)
+            if len(parts) == 3:
+                idx.setdefault(parts[0], []).append((parts[1], parts[2], Path(e.path)))
+    return idx
+
+
+def _covering_cache(index, sym, start, end):
+    """A cached frame for `sym` whose date range contains [start, end], if
     any - so a run over a sub-window (the wheel backtest over the research
     run's download) reuses bars instead of fetching them again. The frame is
     sliced to the requested window; ends are compared as dates, because the
     cache name carries dates."""
-    safe = sym.replace("/", "_")
-    d = Path(cache_dir) / kind
-    if not d.is_dir():
-        return None
     s0, e0 = f"{start:%Y%m%d}", f"{end:%Y%m%d}"
-    for p in d.glob(f"{safe}_*_*.pkl"):
-        parts = p.stem.rsplit("_", 2)
-        if len(parts) != 3 or parts[0] != safe:
-            continue
-        if parts[1] <= s0 and parts[2] >= e0:
+    for s1, e1, p in index.get(sym.replace("/", "_"), ()):
+        if s1 <= s0 and e1 >= e0:
             with open(p, "rb") as f:
                 df = pickle.load(f)
             if df.empty:
@@ -137,17 +153,23 @@ def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk, adjustment=No
     if adjustment:
         kind = f"{kind}_{adjustment}"
     out, missing = {}, []
-    for s in symbols:
+    index = _cache_index(cache_dir, kind)
+    print(f"   [data] {kind}: checking the cache for {len(symbols)} symbols "
+          f"({sum(len(v) for v in index.values())} cached files)...")
+    for n, s in enumerate(symbols, 1):
         p = _cache_path(cache_dir, kind, s, start, end)
+        cov = None
         if p.exists():
             with open(p, "rb") as f:
-                out[s] = pickle.load(f)
-            continue
-        cov = _covering_cache(cache_dir, kind, s, start, end)
+                cov = pickle.load(f)
+        else:
+            cov = _covering_cache(index, s, start, end)
         if cov is not None:
             out[s] = cov
         else:
             missing.append(s)
+        if n % 2000 == 0:
+            print(f"   [data] {kind}: {n}/{len(symbols)} checked, {len(out)} from cache")
     if missing:
         print(f"   [data] fetching {kind} bars for {len(missing)} symbols "
               f"({len(out)} cached)...")

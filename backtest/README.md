@@ -55,11 +55,16 @@ The targets file is modelled as the fleet reads it (`utils.load_and_validate_tar
 newest *transferred* run wins. A file whose `updated` stamp (set when the scout **starts**)
 is over 24h old reads as empty. That is why the first ~hour of every Monday trades nothing.
 
-LLM outages are kept as they happened. `ask_llama` scores a failed call 0.0, so when LM
-Studio is down every candidate is rejected and an empty "success" file is published. The
-report lists those runs. The random arm matches the LLM's approval count of zero on them.
+LLM outages are kept as they happened. `ask_llama` used to score a failed call 0.0, so when
+LM Studio was down every candidate was rejected and an empty "success" file was published.
+The report lists those runs. The random arm matches the LLM's approval count of zero on them.
 The candidate-level signal tests exclude failed calls, because a failed call is not a
-judgment.
+judgment. The scout now scores a failed call as missing. It prints the call as `N/A` and
+names it in a `(LLM failed: T1, T2)` suffix, which the parser reads into
+`Candidate.failed`. It also refuses to publish a run where more than half the calls failed
+or more than half the candidates had no news. The report lists news-outage runs as well
+(`analysis.news_outage_runs`). On pre-guard history, a normal-looking run in that list is a
+false positive of the guard's 0.5 threshold.
 
 ## Running it on the Corsair
 

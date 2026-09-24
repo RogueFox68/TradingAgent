@@ -153,13 +153,22 @@ def main(argv=None):
                _df_table(ds.get("mechanical")),
                "\n### LLM outages\n",
                f"{_fmt(ds.get('ai_error_pct'), 1)}% of candidates had a failed LLM call. "
-               "`ask_llama` scores a failed call 0.0, so a run where LM Studio is down rejects "
-               "everything and still publishes empty buckets, which the fleet treats as a deliberate "
-               "stand-by. These runs are in every LLM arm (C, C_flat, and D, which matches the LLM's "
-               "count of zero), because they happened. The signal tests in section 5 exclude "
-               "failed calls, because a failed call is not a judgment.\n",
+               "`ask_llama` used to score a failed call 0.0, so a run where LM Studio was down "
+               "rejected everything and still published empty buckets, which the fleet treats as a "
+               "deliberate stand-by. These runs are in every LLM arm (C, C_flat, and D, which matches "
+               "the LLM's count of zero), because they happened. The scout now scores a failed call "
+               "as missing and refuses to publish a run where more than half the calls failed. The "
+               "signal tests in section 5 exclude failed calls, because a failed call is not a "
+               "judgment.\n",
                _table(ds.get("outages", []), ["run_start", "candidates", "ai_error_pct", "approved", "published"])
                if ds.get("outages") else "_No outage runs in the window._",
+               "\n### News outages\n",
+               "Runs where more than half the candidates had no news in any tier. The scout now "
+               "refuses to publish these. Before that guard they published whatever the few covered "
+               "names produced. A run listed here that looks like a normal day is a false positive of "
+               "the guard's threshold.\n",
+               _table(ds.get("news_outages", []), ["run_start", "candidates", "no_news_pct", "approved", "published"])
+               if ds.get("news_outages") else "_No news-outage runs in the window._",
                f"\n### Latency\nScanner finished -> targets published: median {_fmt(lat.get('median_min'), 0)} min, "
                f"p10 {_fmt(lat.get('p10_min'), 0)}, p90 {_fmt(lat.get('p90_min'), 0)}, "
                f"max {_fmt(lat.get('max_min'), 0)} ({lat.get('runs', 0)} runs).\n"]

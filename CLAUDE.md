@@ -153,9 +153,20 @@ For each candidate from Phase 1:
      and all three 09-22 runs. The guard is checked before the summary webhook, so an aborted
      run does not also send "0 TARGETS, bots will STAND BY". The bots keep their previous
      targets instead. The summary prints `LLM Calls: N (M failed)` every run.
-     `test_scoring_logic.RunScoutLLMFailureTest` drives the real `run_scout` through a
-     single failed call, a full outage, a majority outage, and a healthy model that rejects
-     everything (which must still publish).
+     **So does a run where more than half the candidates had no news in any tier**
+     (`NO_NEWS_ABORT_SHARE`), meaning yfinance news is down or has changed shape. The LLM
+     guard cannot see this, because a candidate with no news makes no news call, and with
+     Reddit down too the run makes no calls at all. Social coverage does not count as news.
+     News carries 60% of the weight, so without it a candidate needs tech ≥ 0.867 even with a
+     perfect social score, and the file would be empty or a few social-driven names. The
+     summary prints `News Coverage: N/M candidates`. When both sources are down, the alert
+     names both.
+     `test_scoring_logic.RunScoutPublishGuardTest` drives the real `run_scout` through a
+     single failed call, a full and a majority LLM outage, a news outage with and without
+     Reddit, a few uncovered names (which must still publish), and a healthy model that
+     rejects everything (which must also still publish). `backtest.analysis.news_outage_runs`
+     lists the runs in `scout_log.txt` this guard would have stopped. Check that list for
+     false positives before relying on the 0.5 threshold.
 
 6. **Runs shadow specialist advisors** (paper-only measurement layer)
    - Equity specialist: trend/survivor/short stock buckets

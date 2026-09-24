@@ -318,6 +318,29 @@ class AnalysisTest(unittest.TestCase):
         self.assertEqual(out[0]["ai_error_pct"], 100.0)
         self.assertEqual(analysis.llm_outage_runs(runs(), date(2026, 9, 14), date(2026, 9, 14)), [])
 
+    def test_news_outage_runs_count_a_failed_call_as_coverage(self):
+        # A newer scout prints a failed call as N/A and names it after the
+        # breakdown. That source HAD news; reading N/A alone would turn an LM
+        # Studio outage into a news outage.
+        (r,) = scout_log.parse([
+            "[Tue 09/22/2026  8:30:00.00] 🚀 STARTING DAILY TRADING SEQUENCE (Fixed)",
+            "   👉 Analyzing trend_targets...",
+            "      ❌ AAA  | Conf: 0.65 [Tech: 1.00 | T1: N/A | T2: N/A | T3: N/A | Soc: N/A] (LLM failed: T1, T2)",
+            "      ❌ BBB  | Conf: 0.65 [Tech: 1.00 | T1: N/A | T2: N/A | T3: N/A | Soc: N/A]",
+            "      ✅ CCC  | Conf: 0.69 [Tech: 1.00 | T1: N/A | T2: N/A | T3: N/A | Soc: 0.90]",
+        ])
+        c = {x.symbol: x for x in r.candidates}
+        self.assertEqual(c["AAA"].failed, ("T1", "T2"))
+        self.assertTrue(c["AAA"].has_news())
+        self.assertFalse(c["BBB"].has_news())
+        self.assertFalse(c["CCC"].has_news())  # social is not news
+        day = date(2026, 9, 22)
+        out = analysis.news_outage_runs([r], day, day)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0]["no_news_pct"], 66.7)
+        # The fixture's first run: 1 of 6 without news.
+        self.assertEqual(analysis.news_outage_runs(runs(), date(2026, 9, 14), date(2026, 9, 14)), [])
+
     def test_identical_arms_differ_by_zero(self):
         eq = pd.Series([100_100.0, 100_050.0, 100_300.0] * 5,
                        index=[date(2026, 9, 1) + timedelta(days=k) for k in range(15)])

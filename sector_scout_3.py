@@ -71,6 +71,9 @@ NEUTRAL_SCORE = 0.5
 # Refuse to publish when MORE than this share of a run's LLM calls failed.
 # Those runs measure LM Studio being down, not the model's view of the tape.
 LLM_FAILURE_ABORT_SHARE = 0.5
+# Refuse to publish when MORE than this share of scored candidates had no news
+# in any tier. That is the news source being down, not a quiet news cycle.
+NO_NEWS_ABORT_SHARE = 0.5
 
 # --- REDDIT CONFIG ---
 REDDIT_SUBS = ["wallstreetbets", "stocks", "investing", "options", "thetagang"]
@@ -530,36 +533,51 @@ def beam_to_beelink(retries=3):
     except: pass
     return False
 
-def publish_abort_reason(total_analyzed, llm_calls, llm_failed, first_llm_error=None):
+def publish_abort_reason(total_analyzed, scored=0, no_news=0, llm_calls=0,
+                         llm_failed=0, first_llm_error=None):
     """Why this run must NOT overwrite the Beelink's targets, or None if it may.
 
     `total_approved == 0` is a LEGITIMATE outcome: the model rejecting
     everything in a bad tape is a real signal, and the bots standing by is the
-    correct response to it. Two ways of reaching an empty result are not:
+    correct response to it. Three ways of reaching an empty result are not:
 
     - `total_analyzed == 0`: there was nothing to analyse, i.e. the scanner
       produced nothing and even CORE_WATCHLIST came back empty.
+    - Most scored candidates had NO NEWS in any tier: yfinance news was down,
+      or changed shape so that every item got filtered out. get_tiered_news
+      returns an empty result for both, and a shape change raises nothing, so
+      only the outcome shows it. News carries 60% of the weight. Without it a
+      candidate needs tech >= 0.867 even with a perfect social score, so the
+      file would be empty or a few social-driven names. Social coverage alone
+      does not count. The LLM guard below cannot see this: no news means no
+      LLM call, and with social down too the run makes no calls at all.
     - Most LLM calls FAILED: LM Studio was down (e.g. HTTP 400 with no model
       loaded). With every LLM source neutral, a candidate tops out at 0.65,
       below the 0.66 threshold, so nothing can be approved. When failed calls
       scored 0.0 the result was the same: runs on 07-20, 08-17 and all three
-      on 09-22 approved nothing. That file would describe the outage, not the
-      market.
+      on 09-22 approved nothing.
 
-    Writing either would SCP a fresh file over the Beelink's good targets, and
-    the fleet's 24h staleness check cannot catch it because the file it
-    receives is fresh, just empty. Aborting keeps the previous targets, which
-    age into a STALE TARGETS alert if this persists.
+    The last two files would describe the outage, not the market. Writing any
+    of them would SCP a fresh file over the Beelink's good targets, and the
+    fleet's 24h staleness check cannot catch it because the file it receives
+    is fresh, just empty. Aborting keeps the previous targets, which age into
+    a STALE TARGETS alert if this persists.
     """
     keep = (f"Refusing to write and beam {OUTPUT_FILE}. The Beelink keeps its "
             f"previous targets (which will age into a STALE TARGETS alert if "
             f"this persists).")
     if total_analyzed == 0:
         return f"Scout had 0 candidates to analyse. {keep}"
+    problems = []
+    if scored and no_news / scored > NO_NEWS_ABORT_SHARE:
+        problems.append(f"{no_news}/{scored} candidates had no news in any "
+                        f"tier. Is yfinance news reachable?")
     if llm_calls and llm_failed / llm_calls > LLM_FAILURE_ABORT_SHARE:
         sample = f" First error: {first_llm_error[:300]}." if first_llm_error else ""
-        return (f"{llm_failed}/{llm_calls} LLM calls failed. Is LM Studio "
-                f"running with {MODEL_NAME} loaded?{sample} {keep}")
+        problems.append(f"{llm_failed}/{llm_calls} LLM calls failed. Is LM Studio "
+                        f"running with {MODEL_NAME} loaded?{sample}")
+    if problems:
+        return " ".join(problems + [keep])
     return None
 
 def run_scout():
@@ -575,6 +593,8 @@ def run_scout():
         "short_targets": {}
     }
     shadow_votes = []
+    scored = 0
+    no_news = 0
     llm_calls = 0
     llm_failed = 0
     first_llm_error = None
@@ -622,6 +642,9 @@ def run_scout():
             # 2. Gather Intelligence
             news_map = get_tiered_news(ticker)
             reddit_text = get_reddit_sentiment(ticker)
+            scored += 1
+            if not any(news_map[tier] for tier in ("tier1", "tier2", "tier3")):
+                no_news += 1
             
             # 3. Multi-Factor Scoring
             scores = []
@@ -717,6 +740,7 @@ def run_scout():
     print(f"   Analyzed: {total_analyzed}")
     print(f"   Approved: {total_approved} ({approval_rate*100:.0f}%)")
     print(f"   Avg Confidence: {avg_confidence:.2f}")
+    print(f"   News Coverage: {scored - no_news}/{scored} candidates")
     print(f"   LLM Calls: {llm_calls} ({llm_failed} failed)")
     if ENABLE_SHADOW_ADVISORS:
         shadow_snapshot = shadow_advisors.build_snapshot(
@@ -733,7 +757,9 @@ def run_scout():
     # Publish guards run BEFORE the summary webhook, so an aborted run never
     # also announces "0 TARGETS, bots will STAND BY". They won't: they keep
     # the previous file.
-    abort_msg = publish_abort_reason(total_analyzed, llm_calls, llm_failed, first_llm_error)
+    abort_msg = publish_abort_reason(
+        total_analyzed, scored=scored, no_news=no_news, llm_calls=llm_calls,
+        llm_failed=llm_failed, first_llm_error=first_llm_error)
     if abort_msg:
         print(f"[!] PUBLISH ABORTED: {abort_msg}")
         if WEBHOOK_OVERSEER:

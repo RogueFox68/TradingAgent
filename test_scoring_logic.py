@@ -123,13 +123,14 @@ REASON = "Steady fundamentals with no headline risk in the recent coverage windo
 WEBHOOK = "https://discord.invalid/webhook"
 
 
-class RunScoutLLMFailureTest(unittest.TestCase):
+class RunScoutPublishGuardTest(unittest.TestCase):
     """Drives the real run_scout -> ask_llama -> publish path, with only
     requests.post, the data sources and the SCP step stubbed out.
 
     A candidate is (ticker, raw tech score, {source label: LLM outcome}). A
-    label that is absent has no coverage; FAIL makes LM Studio answer that
-    call with HTTP 400 and no 'choices', the 09-22 outage shape.
+    label that is absent has no coverage, so a candidate with no T1/T2/T3 is
+    one yfinance returned no news for. FAIL makes LM Studio answer that call
+    with HTTP 400 and no 'choices', the 09-22 outage shape.
     """
 
     def setUp(self):
@@ -279,19 +280,81 @@ class RunScoutLLMFailureTest(unittest.TestCase):
         self.beam.assert_not_called()
         self.assertIn("0 candidates", self.webhooks[0])
 
+    def test_news_outage_aborts_and_keeps_previous_targets(self):
+        # yfinance news and Reddit both down: nothing to score, so no LLM
+        # call is made and the LLM guard has nothing to count. Every
+        # candidate tops out at 0.65 and this used to publish empty.
+        with open(self.output, "w") as f:
+            f.write('{"previous": "targets"}')
+        code, out = self._run([
+            ("AAA", 40.0, {}),
+            ("BBB", 40.0, {}),
+            ("CCC", 20.0, {}),
+        ])
+        self.assertEqual(code, 1, out)
+        self.assertIn("LLM Calls: 0 (0 failed)", out)
+        self.assertEqual(self._published(), {"previous": "targets"})
+        self.beam.assert_not_called()
+        self.assertEqual(len(self.webhooks), 1, self.webhooks)
+        self.assertIn("SCOUT PUBLISH ABORTED", self.webhooks[0])
+        self.assertIn("3/3 candidates had no news", self.webhooks[0])
+        self.assertNotIn("LLM calls failed", self.webhooks[0])
+
+    def test_news_outage_aborts_even_with_social_approvals(self):
+        # yfinance news down, Reddit up. A max-tech name with strong social
+        # still clears the threshold (.30 + .30 neutral news + .09 = 0.69),
+        # but a file of social-only picks describes the outage, not the market.
+        code, out = self._run([
+            ("AAA", 40.0, {"Soc": 0.9}),
+            ("BBB", 30.0, {"Soc": 0.6}),
+            ("CCC", 20.0, {}),
+        ])
+        self.assertEqual(code, 1, out)
+        self.assertIn("✅ AAA", out)
+        self.assertFalse(os.path.exists(self.output))
+        self.beam.assert_not_called()
+        self.assertIn("3/3 candidates had no news", self.webhooks[0])
+
+    def test_some_candidates_without_news_still_publish(self):
+        # A few names with no coverage is a normal run. Social alone does
+        # not count as news, and 2 of 5 is under the threshold.
+        code, out = self._run([
+            ("AAA", 40.0, {"T1": 0.9, "T2": 0.9}),
+            ("BBB", 40.0, {"Soc": 0.5}),
+            ("CCC", 20.0, {"T3": 0.4}),
+            ("DDD", 20.0, {}),
+            ("EEE", 30.0, {"T2": 0.6, "Soc": 0.6}),
+        ])
+        self.assertIsNone(code, out)
+        self.assertIn("News Coverage: 3/5 candidates", out)
+        self.assertEqual(list(self._published()["trend_targets"]), ["AAA"])
+        self.beam.assert_called_once()
+
 
 class PublishAbortReasonTest(unittest.TestCase):
-    def test_threshold_is_more_than_half_of_calls(self):
-        self.assertIsNone(sector_scout_3.publish_abort_reason(40, 10, 5))
-        self.assertIsNotNone(sector_scout_3.publish_abort_reason(40, 10, 6))
+    reason = staticmethod(sector_scout_3.publish_abort_reason)
 
-    def test_a_run_with_no_llm_calls_is_not_an_llm_outage(self):
-        # Nothing was asked, so nothing failed. The scout's no-coverage
-        # scoring already holds every such candidate below the threshold.
-        self.assertIsNone(sector_scout_3.publish_abort_reason(40, 0, 0))
+    def test_llm_threshold_is_more_than_half_of_calls(self):
+        self.assertIsNone(self.reason(40, scored=40, llm_calls=10, llm_failed=5))
+        self.assertIn("6/10 LLM calls failed",
+                      self.reason(40, scored=40, llm_calls=10, llm_failed=6))
+
+    def test_news_threshold_is_more_than_half_of_candidates(self):
+        self.assertIsNone(self.reason(40, scored=10, no_news=5, llm_calls=10))
+        self.assertIn("6/10 candidates had no news",
+                      self.reason(40, scored=10, no_news=6, llm_calls=8))
+
+    def test_both_outages_are_named(self):
+        # Both sources down in one run: the alert names both, so fixing the
+        # first does not just reveal the second on the next scheduled run.
+        msg = self.reason(40, scored=10, no_news=8, llm_calls=4, llm_failed=4,
+                          first_llm_error="AAA: AI Failed: HTTP 400")
+        self.assertIn("8/10 candidates had no news", msg)
+        self.assertIn("4/4 LLM calls failed", msg)
+        self.assertIn("HTTP 400", msg)
 
     def test_nothing_to_analyse_aborts(self):
-        self.assertIn("0 candidates", sector_scout_3.publish_abort_reason(0, 0, 0))
+        self.assertIn("0 candidates", self.reason(0))
 
 
 if __name__ == "__main__":

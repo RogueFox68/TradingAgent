@@ -41,3 +41,4 @@ influx_data/
 backtest_cache/
 backtest_out/
 backtest_research_out/
+backtest_wheel_out/

@@ -191,3 +191,66 @@ Tests: `python -m unittest test_research`.
   regime/VIX gating.
 - Walk-forward removes the bias of *choosing settings*. It doesn't remove the bias of having
   chosen *these families*, which is why they are pre-registered.
+
+---
+
+# Wheel backtest (`backtest.wheel_research`)
+
+**Question:** does wheel_bot's strategy (cash-secured puts, assignment, covered calls) earn its
+38% of the account after costs, compared with holding SPY?
+
+## Method
+
+- **Underlyings:** the scanner's own wheel rule, applied point in time with no LLM:
+  - price above its 200-day SMA, RSI(14) between 40 and 55, ADX(14) below 25;
+  - drawn from its top 400 names by dollar volume, priced $15–$1000;
+  - the top 10 each day by 50 − RSI.
+- **Rules:** wheel_bot's own, checked against the fleet source on every run
+  (`rules.verify_wheel_against_fleet`):
+  - sell a put about `otm` below the price, 25–45 days to expiry, premium at least $0.10;
+  - take profit at 50% of the premium;
+  - close an in-the-money contract at 5 days or less to expiry;
+  - roll at 10 days or less;
+  - after an assignment, sell covered calls on the shares;
+  - collateral budget: short puts count at strike × 100.
+- **Gates:** new puts are blocked while SPY is below its 20-day EMA (market_analyst's
+  BEAR_TREND) or VIX is above 22. Covered calls are exempt. When VIX is above 28 the
+  commander stops the process, so nothing at all is managed that day.
+- **Prices:** Alpaca keeps no option quote history, only trades.
+  - Every decision uses day t's close. The fill happens on day t+1 at that contract's traded
+    VWAP, less `--slip` (a fraction of the option price, default 5%) and `--fee` per contract.
+  - A contract that didn't trade that day can't be filled. The report counts those skips as
+    the **fill rate**, and warns when it falls below 50%.
+  - Expiry settles at intrinsic value against the underlying's raw close.
+- **Pre-registered grid:** otm 3%/5%/8% × take-profit 50%/none × gates on/off (12 trials).
+  - Quarterly walk-forward, scored against the same `PASS_BAR` as `backtest.research`.
+  - otm 3% / tp 50% / gates on is the **live-like** trial; the live bot sells about 3% OTM at
+    typical scout confidence. It is reported separately, with a cost-sensitivity table
+    (slip 0%, 5%, 10%).
+- **Window:** from 2024-03-01. Alpaca's option history starts in February 2024.
+
+## Running it
+
+```bat
+venv\Scripts\python -m backtest.wheel_research --fleet-repo ..\trading-bot-fleet
+```
+
+- **Data.** It reuses the daily bars cached by `backtest.research` when their range covers
+  the wheel's window. It then downloads option chains per candidate per quarter, daily bars for
+  each contract it trades, and CBOE's VIX history.
+- **VIX offline.** If the Corsair can't reach cdn.cboe.com, pass a downloaded copy of
+  `VIX_History.csv` with `--vix-csv`.
+- **Output.** `backtest_wheel_out/wheel_report.md`, `wheel_trial_daily_returns.csv` and
+  `wheel_events_live_like.csv`, which records every sell, roll, close, assignment and expiry.
+
+Tests: `python -m unittest test_wheel`.
+
+## Limitations
+
+- Trade prices, not quotes.
+- Decisions are made daily; the live bot runs every 15 minutes.
+- No interest is earned on idle collateral, which understates the wheel against SPY by
+  roughly the cash yield times the idle share.
+- No earnings guard.
+- Early exercise and splits during a held contract are not modelled.
+- About 2.5 years of history.

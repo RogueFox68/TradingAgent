@@ -47,10 +47,11 @@ TradingAgent/
 │                                #   (dual bar source: yfinance primary, Alpaca fallback)
 ├── sector_scout_3.py            # Phase 2: AI analysis of candidates, outputs active_targets.json
 ├── shadow_advisors.py           # Shadow-only specialist votes for equity/options/crypto targets
-├── backtest/                    # LLM-gate ablation backtest + walk-forward strategy research
-│                                #   (see backtest/README.md)
+├── backtest/                    # LLM-gate ablation backtest, walk-forward strategy research,
+│                                #   and the wheel backtest (see backtest/README.md)
 ├── test_backtest.py             # Unit tests for the backtest: log parser, schedules, simulator
 ├── test_research.py             # Unit tests for strategy research: engine, walk-forward, stats
+├── test_wheel.py                # Unit tests for the wheel backtest: fills, expiry, assignment, gates
 ├── test_market_scanner.py       # Unit tests for bar sourcing, liquidity filter, publish guard
 ├── test_parser_logic.py         # Unit tests for LLM JSON response parsing
 ├── test_shadow_advisors.py      # Unit tests for specialist routing/vote persistence

@@ -190,3 +190,60 @@ def verify_against_fleet(fleet_repo):
             if snip not in text:
                 problems.append(f"{fname}: expected source line not found: {snip!r}")
     return problems
+
+
+# --- wheel_bot.py (wheel backtest) ---------------------------------------------
+WHEEL = dict(
+    MIN_DTE=25,
+    MAX_DTE=45,
+    TARGET_OTM_PCT=0.05,
+    MIN_PREMIUM=0.10,
+    TAKE_PROFIT_PCT=0.50,
+    STALE_ROLL_DTE=10,
+    FORCE_CLOSE_DTE=5,
+)
+WHEEL_GATED_REGIMES = ("BEAR_TREND", "CRITICAL_VOLATILITY")
+WHEEL_VIX_GATE = 22
+FLEET_VIX_PAUSE = 28.0
+
+_WHEEL_INLINE = {
+    # the dynamic OTM, the strict-OTM strike filter and the closest-OTM score
+    "wheel_bot.py": ["dynamic_otm = TARGET_OTM_PCT * (1.5 - confidence)",
+                     "if side == \"PUT\" and strike >= current_price: continue",
+                     "score = abs(pct_otm - target_otm)",
+                     "if capture_pct >= TAKE_PROFIT_PCT:",
+                     "if is_itm and dte <= FORCE_CLOSE_DTE:",
+                     "is_stale = dte <= STALE_ROLL_DTE",
+                     "if new_limit_price < MIN_PREMIUM:",
+                     "if new_trade_collateral > 0 and total_commitment + new_trade_collateral > my_budget:"],
+    "fleet_registry.py": ['gated_when=dict(regimes=("BEAR_TREND", "CRITICAL_VOLATILITY"), vix_above=22)'],
+    "market_analyst.py": ["if vix_val > 28.0:",
+                          "if price < ema20:",
+                          "if price > ema20 and adx > 25:"],
+    # a paused bot is STOPPED (pm2 stop): it manages nothing until resumed
+    "commander.py": ["elif desired_status == \"paused\" and actual_status == \"online\":",
+                     "subprocess.run(['pm2', 'stop', bot_name])"],
+}
+
+
+def verify_wheel_against_fleet(fleet_repo):
+    """Mismatches between the wheel backtest's rules and the fleet source."""
+    root = Path(fleet_repo)
+    problems = []
+    path = root / "wheel_bot.py"
+    if not path.exists():
+        return [f"wheel_bot.py: not found under {root}"]
+    live = _module_constants(path)
+    for k, v in WHEEL.items():
+        if live.get(k) != v:
+            problems.append(f"wheel_bot.py: {k} = {live.get(k)!r}, backtest assumes {v!r}")
+    for fname, snippets in _WHEEL_INLINE.items():
+        p = root / fname
+        if not p.exists():
+            problems.append(f"{fname}: not found under {root}")
+            continue
+        text = p.read_text(encoding="utf-8")
+        for snip in snippets:
+            if snip not in text:
+                problems.append(f"{fname}: expected source line not found: {snip!r}")
+    return problems

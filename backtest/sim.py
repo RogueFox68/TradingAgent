@@ -175,8 +175,24 @@ def _fresh(market, s, i, t, session_open):
 
 class Simulator:
     def __init__(self, market, sessions, start_equity=100_000.0, slippage_bps=5.0,
-                 seed=0, regime="SIDEWAYS", vix=18.0):
-        """sessions: list of (open_ts, close_ts) tz-aware pandas Timestamps."""
+                 seed=0, regime="SIDEWAYS", vix=18.0, variant=None):
+        """sessions: list of (open_ts, close_ts) tz-aware pandas Timestamps.
+
+        `variant` is for strategy research (backtest.research) and is None for
+        the LLM ablation, which must run the live rules unchanged. Keys:
+          trend_stop / trend_tp / surv_stop / surv_tp - exit levels
+          trend_invert - trade AGAINST trend_bot's signals: a bullish
+              crossover or momentum setup opens a SHORT, and the position
+              exits when that signal reverses. Everything else is unchanged.
+          bots - which bots run, e.g. ("trend_bot",)
+        """
+        v = dict(variant or {})
+        self.trend_stop = v.get("trend_stop", rules.TREND["STOP_LOSS"])
+        self.trend_tp = v.get("trend_tp", rules.TREND["TAKE_PROFIT"])
+        self.surv_stop = v.get("surv_stop", rules.SURVIVOR_STOP_LOSS)
+        self.surv_tp = v.get("surv_tp", rules.SURVIVOR_TAKE_PROFIT)
+        self.trend_invert = bool(v.get("trend_invert", False))
+        self.bots = tuple(v.get("bots", ("trend_bot", "survivor_bot")))
         self.m = market
         self.sessions = sessions
         self.start_equity = float(start_equity)
@@ -257,13 +273,15 @@ class Simulator:
 
         if p.bot == "trend_bot":
             ind = {}
+            # the direction of the SIGNAL the position was opened on; equal to
+            # the position's side unless the variant trades against trend_bot
+            sig_long = long != self.trend_invert
             if ok and not np.isnan(a["adx"][i]):
-                intact = a["ema_fast"][i] > a["ema_slow"][i] if long else a["ema_fast"][i] < a["ema_slow"][i]
+                intact = a["ema_fast"][i] > a["ema_slow"][i] if sig_long else a["ema_fast"][i] < a["ema_slow"][i]
                 ind = {"adx": a["adx"][i], "ema_trend_intact": bool(intact)}
-            stop, tp = rules.TREND["STOP_LOSS"], rules.TREND["TAKE_PROFIT"]
         else:
             ind = {"rsi": a["rsi"][i]} if ok and not np.isnan(a["rsi"][i]) else {}
-            stop, tp = rules.SURVIVOR_STOP_LOSS, rules.SURVIVOR_TAKE_PROFIT
+        stop, tp = self._exit_levels(p.bot)
 
         tier = rules.hold_tier(p.bot, rules.hold_score(p.bot, pnl_pct, ind, hours, self.regime, self.vix))
         max_days = rules.MAX_HOLD_DAYS.get(tier)
@@ -275,22 +293,27 @@ class Simulator:
                 return "Stop Loss"
             if pnl_pct >= tp:
                 return "Take Profit"
-            if ok and long and a["bear_cross"][i] and not a["bull_cross"][i]:
+            if ok and sig_long and a["bear_cross"][i] and not a["bull_cross"][i]:
                 return "Bearish Crossover"
-            if ok and not long and a["bull_cross"][i] and not a["bear_cross"][i]:
+            if ok and not sig_long and a["bull_cross"][i] and not a["bear_cross"][i]:
                 return "Bullish Crossover"
         else:
             if ok and not np.isnan(a["rsi"][i]) and a["rsi"][i] > rules.SURVIVOR["RSI_SELL"]:
                 return "RSI Overbought"
             if pnl_pct > tp:
-                return "Take Profit (+5%)"
+                return f"Take Profit (+{tp:.0%})"
             if pnl_pct < stop:
-                return "Stop Loss (-3%)"
+                return f"Stop Loss ({stop:.0%})"
 
         held_overnight = tstr >= rules.EOD_EVAL_FROM and tier != "CLOSE_EOD"
         if tstr >= rules.EOD_CLOSE_FROM and not held_overnight:
             return "EOD Liquidation"
         return None
+
+    def _exit_levels(self, bot):
+        if bot == "trend_bot":
+            return self.trend_stop, self.trend_tp
+        return self.surv_stop, self.surv_tp
 
     def _intrabar(self, p, t_ns, t):
         """Stop / target through the bar starting at t. Returns True if closed."""
@@ -300,10 +323,7 @@ class Simulator:
             return False
         o, h, l = a["open"][i], a["high"][i], a["low"][i]
         e = p.entry_price
-        if p.bot == "trend_bot":
-            sl, tp = rules.TREND["STOP_LOSS"], rules.TREND["TAKE_PROFIT"]
-        else:
-            sl, tp = rules.SURVIVOR_STOP_LOSS, rules.SURVIVOR_TAKE_PROFIT
+        sl, tp = self._exit_levels(p.bot)
         if p.side == "long":
             stop_px, tp_px = e * (1 + sl), e * (1 + tp)
             if o <= stop_px:
@@ -399,8 +419,9 @@ class Simulator:
             size_mult = 0.5
         elif not long and self.regime == "BULL_TREND":
             size_mult = 0.5
-        cross = a["bull_cross"][i] if long else a["bear_cross"][i]
-        aligned = a["aligned_long"][i] if long else a["aligned_short"][i]
+        sig_long = long != self.trend_invert
+        cross = a["bull_cross"][i] if sig_long else a["bear_cross"][i]
+        aligned = a["aligned_long"][i] if sig_long else a["aligned_short"][i]
         momentum = aligned and a["pullback"][i] <= R["MOMENTUM_PULLBACK_PCT"] and adx > R["MOMENTUM_ADX_MIN"]
         if cross:
             entry_type = "Crossover"
@@ -445,7 +466,9 @@ class Simulator:
                             self._exited_now.add(s)
                 if tstr < rules.NO_ENTRY_AFTER:
                     targets = sched.at(t.to_pydatetime())
-                    bots = [self._trend_entries, self._survivor_entries]
+                    bots = [f for name, f in (("trend_bot", self._trend_entries),
+                                              ("survivor_bot", self._survivor_entries))
+                            if name in self.bots]
                     rng.shuffle(bots)
                     for enter in bots:
                         enter(targets, sched, t, t_ns, equity, rng)

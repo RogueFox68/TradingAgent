@@ -113,3 +113,76 @@ Tests: `python -m unittest test_backtest`.
   missing. This is a small survivorship bias.
 - Three months is one market regime. An interval that includes 0 means "no answer", not "no
   difference".
+
+---
+
+# Strategy research (`backtest.research`)
+
+**Question:** is there *any* rule set that trades the top-N universe profitably after costs,
+**on data it was not tuned on**?
+
+Searching settings on three months would find a "winner" by luck. This tool guards against
+that in three ways.
+
+1. **A pre-registered hypothesis list.** `HYPOTHESES` in `research.py` fixes the strategy
+   families and their parameter grids, and the git history dates them. Adding to the list
+   after seeing results is allowed only as a new, dated entry.
+2. **Walk-forward selection.** For each fold (a calendar year for daily strategies, a quarter
+   for the 15m bots), each family's settings are chosen by Sharpe over **earlier folds only**.
+   Only that choice's returns in the next fold count. The out-of-sample (OOS) record that
+   results is the answer.
+3. **A pass bar fixed in advance** (`walkforward.PASS_BAR`). A family passes only if all of
+   these hold:
+   - at least 4 OOS folds;
+   - OOS Sharpe ≥ 0.5 after costs;
+   - probability that the true Sharpe is above 0 ≥ 0.95;
+   - positive in at least 2/3 of OOS folds;
+   - Sharpe at least as high as simply holding SPY over the same days.
+
+   Passing earns paper trading next to the live bots, not live money.
+
+The full-period table of every trial is printed for transparency only. Next to it is the
+**Deflated Sharpe Ratio**, which tests the best trial against what the best of N zero-skill
+trials would reach by luck.
+
+## Families (pre-registered 2026-09-24)
+
+| Family | Idea | Grid | Record |
+|---|---|---|---|
+| `reversal_daily` | Buy the top-N's recent losers (optionally short the winners) | lookback 3/5/10d × hold 3/10d × long vs long-short, k=10 | 2019–, yearly folds |
+| `momentum_daily` | Buy 6- or 12-month winners, skipping the last month | lookback 126/252 × k 10/20 × SPY 200-day filter, monthly rebalance | 2019–, yearly folds |
+| `trend_15m` | trend_bot's entries on top-N, alternative exits, and **inverted** | stop/target −5/+8, −3/+6, −8/+15 × invert | Jul 2024–, quarterly folds |
+| `survivor_15m` | survivor_bot's RSI-dip entries on top-N, alternative exits | stop/target −3/+5, −5/+10, −2/+3 | Jul 2024–, quarterly folds |
+
+29 trials in total. The daily strategies decide at the close and trade at the next open.
+Overlapping holding periods are handled as staggered cohorts, and costs are charged on
+turnover. The 15m families reuse the ablation simulator with variant settings.
+
+## Running it
+
+```bat
+venv\Scripts\python -m backtest.research --fleet-repo ..\trading-bot-fleet
+```
+
+- **First run.** It downloads split-and-dividend-adjusted daily bars for every active and
+  delisted US equity from about 15 months before `--start`, plus split-adjusted 15m bars for
+  every top-N name since `--intraday-start`. Allow some time; everything is cached under
+  `backtest_cache/`.
+- **Output.** `backtest_research_out/research_report.md`, `trial_daily_returns.csv` and
+  `oos_daily_returns.csv`.
+- **Useful flags:**
+  - `--families reversal_daily momentum_daily` runs only those families (daily-only is much faster).
+  - `--no-delisted` runs faster, but ranks only today's survivors and is biased.
+  - `--top-n`, `--cost-bps`, `--start`, `--intraday-start`.
+
+Tests: `python -m unittest test_research`.
+
+## Limitations
+
+- Short borrow cost and market impact are not modelled.
+- A missing next open counts as a flat day.
+- Delisted names are covered only where Alpaca still serves their bars.
+- The 15m families use split-adjusted bars (the live bots trade raw ones) and don't model
+  regime/VIX gating.
+- Walk-forward removes the bias of *choosing settings*. It doesn't remove the bias of having
+  chosen *these families*, which is why they are pre-registered.

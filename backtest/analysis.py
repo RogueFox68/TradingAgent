@@ -140,7 +140,8 @@ def decision_stats(runs, start, end, threshold=0.66):
         for c in r.candidates:
             if c.bucket not in EQUITY_BUCKETS + ("wheel_targets",):
                 continue
-            no_news = all(x is None for x in (c.t1, c.t2, c.t3, c.social))
+            no_news = (all(x is None for x in (c.t1, c.t2, c.t3, c.social))
+                       and not c.failed)
             rows.append(dict(
                 month=r.started.strftime("%Y-%m"), bucket=c.bucket, approved=c.approved,
                 tech=c.tech, llm=c.llm_score(), no_news=no_news,
@@ -173,7 +174,8 @@ def decision_stats(runs, start, end, threshold=0.66):
                 typical_llm=typical_llm, no_news_total=int(df["no_news"].sum()),
                 no_news_approved=no_news_approved, n=len(df),
                 ai_error_pct=100 * float(df["ai_error"].mean()),
-                outages=llm_outage_runs(runs, start, end))
+                outages=llm_outage_runs(runs, start, end),
+                news_outages=news_outage_runs(runs, start, end))
 
 
 def llm_outage_runs(runs, start, end, share=0.5):
@@ -191,6 +193,26 @@ def llm_outage_runs(runs, start, end, share=0.5):
             out.append(dict(run_start=r.started.strftime("%Y-%m-%d %H:%M"),
                             candidates=len(r.candidates),
                             ai_error_pct=round(100 * err, 1),
+                            approved=sum(c.approved for c in r.candidates),
+                            published=r.published))
+    return out
+
+
+def news_outage_runs(runs, start, end, share=0.5):
+    """Runs where MORE than `share` of the candidates had no news in any tier.
+    sector_scout_3.publish_abort_reason refuses to publish these
+    (NO_NEWS_ABORT_SHARE, also 0.5 and also "more than"). For a run from
+    before that guard, a listing here is what it would have stopped, and a
+    run that looks normal is a false positive of the threshold."""
+    out = []
+    for r in runs:
+        if not (start <= r.started.date() <= end) or not r.candidates:
+            continue
+        missing = sum(not c.has_news() for c in r.candidates) / len(r.candidates)
+        if missing > share:
+            out.append(dict(run_start=r.started.strftime("%Y-%m-%d %H:%M"),
+                            candidates=len(r.candidates),
+                            no_news_pct=round(100 * missing, 1),
                             approved=sum(c.approved for c in r.candidates),
                             published=r.published))
     return out

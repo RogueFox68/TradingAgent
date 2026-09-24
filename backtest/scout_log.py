@@ -36,6 +36,9 @@ _CANDIDATE = re.compile(
     r"Tech: ([\d.]+|N/A) \| T1: ([\d.]+|N/A) \| T2: ([\d.]+|N/A) \| "
     r"T3: ([\d.]+|N/A) \| Soc: ([\d.]+|N/A)\]")
 _AI_ERROR = re.compile(r"\[!\] AI Error on (\S+?):")
+# Newer scouts score a failed LLM call as missing: it prints "N/A" like a
+# source with no coverage and is named after the breakdown instead.
+_LLM_FAILED = re.compile(r"\(LLM failed: ([\w, ]+)\)")
 
 
 def _num(tok):
@@ -54,6 +57,15 @@ class Candidate:
     t3: float | None       # specialty news
     social: float | None
     ai_error: bool = False
+    # Sources whose LLM call failed, from the "(LLM failed: T1, Soc)" suffix.
+    # Their score reads None (N/A), but the source HAD coverage. Older logs
+    # print a failed call as 0.00 instead and leave this empty.
+    failed: tuple = ()
+
+    def has_news(self):
+        """Any news in any tier, whether or not its LLM call succeeded."""
+        return (any(x is not None for x in (self.t1, self.t2, self.t3))
+                or any(s in self.failed for s in ("T1", "T2", "T3")))
 
     def llm_score(self):
         """The LLM's share of the composite under the CURRENT weights
@@ -148,11 +160,13 @@ def parse(lines, tz_name=LOG_TZ):
         m = _CANDIDATE.match(line)
         if m and bucket:
             emoji, sym, conf, tech, t1, t2, t3, soc = m.groups()
+            f = _LLM_FAILED.search(line, m.end())
             run.candidates.append(Candidate(
                 bucket=bucket, symbol=sym, approved=(emoji == "✅"),
                 confidence=float(conf), tech=_num(tech) or 0.0,
                 t1=_num(t1), t2=_num(t2), t3=_num(t3), social=_num(soc),
-                ai_error=sym in ai_errors))
+                ai_error=sym in ai_errors,
+                failed=tuple(x.strip() for x in f.group(1).split(",")) if f else ()))
     return runs
 
 

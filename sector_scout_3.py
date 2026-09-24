@@ -10,6 +10,7 @@ except ImportError:
             raise RuntimeError("requests is not installed")
     requests = _MissingRequests()
 import json
+import math
 import os
 import time
 import datetime
@@ -63,6 +64,16 @@ BEELINK_IP = getattr(config, 'BEELINK_IP', "192.168.5.87")
 BEELINK_USER = getattr(config, 'BEELINK_USER', "trader")
 BEELINK_PATH = getattr(config, 'BEELINK_PATH', "~/bots/repo/active_targets.json")
 WEBHOOK_OVERSEER = getattr(config, 'WEBHOOK_OVERSEER', '')
+
+# What a source with no usable evidence contributes to the composite: no
+# coverage (N/A) and a failed LLM call alike.
+NEUTRAL_SCORE = 0.5
+# Refuse to publish when MORE than this share of a run's LLM calls failed.
+# Those runs measure LM Studio being down, not the model's view of the tape.
+LLM_FAILURE_ABORT_SHARE = 0.5
+# Refuse to publish when MORE than this share of scored candidates had no news
+# in any tier. That is the news source being down, not a quiet news cycle.
+NO_NEWS_ABORT_SHARE = 0.5
 
 # --- REDDIT CONFIG ---
 REDDIT_SUBS = ["wallstreetbets", "stocks", "investing", "options", "thetagang"]
@@ -309,6 +320,12 @@ def validate_llm_response(score, reason, ticker):
 def ask_llama(ticker, strategy, content_text, source_type="news"):
     """
     source_type: 'tier1_news', 'tier2_news', 'social'
+
+    Returns (score, reason). score is None when the call FAILED: LM Studio
+    unreachable or erroring, or a reply with no usable JSON score. A failed
+    call is missing evidence, not a verdict. It used to return 0.0, the most
+    bearish score there is, so an LM Studio outage rejected every candidate
+    and the run published an empty "success" file.
     """
     if not content_text: return 0.5, "Insufficient Data"
 
@@ -356,7 +373,11 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
         }
         response = requests.post(LM_STUDIO_URL, json=payload, timeout=300)
         response_json = response.json()
-        
+        if not isinstance(response_json, dict) or 'choices' not in response_json:
+            # LM Studio reports an error (e.g. HTTP 400 with no model loaded)
+            # as {"error": ...}. Name it, instead of logging KeyError 'choices'.
+            raise RuntimeError(f"HTTP {response.status_code}: {str(response_json)[:200]}")
+
         raw_text = response_json['choices'][0]['message']['content']
         try:
             analysis = json.loads(raw_text)
@@ -366,12 +387,22 @@ def ask_llama(ticker, strategy, content_text, source_type="news"):
             if match:
                 analysis = json.loads(match.group(0))
             else:
-                return 0.0, "JSON Parse Failed"
+                # Same "AI Error on" prefix as below, so the backtest's log
+                # parser counts a parse failure as a failed call too.
+                print(f"   [!] AI Error on {ticker}: JSON Parse Failed")
+                return None, "JSON Parse Failed"
 
-        return validate_llm_response(analysis.get('score', 0.0), analysis.get('reason', 'N/A'), ticker)
+        # A reply with no numeric score is a failed call too. The old default
+        # of 0.0 turned it into a bearish verdict.
+        score = analysis.get('score') if isinstance(analysis, dict) else None
+        if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score):
+            print(f"   [!] AI Error on {ticker}: no usable score in reply ({score!r})")
+            return None, "No Score"
+
+        return validate_llm_response(score, analysis.get('reason', 'N/A'), ticker)
     except Exception as e:
         print(f"   [!] AI Error on {ticker}: {e}")
-        return 0.0, "AI Failed"
+        return None, f"AI Failed: {type(e).__name__}: {e}"
 
 def _shadow_source_context(news_map, reddit_text):
     # Raw evidence only — the specialist never sees the scout's scores, so its
@@ -502,6 +533,53 @@ def beam_to_beelink(retries=3):
     except: pass
     return False
 
+def publish_abort_reason(total_analyzed, scored=0, no_news=0, llm_calls=0,
+                         llm_failed=0, first_llm_error=None):
+    """Why this run must NOT overwrite the Beelink's targets, or None if it may.
+
+    `total_approved == 0` is a LEGITIMATE outcome: the model rejecting
+    everything in a bad tape is a real signal, and the bots standing by is the
+    correct response to it. Three ways of reaching an empty result are not:
+
+    - `total_analyzed == 0`: there was nothing to analyse, i.e. the scanner
+      produced nothing and even CORE_WATCHLIST came back empty.
+    - Most scored candidates had NO NEWS in any tier: yfinance news was down,
+      or changed shape so that every item got filtered out. get_tiered_news
+      returns an empty result for both, and a shape change raises nothing, so
+      only the outcome shows it. News carries 60% of the weight. Without it a
+      candidate needs tech >= 0.867 even with a perfect social score, so the
+      file would be empty or a few social-driven names. Social coverage alone
+      does not count. The LLM guard below cannot see this: no news means no
+      LLM call, and with social down too the run makes no calls at all.
+    - Most LLM calls FAILED: LM Studio was down (e.g. HTTP 400 with no model
+      loaded). With every LLM source neutral, a candidate tops out at 0.65,
+      below the 0.66 threshold, so nothing can be approved. When failed calls
+      scored 0.0 the result was the same: runs on 07-20, 08-17 and all three
+      on 09-22 approved nothing.
+
+    The last two files would describe the outage, not the market. Writing any
+    of them would SCP a fresh file over the Beelink's good targets, and the
+    fleet's 24h staleness check cannot catch it because the file it receives
+    is fresh, just empty. Aborting keeps the previous targets, which age into
+    a STALE TARGETS alert if this persists.
+    """
+    keep = (f"Refusing to write and beam {OUTPUT_FILE}. The Beelink keeps its "
+            f"previous targets (which will age into a STALE TARGETS alert if "
+            f"this persists).")
+    if total_analyzed == 0:
+        return f"Scout had 0 candidates to analyse. {keep}"
+    problems = []
+    if scored and no_news / scored > NO_NEWS_ABORT_SHARE:
+        problems.append(f"{no_news}/{scored} candidates had no news in any "
+                        f"tier. Is yfinance news reachable?")
+    if llm_calls and llm_failed / llm_calls > LLM_FAILURE_ABORT_SHARE:
+        sample = f" First error: {first_llm_error[:300]}." if first_llm_error else ""
+        problems.append(f"{llm_failed}/{llm_calls} LLM calls failed. Is LM Studio "
+                        f"running with {MODEL_NAME} loaded?{sample}")
+    if problems:
+        return " ".join(problems + [keep])
+    return None
+
 def run_scout():
     print("--- 🔬 SECTOR SCOUT 4.1 (Segregated Targets) ---")
     candidates = get_candidates()
@@ -515,6 +593,11 @@ def run_scout():
         "short_targets": {}
     }
     shadow_votes = []
+    scored = 0
+    no_news = 0
+    llm_calls = 0
+    llm_failed = 0
+    first_llm_error = None
 
     print("\n2. Deep Diving Candidates...")
 
@@ -559,6 +642,9 @@ def run_scout():
             # 2. Gather Intelligence
             news_map = get_tiered_news(ticker)
             reddit_text = get_reddit_sentiment(ticker)
+            scored += 1
+            if not any(news_map[tier] for tier in ("tier1", "tier2", "tier3")):
+                no_news += 1
             
             # 3. Multi-Factor Scoring
             scores = []
@@ -570,54 +656,40 @@ def run_scout():
             weights.append(0.30)
             reasons.append(f"Tech: {tech_norm:.2f}")
 
-            # --- B. Elite News (30%) ---
-            if news_map['tier1']:
-                txt = "\n".join(news_map['tier1'][:3])
-                s, r = ask_llama(ticker, category, txt, "tier1_news")
-                scores.append(s)
-                weights.append(0.30)
-                reasons.append(f"T1: {s:.2f}")
-            else:
-                scores.append(0.50)
-                weights.append(0.30)
-                reasons.append("T1: N/A")
-
-            # --- C. Mainstream News (20%) ---
-            if news_map['tier2']:
-                txt = "\n".join(news_map['tier2'][:3])
-                s, r = ask_llama(ticker, category, txt, "tier2_news")
-                scores.append(s)
-                weights.append(0.20)
-                reasons.append(f"T2: {s:.2f}")
-            else:
-                scores.append(0.50)
-                weights.append(0.20)
-                reasons.append("T2: N/A")
-
-            # --- D. Specialty/Industry News (10%) ---
-            if news_map['tier3']:
-                txt = "\n".join(news_map['tier3'][:3])
-                s, r = ask_llama(ticker, category, txt, "tier3_news")
-                scores.append(s)
-                weights.append(0.10)
-                reasons.append(f"T3: {s:.2f}")
-            else:
-                scores.append(0.50)
-                weights.append(0.10)
-                reasons.append("T3: N/A")
-
-            # --- E. Social/Reddit (10%) ---
+            # --- B-E. LLM-scored sources: Elite News (30%), Mainstream
+            # News (20%), Specialty/Industry News (10%), Social/Reddit (10%).
+            # No coverage and a failed call both count as NEUTRAL_SCORE and
+            # both print "N/A". A failed call is named after the breakdown,
+            # not inside it, so the line still matches the backtest's log
+            # parser.
+            llm_sources = [
+                ("T1", 0.30, "\n".join(news_map['tier1'][:3]), "tier1_news"),
+                ("T2", 0.20, "\n".join(news_map['tier2'][:3]), "tier2_news"),
+                ("T3", 0.10, "\n".join(news_map['tier3'][:3]), "tier3_news"),
+                ("Soc", 0.10, reddit_text, "social"),
+            ]
             social_score = None
-            if reddit_text:
-                s, r = ask_llama(ticker, category, reddit_text, "social")
-                social_score = s
+            failed_sources = []
+            for label, weight, txt, source_type in llm_sources:
+                weights.append(weight)
+                if not txt:
+                    scores.append(NEUTRAL_SCORE)
+                    reasons.append(f"{label}: N/A")
+                    continue
+                llm_calls += 1
+                s, r = ask_llama(ticker, category, txt, source_type)
+                if s is None:
+                    llm_failed += 1
+                    if first_llm_error is None:
+                        first_llm_error = f"{ticker}: {r}"
+                    failed_sources.append(label)
+                    scores.append(NEUTRAL_SCORE)
+                    reasons.append(f"{label}: N/A")
+                    continue
+                if label == "Soc":
+                    social_score = s
                 scores.append(s)
-                weights.append(0.10)
-                reasons.append(f"Soc: {s:.2f}")
-            else:
-                scores.append(0.50)
-                weights.append(0.10)
-                reasons.append("Soc: N/A")
+                reasons.append(f"{label}: {s:.2f}")
 
             # 4. Calculate Weighted Final Score
             final_confidence = 0.0
@@ -633,7 +705,8 @@ def run_scout():
             
             emoji = "✅" if is_approved else "❌"
             breakdown = " | ".join(reasons)
-            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} [{breakdown}]")
+            failed_note = f" (LLM failed: {', '.join(failed_sources)})" if failed_sources else ""
+            print(f"      {emoji} {ticker:<4} | Conf: {final_confidence:>4.2f} [{breakdown}]{failed_note}")
 
             if ENABLE_SHADOW_ADVISORS:
                 shadow_votes.append(ask_shadow_advisor(
@@ -667,6 +740,8 @@ def run_scout():
     print(f"   Analyzed: {total_analyzed}")
     print(f"   Approved: {total_approved} ({approval_rate*100:.0f}%)")
     print(f"   Avg Confidence: {avg_confidence:.2f}")
+    print(f"   News Coverage: {scored - no_news}/{scored} candidates")
+    print(f"   LLM Calls: {llm_calls} ({llm_failed} failed)")
     if ENABLE_SHADOW_ADVISORS:
         shadow_snapshot = shadow_advisors.build_snapshot(
             shadow_votes, updated=final_targets["updated"])
@@ -678,6 +753,23 @@ def run_scout():
         if shadow_failures == len(shadow_votes) and shadow_votes:
             print("   [!] Every shadow vote failed — check SHADOW_ADVISOR_MODELS ids "
                   "against the models loaded in LM Studio.")
+
+    # Publish guards run BEFORE the summary webhook, so an aborted run never
+    # also announces "0 TARGETS, bots will STAND BY". They won't: they keep
+    # the previous file.
+    abort_msg = publish_abort_reason(
+        total_analyzed, scored=scored, no_news=no_news, llm_calls=llm_calls,
+        llm_failed=llm_failed, first_llm_error=first_llm_error)
+    if abort_msg:
+        print(f"[!] PUBLISH ABORTED: {abort_msg}")
+        if WEBHOOK_OVERSEER:
+            try:
+                requests.post(WEBHOOK_OVERSEER, json={
+                    "content": f"🚨 **SCOUT PUBLISH ABORTED**\n{abort_msg}",
+                    "username": "Sector Scout"}, timeout=10)
+            except Exception as e:
+                print(f"[!] Abort alert failed: {e}")
+        sys.exit(1)
 
     if WEBHOOK_OVERSEER:
         try:
@@ -705,27 +797,6 @@ def run_scout():
             print(f"[!] Scout summary webhook failed: {e}")
 
     print("\n3. Saving Results...")
-
-    # Publish guard. `total_approved == 0` is a LEGITIMATE outcome — the model
-    # rejecting everything in a bad tape is a real signal, and the bots standing
-    # by is the correct response to it. `total_analyzed == 0` is not: it means
-    # there was nothing to analyse, i.e. the scanner produced nothing and even
-    # CORE_WATCHLIST came back empty. Writing that would SCP an empty file over
-    # the Beelink's good targets, and the fleet's 24h staleness check cannot
-    # catch it because the file it receives is fresh — just empty.
-    if total_analyzed == 0:
-        msg = (f"Scout had 0 candidates to analyse. Refusing to write and beam "
-               f"{OUTPUT_FILE} — the Beelink keeps its previous targets "
-               f"(which will age into a STALE TARGETS alert if this persists).")
-        print(f"[!] PUBLISH ABORTED: {msg}")
-        if WEBHOOK_OVERSEER:
-            try:
-                requests.post(WEBHOOK_OVERSEER, json={
-                    "content": f"🚨 **SCOUT PUBLISH ABORTED**\n{msg}",
-                    "username": "Sector Scout"}, timeout=10)
-            except Exception as e:
-                print(f"[!] Abort alert failed: {e}")
-        sys.exit(1)
 
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(final_targets, f, indent=4)

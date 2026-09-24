@@ -47,6 +47,8 @@ TradingAgent/
 │                                #   (dual bar source: yfinance primary, Alpaca fallback)
 ├── sector_scout_3.py            # Phase 2: AI analysis of candidates, outputs active_targets.json
 ├── shadow_advisors.py           # Shadow-only specialist votes for equity/options/crypto targets
+├── backtest/                    # LLM-gate ablation backtest (see backtest/README.md)
+├── test_backtest.py             # Unit tests for the backtest: log parser, schedules, simulator
 ├── test_market_scanner.py       # Unit tests for bar sourcing, liquidity filter, publish guard
 ├── test_parser_logic.py         # Unit tests for LLM JSON response parsing
 ├── test_shadow_advisors.py      # Unit tests for specialist routing/vote persistence
@@ -191,11 +193,20 @@ drops `active_targets.json`, so the file is visible in-container immediately.
 - **Test coverage:** `test_market_scanner.py` (bar-source fallback, IEX rank filtering, the
   publish guard), `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken),
   `test_shadow_advisors.py` (specialist routing, parsing, fallback, persistence),
-  `test_scp_logic.py` (SCP transfer retry/backoff), and `test_scoring_logic.py` (confidence
-  weighting and technical-score normalization).
+  `test_scp_logic.py` (SCP transfer retry/backoff), `test_scoring_logic.py` (confidence
+  weighting and technical-score normalization), and `test_backtest.py` (scout-log parsing,
+  target-file timing, the replay simulator, no-lookahead and budget rules; its rule-parity test
+  runs when a `trading-bot-fleet` checkout sits beside this repo or `FLEET_REPO` points at one).
 - **No linter/formatter configured** — code follows loose PEP 8 style with 4-space indentation
-- **Logging:** `scout_log.txt` with emoji-annotated output. Typical run: ~50 tickers analyzed,
-  95–98% approval rate, average confidence 0.68–0.72.
+- **Logging:** `scout_log.txt` with emoji-annotated output, **appended** by `run_scout.bat`, so
+  it is the only archive of every candidate the scout analysed (approved and rejected, with
+  per-source sub-scores). A typical run analyses 40 tickers. The approval rate is **not** the
+  95–98% this file used to state. Measured from the log for 2026-06-24..09-23: trend 56%,
+  short 28%, wheel 28%, **survivor 2%**. Survivor's technical score normalises to ~0.56,
+  which leaves it needing an LLM score of ~0.70 to clear 0.66 when the typical LLM score is
+  ~0.54. A candidate with no news or social data at all can never be approved, because each
+  missing source counts as 0.5 and the composite then tops out at 0.65. Run
+  `python -m backtest.run_backtest --scout-log scout_log.txt --decisions-only` for current figures.
 - **Transfer is fire-and-forget:** If SCP fails after 3 retries, bots continue using the
   previous `active_targets.json` on the Beelink. A Discord alert fires but the fleet doesn't
   stop.

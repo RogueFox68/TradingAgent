@@ -76,8 +76,14 @@ def _cache_path(cache_dir, kind, sym, start, end):
     return Path(cache_dir) / kind / f"{safe}_{start:%Y%m%d}_{end:%Y%m%d}.pkl"
 
 
-def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk):
+def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk, adjustment=None):
+    """`adjustment`: None = the API default (raw), which is what the bots
+    trade on and what the 3-month ablation uses. Multi-year research must
+    pass "split" or "all": on raw bars a 10:1 split is a -90% bar, which fires
+    every stop and books a fortune for every short."""
     from alpaca.data.requests import StockBarsRequest
+    if adjustment:
+        kind = f"{kind}_{adjustment}"
     out, missing = {}, []
     for s in symbols:
         p = _cache_path(cache_dir, kind, s, start, end)
@@ -91,8 +97,12 @@ def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk):
               f"({len(out)} cached)...")
     for k in range(0, len(missing), chunk):
         part = missing[k:k + chunk]
+        kw = {}
+        if adjustment:
+            from alpaca.data.enums import Adjustment
+            kw["adjustment"] = Adjustment(adjustment)
         req = StockBarsRequest(symbol_or_symbols=part, timeframe=timeframe,
-                               start=start, end=end)
+                               start=start, end=end, **kw)
         resp = _retry(lambda: data_client().get_stock_bars(req), f"{kind} bars {part[0]}..")
         df = resp.df if resp.data else pd.DataFrame()
         for s in part:
@@ -109,29 +119,43 @@ def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk):
     return out
 
 
-def bars_15m(symbols, start, end, cache_dir):
+def bars_15m(symbols, start, end, cache_dir, adjustment=None):
     from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
     return _fetch(sorted(set(symbols)), start, end, TimeFrame(15, TimeFrameUnit.Minute),
-                  "15m", cache_dir, chunk=25)
+                  "15m", cache_dir, chunk=25, adjustment=adjustment)
 
 
-def bars_daily(symbols, start, end, cache_dir):
+def bars_daily(symbols, start, end, cache_dir, adjustment=None):
     from alpaca.data.timeframe import TimeFrame
-    return _fetch(sorted(set(symbols)), start, end, TimeFrame.Day, "1d", cache_dir, chunk=200)
+    return _fetch(sorted(set(symbols)), start, end, TimeFrame.Day, "1d", cache_dir,
+                  chunk=200, adjustment=adjustment)
 
 
-def equity_universe():
+def equity_universe(include_inactive=False):
     """Every active, tradable US equity symbol Alpaca lists today.
 
     Survivorship caveat: a name delisted during the window is absent. For a
     top-100-by-dollar-volume list over three months that is a handful of names
     at most, and it biases arm A the same way it biased the live scanner,
-    which also started from get_all_assets(ACTIVE)."""
+    which also started from get_all_assets(ACTIVE).
+
+    `include_inactive=True` adds delisted names, for multi-year research,
+    where the bias is no longer small: a universe built from today's
+    survivors has already removed every stock that went to zero, which
+    flatters any strategy that buys losers. Alpaca still serves bars for many
+    delisted symbols, not all, so this reduces the bias rather than removing
+    it."""
     from alpaca.trading.requests import GetAssetsRequest
     from alpaca.trading.enums import AssetClass, AssetStatus
-    assets = _retry(lambda: trading_client().get_all_assets(
-        GetAssetsRequest(asset_class=AssetClass.US_EQUITY, status=AssetStatus.ACTIVE)), "assets")
-    return sorted(a.symbol for a in assets if a.tradable and "/" not in a.symbol and "." not in a.symbol)
+    assets = list(_retry(lambda: trading_client().get_all_assets(
+        GetAssetsRequest(asset_class=AssetClass.US_EQUITY, status=AssetStatus.ACTIVE)), "assets"))
+    syms = {a.symbol for a in assets if a.tradable}
+    if include_inactive:
+        inactive = _retry(lambda: trading_client().get_all_assets(
+            GetAssetsRequest(asset_class=AssetClass.US_EQUITY, status=AssetStatus.INACTIVE)),
+            "inactive assets")
+        syms |= {a.symbol for a in inactive}
+    return sorted(s for s in syms if "/" not in s and "." not in s)
 
 
 def topn_lists(daily, session_dates, n=100, lookback=20, min_price=5.0, min_rows=15):

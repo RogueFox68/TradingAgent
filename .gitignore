@@ -40,3 +40,4 @@ influx_data/
 # --- Backtest (backtest/) ---
 backtest_cache/
 backtest_out/
+backtest_research_out/

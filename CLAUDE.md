@@ -129,6 +129,12 @@ For each candidate from Phase 1:
    - Clamps scores to 0.0–1.0
    - Penalizes weak reasoning (<50 chars) by 30%
    - Catches "insufficient data" hedging and assigns 0.5
+   - **A failed call is missing data, not a verdict.** `ask_llama` returns `None` when LM
+     Studio errors or is unreachable, or when the reply has no usable JSON score. The
+     composite then scores that source 0.5, as it does a source with no coverage. The
+     breakdown shows `N/A` and the candidate line ends with `(LLM failed: T2)`. Failures
+     used to score 0.0, the most bearish verdict, so an LM Studio outage (HTTP 400, no
+     model loaded) rejected every candidate.
 
 5. **Writes `active_targets.json`** and **SCP transfers to Beelink**
    - 3 retry attempts with 5-second backoff
@@ -138,6 +144,16 @@ For each candidate from Phase 1:
      was empty, and writing it would SCP an empty file over the Beelink's good targets. The
      fleet's 24h staleness check cannot catch that, because the file it receives is fresh —
      just empty. So that case aborts (exit 1 + alert) and the previous targets stand.
+     **A run where more than half the LLM calls failed aborts the same way**
+     (`LLM_FAILURE_ABORT_SHARE`). With every LLM source neutral, a candidate tops out at 0.65,
+     below the threshold. Publishing that run would send the fleet an empty "success" file,
+     which it reads as a deliberate stand-by. Before this guard that happened on 07-20, 08-17
+     and all three 09-22 runs. The guard is checked before the summary webhook, so an aborted
+     run does not also send "0 TARGETS, bots will STAND BY". The bots keep their previous
+     targets instead. The summary prints `LLM Calls: N (M failed)` every run.
+     `test_scoring_logic.RunScoutLLMFailureTest` drives the real `run_scout` through a
+     single failed call, a full outage, a majority outage, and a healthy model that rejects
+     everything (which must still publish).
 
 6. **Runs shadow specialist advisors** (paper-only measurement layer)
    - Equity specialist: trend/survivor/short stock buckets
@@ -189,7 +205,8 @@ drops `active_targets.json`, so the file is visible in-container immediately.
 
 - **No build system** — standalone Python scripts, no packaging
 - **Test coverage:** `test_market_scanner.py` (bar-source fallback, IEX rank filtering, the
-  publish guard), `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken),
+  publish guard), `test_parser_logic.py` (LLM JSON response parsing — clean, chatty, broken,
+  and every failure shape returning `None` rather than 0.0),
   `test_shadow_advisors.py` (specialist routing, parsing, fallback, persistence),
   `test_scp_logic.py` (SCP transfer retry/backoff), and `test_scoring_logic.py` (confidence
   weighting and technical-score normalization).

@@ -49,11 +49,54 @@ class TestParser(unittest.TestCase):
 
     @patch('sector_scout_3.requests.post')
     def test_broken_json(self, mock_post):
-        # No JSON object anywhere -> JSON Parse Failed
+        # No JSON object anywhere -> a failed call (None), not a 0.0 verdict
         mock_post.return_value = self._mock_llm("I cannot do that.")
         score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
-        self.assertEqual(score, 0.0)
+        self.assertIsNone(score)
         self.assertEqual(reason, "JSON Parse Failed")
+
+    @patch('sector_scout_3.requests.post')
+    def test_lm_studio_error_is_a_failed_call(self, mock_post):
+        # The 09-22 shape: HTTP 400 with no model loaded. The body has no
+        # 'choices', which used to log KeyError 'choices' and score 0.0.
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {"error": "No models loaded. Please load a model."}
+        mock_post.return_value = mock_response
+        score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
+        self.assertIsNone(score)
+        self.assertIn("HTTP 400", reason)
+        self.assertIn("No models loaded", reason)
+
+    @patch('sector_scout_3.requests.post')
+    def test_unreachable_lm_studio_is_a_failed_call(self, mock_post):
+        mock_post.side_effect = ConnectionError("connection refused")
+        score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
+        self.assertIsNone(score)
+        self.assertIn("connection refused", reason)
+
+    @patch('sector_scout_3.requests.post')
+    def test_reply_without_a_score_is_a_failed_call(self, mock_post):
+        # Missing, non-numeric and non-finite scores used to default to (or
+        # crash into) 0.0. None of them is the model's verdict.
+        for body in (f'{{"reason": "{GOOD_REASON}"}}',
+                     f'{{"score": "high", "reason": "{GOOD_REASON}"}}',
+                     f'{{"score": NaN, "reason": "{GOOD_REASON}"}}',
+                     '[0.9]'):
+            with self.subTest(body=body):
+                mock_post.return_value = self._mock_llm(body)
+                score, _ = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
+                self.assertIsNone(score)
+
+    @patch('sector_scout_3.requests.post')
+    def test_bearish_verdict_is_still_zero(self, mock_post):
+        # A real 0.0 from the model is a verdict and must stay one.
+        mock_post.return_value = self._mock_llm(
+            f'{{"score": 0.0, "reason": "{BAD_REASON}"}}'
+        )
+        score, reason = sector_scout_3.ask_llama("AAPL", "trend_targets", "headline text", "tier1_news")
+        self.assertEqual(score, 0.0)
+        self.assertEqual(reason, BAD_REASON)
 
     @patch('sector_scout_3.requests.post')
     def test_shadow_advisor_sends_json_schema(self, mock_post):

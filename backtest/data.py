@@ -11,6 +11,7 @@ weeks-old data (trading-bot-fleet CLAUDE.md, "Market Data Correctness").
 Requests here page the whole window.
 """
 import pickle
+import re
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -20,6 +21,19 @@ import pandas as pd
 from .schedule import ET
 
 _clients = {}
+
+# A real US equity ticker: 1-5 capital letters. Alpaca's INACTIVE asset list
+# is ~20k entries of mostly non-tradable placeholders - CUSIPs (0029900E0),
+# contingent value rights (003CVR016), escrows (097ESC016) - and the bars
+# endpoint rejects a whole request over any one of them.
+_TICKER = re.compile(r"^[A-Z]{1,5}$")
+_INVALID = re.compile(r"invalid symbol: ([^\s\"',]+)")
+
+
+class InvalidSymbol(Exception):
+    def __init__(self, symbol):
+        super().__init__(f"invalid symbol: {symbol}")
+        self.symbol = symbol
 
 
 def _config():
@@ -48,6 +62,11 @@ def _retry(fn, what, tries=4):
         try:
             return fn()
         except Exception as e:  # network / 429 / 5xx: back off, then give up loudly
+            m = _INVALID.search(str(e))
+            if m:
+                # a permanent answer about one symbol, not a transient failure:
+                # retrying the same request can only fail the same way
+                raise InvalidSymbol(m.group(1)) from e
             if k == tries - 1:
                 raise RuntimeError(f"{what} failed after {tries} attempts: {e}") from e
             wait = 2 ** (k + 1)
@@ -101,10 +120,23 @@ def _fetch(symbols, start, end, timeframe, kind, cache_dir, chunk, adjustment=No
         if adjustment:
             from alpaca.data.enums import Adjustment
             kw["adjustment"] = Adjustment(adjustment)
-        req = StockBarsRequest(symbol_or_symbols=part, timeframe=timeframe,
-                               start=start, end=end, **kw)
-        resp = _retry(lambda: data_client().get_stock_bars(req), f"{kind} bars {part[0]}..")
-        df = resp.df if resp.data else pd.DataFrame()
+        df = pd.DataFrame()
+        todo = list(part)
+        while todo:
+            req = StockBarsRequest(symbol_or_symbols=todo, timeframe=timeframe,
+                                   start=start, end=end, **kw)
+            try:
+                resp = _retry(lambda: data_client().get_stock_bars(req), f"{kind} bars {todo[0]}..")
+            except InvalidSymbol as e:
+                if e.symbol not in todo:
+                    raise RuntimeError(f"Alpaca rejected {e.symbol!r}, which was not requested") from e
+                # drop it and re-ask for the rest; it is cached below as
+                # having no bars, so a rerun does not ask again
+                print(f"   [data] skipping {e.symbol}: Alpaca says it is not a valid symbol")
+                todo.remove(e.symbol)
+                continue
+            df = resp.df if resp.data else pd.DataFrame()
+            break
         for s in part:
             if not df.empty and s in df.index.get_level_values(0):
                 sdf = df.xs(s)[["open", "high", "low", "close", "volume"]].sort_index()
@@ -155,7 +187,7 @@ def equity_universe(include_inactive=False):
             GetAssetsRequest(asset_class=AssetClass.US_EQUITY, status=AssetStatus.INACTIVE)),
             "inactive assets")
         syms |= {a.symbol for a in inactive}
-    return sorted(s for s in syms if "/" not in s and "." not in s)
+    return sorted(s for s in syms if _TICKER.match(s))
 
 
 def topn_lists(daily, session_dates, n=100, lookback=20, min_price=5.0, min_rows=15):

@@ -85,17 +85,20 @@ class OptionBook:
         self._chain_loader = chain_loader    # (underlying, day) -> DataFrame[symbol,type,strike,expiry]
         self._bar_loader = bar_loader        # ([symbols]) -> {symbol: bars by date}
         self._chains, self._bars = {}, {}
+        self.chain_loads = self.bar_loads = 0   # loader calls (cache or network)
 
     def chain(self, u, day):
         key = (u, day.year, (day.month - 1) // 3)
         if key not in self._chains:
             self._chains[key] = self._chain_loader(u, day)
+            self.chain_loads += 1
         return self._chains[key]
 
     def bars(self, sym):
         if sym not in self._bars:
             self._bars.update(self._bar_loader([sym]))
             self._bars.setdefault(sym, pd.DataFrame())
+            self.bar_loads += 1
         return self._bars[sym]
 
     def bar(self, sym, day):
@@ -303,6 +306,15 @@ class WheelSim:
                 continue
             if gated:
                 continue
+            # Budget pre-check BEFORE the chain lookup, which is an API call
+            # per underlying per quarter: with a ~$36k sleeve most candidates
+            # can never fit, and fetching their chains made the first real run
+            # look hung. The chosen strike sits near price x (1 - otm); unless
+            # no strike exists within 10 points of that, its collateral is at
+            # least this much, so skipping here loses nothing. The exact check
+            # on the real strike still follows.
+            if commitment + price * max(0.0, 1 - p.otm - 0.10) * CONTRACT > budget:
+                continue
             c = pick_contract(self.book.chain(u, day), "P", price, p.otm, next_day, p.min_dte, p.max_dte)
             if c is None:
                 continue
@@ -315,13 +327,18 @@ class WheelSim:
         return orders
 
     # -- main loop -------------------------------------------------------------
-    def run(self):
+    def run(self, progress=None):
+        """progress: optional callable(day, book) called at each new month."""
         self.cash = self.capital
         self.shares, self.opts, self.events = {}, {}, []
         pending = []
         equity = {}
         self.paused_days = 0
+        month = None
         for i, day in enumerate(self.days):
+            if progress and (day.year, day.month) != month:
+                month = (day.year, day.month)
+                progress(day, self.book)
             paused = self.p.gates and (self._gate_value(self.vix, day) or 0) > self.p.vix_pause
             if pending:
                 self._execute(day, pending)

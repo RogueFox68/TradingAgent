@@ -89,9 +89,11 @@ def make_loaders(raw_close, cache_dir, t1):
         w = s[(s.index >= q0 - timedelta(days=10)) & (s.index <= q1)]
         if w.empty:
             return pd.DataFrame(columns=O.CHAIN_COLUMNS)
-        # a data-fetch band only; pick_contract decides from day t's price
+        # A data-fetch band only; pick_contract decides from day t's price.
+        # Every strike the bot can choose (8% OTM at most, rolls re-picked off
+        # the current price) sits inside +-15% of the quarter's range.
         return O.chain(u, q0 + timedelta(days=20), q1 + timedelta(days=50),
-                       round(0.6 * float(w.min()), 2), round(1.4 * float(w.max()), 2), cache_dir)
+                       round(0.85 * float(w.min()), 2), round(1.15 * float(w.max()), 2), cache_dir)
 
     def bar_loader(symbols):
         out = {}
@@ -147,6 +149,7 @@ def main(argv=None):
     raw_close = {s: _dated(df)["close"] for s, df in raw.items() if df is not None and not df.empty}
     spy_raw = _dated(raw["SPY"])
     regime = WH.regime_series(spy_raw)
+    print("VIX history (CBOE)..." if not args.vix_csv else f"VIX history from {args.vix_csv}...")
     vix = O.vix_history(args.cache_dir, args.vix_csv)
     spy_r = _dated(spy_adj)["close"].pct_change()
     spy_r.index = pd.DatetimeIndex(pd.to_datetime(list(spy_r.index)))
@@ -155,12 +158,16 @@ def main(argv=None):
     book = WH.OptionBook(chain_loader, bar_loader)
 
     trials, results = {}, {}
-    for vals in itertools.product(*GRID.values()):
+    combos = list(itertools.product(*GRID.values()))
+    print("Simulating. The first trial fetches most option chains and contract prices from "
+          "Alpaca (cached for every later trial and run), so it is by far the slowest.")
+    for n, vals in enumerate(combos, 1):
         p = dict(zip(GRID, vals))
         name = trial_name(p)
+        print(f"Trial {n}/{len(combos)}: {name}")
         wp = WH.WheelParams(otm=p["otm"], take_profit=p["take_profit"], gates=p["gates"],
                             slip=args.slip, fee=args.fee)
-        res = WH.WheelSim(days, raw_close, book, cands, wp, args.capital, regime, vix).run()
+        res = WH.WheelSim(days, raw_close, book, cands, wp, args.capital, regime, vix).run(progress=_progress)
         trials[name] = res.returns()
         results[name] = res
         c = res.counts()
@@ -175,6 +182,11 @@ def main(argv=None):
     pd.DataFrame([e.__dict__ for e in live.events]).to_csv(out / "wheel_events_live_like.csv", index=False)
     print(f"Wrote {out / 'wheel_report.md'}")
     return 0
+
+
+def _progress(day, book):
+    print(f"   [wheel] {day:%Y-%m}  (option chains loaded: {book.chain_loads}, "
+          f"contract price series loaded: {book.bar_loads})", flush=True)
 
 
 def _coverage(res):

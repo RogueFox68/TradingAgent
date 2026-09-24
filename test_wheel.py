@@ -210,6 +210,36 @@ class GateTest(unittest.TestCase):
         self.assertEqual(res.counts().get("sell_put", 0), 2)
 
 
+class FetchEconomyTest(unittest.TestCase):
+    """The first real run fetched a chain for every candidate every quarter,
+    including the hundreds the sleeve could never afford, and printed nothing
+    while it did."""
+
+    def test_unaffordable_candidates_never_load_a_chain(self):
+        loads = []
+
+        def loader(u, d):
+            loads.append(u)
+            return make_chain(u)
+        book = WH.OptionBook(loader, lambda syms: {})
+        prices = {"AAA": closes(lambda d: 100.0), "BIG": closes(lambda d: 900.0)}
+        # $20k: a ~$95 put fits, a ~$855 put ($85,500 collateral) never can
+        res = WH.WheelSim(DAYS, prices, book, always("AAA") | {d: ["AAA", "BIG"] for d in DAYS},
+                          WH.WheelParams(slip=0.0, fee=0.0), 20_000,
+                          pd.Series("SIDEWAYS", index=DAYS, dtype=object),
+                          pd.Series(15.0, index=DAYS)).run()
+        self.assertIn("AAA", loads)
+        self.assertNotIn("BIG", loads)
+
+    def test_progress_reports_each_month(self):
+        seen = []
+        book = Book({"AAA": make_chain("AAA")}, lambda s, d: 1.0)
+        WH.WheelSim(DAYS, {"AAA": closes(lambda d: 100.0)}, book, {}, WH.WheelParams(), 50_000,
+                    pd.Series("SIDEWAYS", index=DAYS, dtype=object),
+                    pd.Series(15.0, index=DAYS)).run(progress=lambda d, b: seen.append((d.year, d.month)))
+        self.assertEqual(seen, [(2025, 1), (2025, 2), (2025, 3), (2025, 4)])
+
+
 class InputsTest(unittest.TestCase):
     def test_regime_rule(self):
         n = 80

@@ -173,6 +173,63 @@ class SimVariantTest(unittest.TestCase):
         self.assertEqual(none, [])
 
 
+class DataRobustnessTest(unittest.TestCase):
+    """The first real run died on Alpaca's inactive-asset list: CUSIPs and
+    rights placeholders, one of which made the bars endpoint reject a whole
+    200-symbol request, four times, and end the run."""
+
+    def test_universe_keeps_only_real_tickers(self):
+        from types import SimpleNamespace as NS
+        from backtest import data
+
+        class TC:
+            def get_all_assets(self, req):
+                if str(req.status).lower().endswith("inactive"):
+                    return [NS(symbol=x, tradable=False) for x in
+                            ("0029900E0", "003CVR016", "26885b100", "LEHMQ", "BRK.A")]
+                return [NS(symbol="SPY", tradable=True), NS(symbol="BF.B", tradable=True),
+                        NS(symbol="ZZZ", tradable=False)]
+        with mock.patch.object(data, "trading_client", lambda: TC()):
+            self.assertEqual(data.equity_universe(include_inactive=True), ["LEHMQ", "SPY"])
+            self.assertEqual(data.equity_universe(), ["SPY"])
+
+    def test_invalid_symbol_is_dropped_not_retried(self):
+        from backtest import data
+        calls = []
+
+        class Resp:
+            def __init__(self, syms):
+                idx = pd.MultiIndex.from_product(
+                    [syms, pd.DatetimeIndex(["2021-01-04"], tz="UTC")], names=["symbol", "timestamp"])
+                self.df = pd.DataFrame({"open": 1.0, "high": 1.0, "low": 1.0, "close": 1.0,
+                                        "volume": 1.0}, index=idx)
+                self.data = {s: [] for s in syms}
+
+        class DC:
+            def get_stock_bars(self, req):
+                syms = list(req.symbol_or_symbols)
+                calls.append(syms)
+                for bad in ("0029900E0", "003CVR016"):
+                    if bad in syms:
+                        raise Exception('{"message":"invalid symbol: %s"}' % bad)
+                return Resp(syms)
+
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(data, "data_client", lambda: DC()), \
+                mock.patch.object(data.time, "sleep", lambda s: self.fail("slept: an invalid symbol was retried")):
+            out = data.bars_daily(["AAA", "0029900E0", "BBB", "003CVR016"],
+                                  datetime(2021, 1, 1), datetime(2021, 1, 5), tmp)
+            self.assertEqual(len(out["AAA"]), 1)
+            self.assertEqual(len(out["BBB"]), 1)
+            self.assertTrue(out["0029900E0"].empty)
+            self.assertEqual(len(calls), 3)                 # two drops, then success
+            # cached: a rerun makes no requests at all
+            calls.clear()
+            data.bars_daily(["AAA", "0029900E0", "BBB", "003CVR016"],
+                            datetime(2021, 1, 1), datetime(2021, 1, 5), tmp)
+            self.assertEqual(calls, [])
+
+
 class ResearchEndToEndTest(unittest.TestCase):
     """Drives research.main with Alpaca stubbed (fleet rule 25)."""
 
